@@ -190,7 +190,7 @@
                       data-option-select
                       name="option-{{ option.position }}"
                       value="{{ value }}"
-                      aria-pressed="{{ option.selected_value == value }}"
+                      aria-pressed="{%- if option.selected_value == value -%}true{%- else -%}false{%- endif -%}"
                       {% unless variant_available %}aria-disabled="true"{% endunless %}>
                       {{ value }}
                     </button>
