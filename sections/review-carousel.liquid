@@ -1,0 +1,99 @@
+<section class="section-padding review-carousel" aria-label="Customer reviews">
+  <div class="container">
+
+    {%- if section.settings.subtitle != blank -%}
+      <span class="section-subtitle">{{ section.settings.subtitle }}</span>
+    {%- endif -%}
+    <h2 class="section-title" style="margin-bottom:var(--space-10)">{{ section.settings.heading | default: 'What Our Customers Say' }}</h2>
+
+    <div class="product-carousel">
+      <div class="carousel__viewport">
+        <div class="carousel__track">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'review' -%}
+              <div class="carousel__slide" {{ block.shopify_attributes }}>
+                <article class="review-card" itemscope itemtype="https://schema.org/Review">
+                  <div class="review-card__stars" aria-label="{{ block.settings.rating }} out of 5 stars" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+                    <meta itemprop="ratingValue" content="{{ block.settings.rating }}">
+                    <meta itemprop="bestRating" content="5">
+                    {%- for i in (1..5) -%}
+                      {%- if i <= block.settings.rating -%}★{%- else -%}☆{%- endif -%}
+                    {%- endfor -%}
+                  </div>
+                  <p class="review-card__title">{{ block.settings.review_title | default: '"Absolutely love it"' }}</p>
+                  <blockquote class="review-card__body" itemprop="reviewBody">
+                    {{ block.settings.review_text }}
+                  </blockquote>
+                  <div class="review-card__meta" itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <div class="review-card__avatar">{{ block.settings.author_name | slice: 0 }}</div>
+                    <div>
+                      <p class="review-card__author" itemprop="name">{{ block.settings.author_name }}</p>
+                      {%- if block.settings.author_meta != blank -%}
+                        <p class="review-card__date">{{ block.settings.author_meta }}</p>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                </article>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <div class="carousel__nav" style="justify-content:center;margin-top:var(--sp-8)">
+        <button class="carousel__nav-btn carousel__nav-btn--prev" aria-label="Previous review">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <button class="carousel__nav-btn carousel__nav-btn--next" aria-label="Next review">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Review Carousel",
+  "settings": [
+    { "type": "text", "id": "subtitle", "label": "Eyebrow text", "default": "Testimonials" },
+    { "type": "text", "id": "heading", "label": "Section heading", "default": "What Our Customers Say" }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5,
+          "label": "Star rating"
+        },
+        { "type": "text",     "id": "review_title", "label": "Review title", "default": "Absolutely worth it" },
+        { "type": "textarea", "id": "review_text", "label": "Review text", "default": "Absolutely love this fragrance. It lasts all day and gets so many compliments." },
+        { "type": "text", "id": "author_name", "label": "Author name", "default": "Priya S." },
+        { "type": "text", "id": "author_meta", "label": "Meta (verified purchase / location)", "default": "Verified Purchase · Mumbai" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Review Carousel",
+      "blocks": [
+        { "type": "review", "settings": { "rating": 5, "review_text": "This scent is absolutely divine. I get compliments every time I wear it.", "author_name": "Priya S.", "author_meta": "Verified Purchase · Mumbai" } },
+        { "type": "review", "settings": { "rating": 5, "review_text": "Long-lasting and unique. Nothing else like it in this price range.", "author_name": "Arjun M.", "author_meta": "Verified Purchase · Delhi" } },
+        { "type": "review", "settings": { "rating": 5, "review_text": "My go-to fragrance now. The packaging is also beautiful.", "author_name": "Sneha R.", "author_meta": "Verified Purchase · Bangalore" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

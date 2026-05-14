@@ -1,0 +1,71 @@
+<section class="newsletter-section section-padding" aria-labelledby="newsletter-heading">
+  <div class="container" style="max-width:640px">
+
+    {%- if section.settings.subtitle != blank -%}
+      <span class="section-subtitle" style="color:rgba(255,255,255,.6)">{{ section.settings.subtitle }}</span>
+    {%- endif -%}
+
+    <h2 class="section-title" id="newsletter-heading" style="color:var(--color-surface)">
+      {{ section.settings.heading | default: 'Join the Nefume Circle' }}
+    </h2>
+
+    {%- if section.settings.description != blank -%}
+      <p style="color:rgba(255,255,255,.7);font-size:var(--fs-sm);margin-top:var(--space-3)">
+        {{ section.settings.description }}
+      </p>
+    {%- endif -%}
+
+    {%- form 'customer', data-newsletter-form: '' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+
+      {%- if form.posted_successfully? -%}
+        <p style="color:var(--color-accent);margin-top:var(--space-6);font-size:var(--fs-sm)" role="alert">
+          {{ section.settings.success_message | default: 'Thank you for subscribing!' }}
+        </p>
+      {%- else -%}
+        <div class="newsletter-form" style="margin-top:var(--space-6)">
+          <label for="newsletter-email-{{ section.id }}" class="visually-hidden">Email address</label>
+          <input
+            id="newsletter-email-{{ section.id }}"
+            class="newsletter-input"
+            type="email"
+            name="contact[email]"
+            placeholder="{{ section.settings.placeholder | default: 'Enter your email' }}"
+            autocomplete="email"
+            required
+            aria-required="true">
+          <button type="submit" class="newsletter-submit">
+            {{ section.settings.btn_text | default: 'Subscribe' }}
+          </button>
+        </div>
+        {%- if form.errors -%}
+          <p style="color:var(--color-accent);margin-top:var(--space-3);font-size:var(--fs-xs)" role="alert">
+            {{ form.errors | default_errors }}
+          </p>
+        {%- endif -%}
+      {%- endif -%}
+
+      <p style="color:rgba(255,255,255,.4);font-size:var(--fs-xs);margin-top:var(--space-4)">
+        No spam. Unsubscribe anytime.
+      </p>
+    {%- endform -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    { "type": "text", "id": "subtitle", "label": "Eyebrow text" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Join the Nefume Circle" },
+    { "type": "text", "id": "description", "label": "Description", "default": "Be the first to discover new launches, exclusive offers, and fragrance stories." },
+    { "type": "text", "id": "placeholder", "label": "Input placeholder", "default": "Enter your email address" },
+    { "type": "text", "id": "btn_text", "label": "Button text", "default": "Subscribe" },
+    { "type": "text", "id": "success_message", "label": "Success message", "default": "Thank you! Welcome to the Nefume family." }
+  ],
+  "presets": [
+    { "name": "Newsletter" }
+  ]
+}
+{% endschema %}

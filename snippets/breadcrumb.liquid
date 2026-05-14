@@ -1,0 +1,46 @@
+{%- comment -%}
+  Renders breadcrumb navigation.
+  Usage: {% render 'breadcrumb' %}
+{%- endcomment -%}
+
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList" style="display:flex;align-items:center;gap:var(--space-2);list-style:none">
+
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" style="display:flex;align-items:center">
+      <a href="/" itemprop="item" style="font-size:var(--fs-xs);color:var(--color-text-muted)">
+        <span itemprop="name">Home</span>
+      </a>
+      <meta itemprop="position" content="1">
+      <span class="breadcrumb__sep" aria-hidden="true" style="margin-left:var(--space-2)">/</span>
+    </li>
+
+    {%- if collection != blank -%}
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" style="display:flex;align-items:center">
+        <a href="{{ collection.url }}" itemprop="item" style="font-size:var(--fs-xs);color:var(--color-text-muted)">
+          <span itemprop="name">{{ collection.title }}</span>
+        </a>
+        <meta itemprop="position" content="2">
+        {%- if template.name == 'product' -%}
+          <span class="breadcrumb__sep" aria-hidden="true" style="margin-left:var(--space-2)">/</span>
+        {%- endif -%}
+      </li>
+    {%- endif -%}
+
+    {%- if template.name == 'product' -%}
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" aria-current="page">
+        <span itemprop="name" style="font-size:var(--fs-xs)">{{ product.title }}</span>
+        <meta itemprop="item" content="{{ request.origin }}{{ product.url }}">
+        <meta itemprop="position" content="{{ collection != blank | ternary: 3, 2 }}">
+      </li>
+    {%- endif -%}
+
+    {%- if template.name == 'collection' -%}
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" aria-current="page">
+        <span itemprop="name" style="font-size:var(--fs-xs)">{{ collection.title }}</span>
+        <meta itemprop="item" content="{{ request.origin }}{{ collection.url }}">
+        <meta itemprop="position" content="2">
+      </li>
+    {%- endif -%}
+
+  </ol>
+</nav>

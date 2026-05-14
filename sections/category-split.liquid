@@ -1,0 +1,80 @@
+<section class="category-section" aria-label="{{ section.settings.section_label | default: 'Shop by category' }}">
+
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'panel' -%}
+      <div class="category-panel" {{ block.shopify_attributes }}>
+
+        {%- if block.settings.image != blank -%}
+          {{ block.settings.image | image_url: width: 900 | image_tag:
+            class: 'category-panel__img',
+            loading: 'lazy',
+            alt: block.settings.title | default: block.settings.label,
+            width: 900, height: 1100
+          }}
+        {%- else -%}
+          <div style="width:100%;height:100%;min-height:400px;background:var(--color-bg-alt)">
+            {{ 'collection-1' | placeholder_svg_tag: 'category-panel__img' }}
+          </div>
+        {%- endif -%}
+
+        <div class="category-panel__overlay"></div>
+
+        <div class="category-panel__content">
+          {%- if block.settings.label != blank -%}
+            <p class="category-panel__label">{{ block.settings.label }}</p>
+          {%- endif -%}
+          {%- if block.settings.title != blank -%}
+            <h2 class="category-panel__title">{{ block.settings.title }}</h2>
+          {%- endif -%}
+          {%- if block.settings.btn_text != blank -%}
+            <a href="{{ block.settings.btn_url | default: '/collections/all' }}"
+               class="btn hero__btn--light">
+              {{ block.settings.btn_text }}
+            </a>
+          {%- endif -%}
+        </div>
+
+        {%- if block.settings.btn_url != blank -%}
+          <a href="{{ block.settings.btn_url }}"
+             class="visually-hidden"
+             tabindex="-1"
+             aria-hidden="true">{{ block.settings.title }}</a>
+        {%- endif -%}
+
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+
+</section>
+
+{% schema %}
+{
+  "name": "Category Split",
+  "settings": [
+    { "type": "text", "id": "section_label", "label": "Section aria-label", "default": "Shop by category" }
+  ],
+  "blocks": [
+    {
+      "type": "panel",
+      "name": "Category panel",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Background image" },
+        { "type": "text", "id": "label", "label": "Eyebrow label", "default": "For Him" },
+        { "type": "text", "id": "title", "label": "Title", "default": "The Men's Edit" },
+        { "type": "text", "id": "btn_text", "label": "Button text", "default": "Shop Him" },
+        { "type": "url", "id": "btn_url", "label": "Button URL" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category Split",
+      "blocks": [
+        { "type": "panel", "settings": { "label": "For Him", "title": "The Men's Edit", "btn_text": "Shop Him" } },
+        { "type": "panel", "settings": { "label": "For Her", "title": "The Women's Edit", "btn_text": "Shop Her" } }
+      ]
+    }
+  ],
+  "max_blocks": 2
+}
+{% endschema %}

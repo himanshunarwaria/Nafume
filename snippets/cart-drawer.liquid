@@ -1,0 +1,90 @@
+<aside id="cart-drawer"
+       class="drawer drawer--right"
+       role="dialog"
+       aria-modal="true"
+       aria-label="Shopping cart"
+       aria-hidden="true">
+
+  <div class="drawer__head">
+    <h2 class="drawer__title">Your Cart</h2>
+    <button class="drawer__close" data-drawer-close aria-label="Close cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="drawer__body" id="cart-drawer-content">
+    {%- if cart.item_count == 0 -%}
+      <div class="cart-empty">
+        <div class="cart-empty__icon">
+          <svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+            <path d="M18 22V16a9 9 0 0118 0v6M7 22h38l-3.5 22H10.5L7 22z"/>
+          </svg>
+        </div>
+        <p class="cart-empty__title">Your cart is empty</p>
+        <p class="cart-empty__text">Discover our luxury fragrance collection</p>
+        <a href="/collections/all" class="btn btn--solid" style="margin-top:var(--sp-4)">Explore Fragrances</a>
+      </div>
+    {%- else -%}
+      <div class="cart-items">
+        {%- for item in cart.items -%}
+          <div class="cart-item">
+            <a href="{{ item.url }}">
+              {{- item.image | image_url: width: 160 | image_tag:
+                class: 'cart-item__img',
+                alt: item.image.alt | default: item.title,
+                loading: 'lazy',
+                width: 80, height: 80
+              -}}
+            </a>
+            <div class="cart-item__body">
+              <span class="cart-item__brand">{{ item.vendor }}</span>
+              <a href="{{ item.url }}" class="cart-item__name">{{ item.product_title }}</a>
+              {%- unless item.variant_title == 'Default Title' -%}
+                <span class="cart-item__variant">{{ item.variant_title }}</span>
+              {%- endunless -%}
+              <div class="cart-item__foot">
+                <div class="qty-ctrl">
+                  <button class="qty-ctrl__btn" data-dir="down" aria-label="Decrease quantity">−</button>
+                  <input class="qty-ctrl__input" type="number" min="0" value="{{ item.quantity }}"
+                    data-cart-qty="{{ item.key }}" aria-label="Quantity">
+                  <button class="qty-ctrl__btn" data-dir="up" aria-label="Increase quantity">+</button>
+                </div>
+                <span class="cart-item__price">{{ item.final_line_price | money }}</span>
+              </div>
+              <button class="cart-item__remove" data-cart-remove="{{ item.key }}">Remove</button>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- if cart.item_count > 0 -%}
+  <div class="drawer__foot">
+    <div class="cart-summary">
+      <div class="cart-summary__row">
+        <span>Subtotal</span>
+        <span>{{ cart.total_price | money }}</span>
+      </div>
+      {%- if cart.total_discounts > 0 -%}
+        <div class="cart-summary__row">
+          <span>Savings</span>
+          <span style="color:var(--clr-sale)">−{{ cart.total_discounts | money }}</span>
+        </div>
+      {%- endif -%}
+      <div class="cart-summary__row cart-summary__row--total">
+        <span>Total</span>
+        <span>{{ cart.total_price | money }}</span>
+      </div>
+    </div>
+    <p class="cart-note">Taxes &amp; shipping calculated at checkout</p>
+    <div style="display:flex;flex-direction:column;gap:var(--sp-3);margin-top:var(--sp-5)">
+      <a href="/checkout" class="btn btn--solid btn--full">Checkout</a>
+      <a href="/cart" class="btn btn--outline btn--full">View Cart</a>
+    </div>
+  </div>
+  {%- endif -%}
+
+</aside>

@@ -1,0 +1,27 @@
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "msg1": { "type": "announcement", "settings": { "text": "Free shipping on orders above ₹999" } },
+        "msg2": { "type": "announcement", "settings": { "text": "New launches: Shop the latest fragrances" } },
+        "msg3": { "type": "announcement", "settings": { "text": "100% authentic | Easy returns | COD available" } }
+      },
+      "block_order": ["msg1","msg2","msg3"],
+      "settings": { "show_announcement": true }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "logo_width": 160
+      }
+    },
+    "mobile-menu-snippet": {
+      "type": "mobile-menu",
+      "settings": {}
+    }
+  },
+  "order": ["announcement-bar","header","mobile-menu-snippet"]
+}

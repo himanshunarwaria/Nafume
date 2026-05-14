@@ -1,0 +1,28 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "col_shop": {
+          "type": "link_list",
+          "settings": { "heading": "Shop", "menu": "shop-menu" }
+        },
+        "col_help": {
+          "type": "link_list",
+          "settings": { "heading": "Help", "menu": "help-menu" }
+        },
+        "col_company": {
+          "type": "link_list",
+          "settings": { "heading": "Company", "menu": "company-menu" }
+        }
+      },
+      "block_order": ["col_shop","col_help","col_company"],
+      "settings": {
+        "brand_description": "Crafted for those who wear their mood. Nefume brings you a curated collection of fine fragrances inspired by nature, art, and emotion."
+      }
+    }
+  },
+  "order": ["footer"]
+}

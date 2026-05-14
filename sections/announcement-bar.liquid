@@ -1,0 +1,88 @@
+{%- if section.settings.show_announcement and section.blocks.size > 0 -%}
+  {%- assign has_multi = false -%}
+  {%- if section.blocks.size > 1 -%}{%- assign has_multi = true -%}{%- endif -%}
+
+<div id="announcement-bar"
+     class="ann-bar"
+     data-ann-bar
+     data-interval="{{ section.settings.rotation_speed | times: 1000 }}"
+     role="region"
+     aria-label="Announcements"
+     style="--ann-bg:{{ section.settings.bg_color }};--ann-fg:{{ section.settings.text_color }}">
+
+  {%- if has_multi -%}
+    <button class="ann-bar__nav ann-bar__nav--prev" data-ann-prev aria-label="Previous announcement">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+  {%- endif -%}
+
+  <div class="ann-bar__viewport" aria-live="polite" aria-atomic="true">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'announcement' -%}
+        <div class="ann-bar__slide{% if forloop.first %} is-active{% endif %}"
+             data-ann-slide
+             aria-hidden="{%- if forloop.first -%}false{%- else -%}true{%- endif -%}"
+             {{ block.shopify_attributes }}>
+          {%- if block.settings.link != blank -%}
+            <a href="{{ block.settings.link }}" class="ann-bar__link">{{ block.settings.text }}</a>
+          {%- else -%}
+            {{ block.settings.text }}
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  {%- if has_multi -%}
+    <button class="ann-bar__nav ann-bar__nav--next" data-ann-next aria-label="Next announcement">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  {%- endif -%}
+
+  {%- if section.settings.show_close -%}
+    <button class="ann-bar__close" data-ann-close aria-label="Dismiss announcement bar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  {%- endif -%}
+
+</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    { "type": "checkbox", "id": "show_announcement", "label": "Show announcement bar", "default": true },
+    { "type": "color",    "id": "bg_color",          "label": "Background color",       "default": "#1c1917" },
+    { "type": "color",    "id": "text_color",         "label": "Text color",             "default": "#ffffff" },
+    {
+      "type": "range",
+      "id": "rotation_speed",
+      "label": "Rotation speed",
+      "min": 2, "max": 10, "step": 1, "default": 4, "unit": "s"
+    },
+    { "type": "checkbox", "id": "show_close", "label": "Show close button", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Message", "default": "FREE SHIPPING ON PREPAID ORDERS" },
+        { "type": "url",  "id": "link", "label": "Link (optional)" }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Announcement Bar",
+      "blocks": [
+        { "type": "announcement", "settings": { "text": "USE CODE WELCOME5 FOR EXTRA 5% OFF PREPAID ORDERS" } },
+        { "type": "announcement", "settings": { "text": "FREE SHIPPING ON PREPAID ORDERS" } },
+        { "type": "announcement", "settings": { "text": "NEW COLLECTION IS LIVE — SHOP NOW" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,101 @@
+{%- layout none -%}
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign on_sale = false
+  if current_variant.compare_at_price > current_variant.price
+    assign on_sale = true
+  endif
+  assign discount_pct = 0
+  if on_sale and current_variant.compare_at_price > 0
+    assign price_diff = current_variant.compare_at_price | minus: current_variant.price
+    assign discount_pct = price_diff | times: 100 | divided_by: current_variant.compare_at_price | round
+  endif
+-%}
+
+<div data-qv-gallery>
+  {%- if product.featured_image -%}
+    {{ product.featured_image | image_url: width: 800 | image_tag:
+      loading: 'eager',
+      alt: product.featured_image.alt | default: product.title,
+      style: 'width:100%;height:100%;object-fit:cover'
+    }}
+  {%- else -%}
+    {{ 'product-1' | placeholder_svg_tag }}
+  {%- endif -%}
+</div>
+
+<div data-qv-body>
+  {%- if product.vendor != blank -%}
+    <p style="font-family:var(--ff-sans);font-size:var(--fs-11);letter-spacing:.1em;text-transform:uppercase;color:var(--clr-muted);margin-bottom:var(--sp-2)">
+      {{ product.vendor }}
+    </p>
+  {%- endif -%}
+
+  <h2 style="font-family:var(--ff-serif);font-size:var(--fs-24);font-weight:400;line-height:1.2;margin-bottom:var(--sp-3)">
+    <a href="{{ product.url }}" style="color:inherit;text-decoration:none">{{ product.title }}</a>
+  </h2>
+
+  {%- if product.metafields.custom.fragrance_family != blank -%}
+    <p style="font-size:var(--fs-12);color:var(--clr-muted);margin-bottom:var(--sp-4)">
+      {{ product.metafields.custom.fragrance_family }}
+    </p>
+  {%- endif -%}
+
+  <div style="display:flex;align-items:baseline;gap:var(--sp-3);margin-bottom:var(--sp-6);flex-wrap:wrap">
+    {%- if on_sale -%}
+      <span style="font-family:var(--ff-sans);font-size:var(--fs-18);font-weight:500;color:var(--clr-ink)">
+        {{ current_variant.price | money }}
+      </span>
+      <span style="font-size:var(--fs-14);color:var(--clr-muted);text-decoration:line-through">
+        {{ current_variant.compare_at_price | money }}
+      </span>
+      <span style="font-size:var(--fs-12);font-family:var(--ff-sans);letter-spacing:.05em;text-transform:uppercase;color:var(--clr-sale);font-weight:500">
+        {{ discount_pct }}% off
+      </span>
+    {%- else -%}
+      <span style="font-family:var(--ff-sans);font-size:var(--fs-18);font-weight:500;color:var(--clr-ink)">
+        {{ current_variant.price | money }}
+      </span>
+    {%- endif -%}
+  </div>
+
+  {%- if product.variants.size > 1 -%}
+    <div style="margin-bottom:var(--sp-5)">
+      {%- for option in product.options_with_values -%}
+        <div style="margin-bottom:var(--sp-3)">
+          <p style="font-size:var(--fs-11);letter-spacing:.08em;text-transform:uppercase;font-weight:500;margin-bottom:var(--sp-2)">
+            {{ option.name }}
+          </p>
+          <div style="display:flex;flex-wrap:wrap;gap:var(--sp-2)">
+            {%- for value in option.values -%}
+              <label style="cursor:pointer">
+                <input type="radio" name="option-{{ option.position }}-{{ product.id }}" value="{{ value }}" style="position:absolute;opacity:0;width:0;height:0">
+                <span style="display:inline-block;padding:var(--sp-2) var(--sp-3);border:1px solid var(--clr-border);font-size:var(--fs-12);font-family:var(--ff-sans);cursor:pointer;transition:border-color .2s,background .2s">
+                  {{ value }}
+                </span>
+              </label>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- if current_variant.available -%}
+    <form action="/cart/add" method="post" data-atc-form style="margin-bottom:var(--sp-4)">
+      <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-input>
+      <input type="hidden" name="quantity" value="1">
+      <button type="submit" class="btn btn--solid btn--lg btn--full">
+        Add to Cart
+      </button>
+    </form>
+  {%- else -%}
+    <button class="btn btn--outline btn--lg btn--full" disabled style="opacity:.5;cursor:not-allowed;margin-bottom:var(--sp-4)">
+      Sold Out
+    </button>
+  {%- endif -%}
+
+  <a href="{{ product.url }}" style="display:block;text-align:center;font-size:var(--fs-12);font-family:var(--ff-sans);letter-spacing:.06em;text-transform:uppercase;color:var(--clr-muted);text-decoration:underline;text-underline-offset:3px">
+    View full details
+  </a>
+</div>

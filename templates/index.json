@@ -1,0 +1,123 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-banner",
+      "blocks": {
+        "slide_1": {
+          "type": "slide",
+          "settings": {
+            "eyebrow": "New Launches 2025",
+            "heading": "Wear Your Story",
+            "description": "Premium fragrances crafted for every emotion.",
+            "btn_primary_text": "Shop Now",
+            "btn_primary_url": "/collections/all",
+            "btn_secondary_text": "Explore All",
+            "btn_secondary_url": "/collections/all"
+          }
+        }
+      },
+      "block_order": ["slide_1"],
+      "settings": {
+        "autoplay_speed": 5
+      }
+    },
+    "new_launches": {
+      "type": "product-carousel",
+      "settings": {
+        "subtitle": "Just Arrived",
+        "heading": "New Launches",
+        "products_to_show": 8,
+        "view_all_text": "View All"
+      }
+    },
+    "best_sellers": {
+      "type": "product-carousel",
+      "settings": {
+        "subtitle": "Customer Favourites",
+        "heading": "Best Sellers",
+        "products_to_show": 8,
+        "view_all_text": "View All"
+      }
+    },
+    "editorial": {
+      "type": "editorial-marquee",
+      "blocks": {
+        "img_1": { "type": "image", "settings": {} },
+        "img_2": { "type": "image", "settings": {} },
+        "img_3": { "type": "image", "settings": {} },
+        "img_4": { "type": "image", "settings": {} },
+        "img_5": { "type": "image", "settings": {} }
+      },
+      "block_order": ["img_1","img_2","img_3","img_4","img_5"],
+      "settings": {
+        "heading": "Discover the Art of Fragrance"
+      }
+    },
+    "categories": {
+      "type": "category-split",
+      "blocks": {
+        "him": {
+          "type": "panel",
+          "settings": {
+            "label": "For Him",
+            "title": "The Men's Edit",
+            "btn_text": "Shop Him",
+            "btn_url": "/collections/him"
+          }
+        },
+        "her": {
+          "type": "panel",
+          "settings": {
+            "label": "For Her",
+            "title": "The Women's Edit",
+            "btn_text": "Shop Her",
+            "btn_url": "/collections/her"
+          }
+        }
+      },
+      "block_order": ["him","her"],
+      "settings": {}
+    },
+    "reviews": {
+      "type": "review-carousel",
+      "blocks": {
+        "r1": { "type": "review", "settings": { "rating": 5, "review_text": "This scent is absolutely divine. I get compliments every time I wear it.", "author_name": "Priya S.", "author_meta": "Verified Purchase · Mumbai" } },
+        "r2": { "type": "review", "settings": { "rating": 5, "review_text": "Long-lasting and unique. Nothing else like it in this price range.", "author_name": "Arjun M.", "author_meta": "Verified Purchase · Delhi" } },
+        "r3": { "type": "review", "settings": { "rating": 5, "review_text": "My go-to fragrance now. The packaging is also beautiful.", "author_name": "Sneha R.", "author_meta": "Verified Purchase · Bangalore" } }
+      },
+      "block_order": ["r1","r2","r3"],
+      "settings": {
+        "subtitle": "Testimonials",
+        "heading": "What Our Customers Say"
+      }
+    },
+    "seo_content": {
+      "type": "seo-content",
+      "blocks": {
+        "b1": { "type": "content_block", "settings": { "title": "Premium Perfumes & Fragrances Online in India", "content": "<p>Nefume offers a curated collection of premium perfumes for men and women. Discover long-lasting Eau de Parfum, Eau de Toilette, and exclusive fragrance sets crafted from the finest ingredients.</p>" } },
+        "b2": { "type": "content_block", "settings": { "title": "How to Choose the Right Fragrance", "content": "<p>Consider the fragrance family — floral, woody, oriental, or fresh — and test on your skin before purchasing. Our discovery kits let you sample before committing.</p>" } }
+      },
+      "block_order": ["b1","b2"],
+      "settings": { "heading": "About Nefume Fragrances" }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": { "type": "faq_item", "settings": { "question": "How long do your fragrances last?", "answer": "<p>Our Eau de Parfum concentrations last 8–12 hours on most skin types.</p>" } },
+        "q2": { "type": "faq_item", "settings": { "question": "Are your fragrances cruelty-free?", "answer": "<p>Yes. All Nefume fragrances are cruelty-free.</p>" } },
+        "q3": { "type": "faq_item", "settings": { "question": "Do you offer Cash on Delivery?", "answer": "<p>Yes, COD is available across most pin codes in India.</p>" } }
+      },
+      "block_order": ["q1","q2","q3"],
+      "settings": { "heading": "Frequently Asked Questions" }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "heading": "Join the Nefume Circle",
+        "description": "Be the first to discover new launches, exclusive offers, and fragrance stories.",
+        "btn_text": "Subscribe"
+      }
+    }
+  },
+  "order": ["hero","new_launches","best_sellers","editorial","categories","reviews","seo_content","faq","newsletter"]
+}

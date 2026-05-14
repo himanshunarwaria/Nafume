@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "main": {
+      "type": "product-main",
+      "settings": {
+        "show_dynamic_checkout": true,
+        "show_cod": true,
+        "show_reviews": true,
+        "show_recently_viewed": true
+      }
+    }
+  },
+  "order": ["main"]
+}

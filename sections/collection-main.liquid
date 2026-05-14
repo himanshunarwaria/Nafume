@@ -1,0 +1,219 @@
+{%- paginate collection.products by section.settings.products_per_page -%}
+
+{%- comment -%} Collection Header {%- endcomment -%}
+<section class="collection-header">
+  <div class="container">
+    {%- if collection.image -%}
+      <div style="margin-bottom:var(--space-6);max-height:300px;overflow:hidden;border-radius:var(--radius-sm)">
+        {{ collection.image | image_url: width: 1440 | image_tag:
+          loading: 'eager',
+          alt: collection.title,
+          style: 'width:100%;height:300px;object-fit:cover'
+        }}
+      </div>
+    {%- endif -%}
+    <h1 class="section-title">{{ collection.title }}</h1>
+    {%- if collection.description != blank -%}
+      <p class="collection-header__desc">{{ collection.description }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+<div class="container section-padding" style="padding-top:var(--space-4)">
+
+  {%- comment -%} Toolbar {%- endcomment -%}
+  <div class="collection-toolbar">
+    <p class="collection-count">
+      <span>{{ collection.products_count }}</span> products
+    </p>
+    <div class="collection-toolbar__right">
+      <button class="filter-toggle show-mobile" data-filter-toggle aria-label="Open filters" aria-expanded="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/>
+        </svg>
+        Filters
+      </button>
+      <label for="sort-by-{{ section.id }}" class="visually-hidden">Sort by</label>
+      <select
+        id="sort-by-{{ section.id }}"
+        class="sort-select"
+        name="sort_by"
+        onchange="window.location.search = '?sort_by=' + this.value">
+        {%- for option in collection.sort_options -%}
+          <option value="{{ option.value }}"{% if option.value == collection.sort_by %} selected{% endif %}>
+            {{ option.name }}
+          </option>
+        {%- endfor -%}
+      </select>
+    </div>
+  </div>
+
+  {%- comment -%} Main layout {%- endcomment -%}
+  <div class="collection-layout">
+
+    {%- comment -%} Sidebar Filters (desktop) {%- endcomment -%}
+    <aside class="collection-sidebar hide-mobile" aria-label="Product filters">
+      {%- if collection.filters.size > 0 -%}
+        <form id="filter-form-desktop">
+          <a href="{{ collection.url }}" style="display:block;font-size:.75rem;color:var(--color-text-muted);margin-bottom:var(--space-5);text-align:right">
+            Clear all
+          </a>
+          {%- for filter in collection.filters -%}
+            <div class="filter-group">
+              <div class="filter-group__title">
+                {{ filter.label }}
+              </div>
+              <div class="filter-options">
+                {%- case filter.type -%}
+                  {%- when 'boolean', 'list' -%}
+                    {%- for value in filter.values -%}
+                      <label class="filter-option">
+                        <input
+                          type="checkbox"
+                          name="{{ value.param_name }}"
+                          value="{{ value.value }}"
+                          {% if value.active %}checked{% endif %}
+                          onchange="this.form.submit()">
+                        {{ value.label }}
+                        <span style="color:var(--color-text-light);font-size:.75rem">({{ value.count }})</span>
+                      </label>
+                    {%- endfor -%}
+                  {%- when 'price_range' -%}
+                    <div style="display:flex;gap:var(--space-2);align-items:center">
+                      <input type="number" name="{{ filter.min_value.param_name }}" placeholder="Min" value="{{ filter.min_value.value }}" style="width:80px;padding:var(--space-2);border:1px solid var(--color-border);font-size:var(--fs-xs)">
+                      <span style="font-size:var(--fs-xs)">—</span>
+                      <input type="number" name="{{ filter.max_value.param_name }}" placeholder="Max" value="{{ filter.max_value.value }}" style="width:80px;padding:var(--space-2);border:1px solid var(--color-border);font-size:var(--fs-xs)">
+                    </div>
+                {%- endcase -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </form>
+      {%- endif -%}
+    </aside>
+
+    {%- comment -%} Product Grid {%- endcomment -%}
+    <div>
+      {%- if collection.products.size == 0 -%}
+        <div style="text-align:center;padding:var(--space-16) 0;color:var(--color-text-muted)">
+          <p style="font-size:var(--fs-lg);margin-bottom:var(--space-4)">No products found.</p>
+          <a href="{{ collection.url }}" class="btn btn--outline">Clear filters</a>
+        </div>
+      {%- else -%}
+        <div class="product-grid" role="list">
+          {%- for product in collection.products -%}
+            <div role="listitem">
+              {% render 'product-card', product: product %}
+            </div>
+          {%- endfor -%}
+        </div>
+
+        {%- comment -%} Pagination {%- endcomment -%}
+        {%- if paginate.pages > 1 -%}
+          <nav class="pagination" aria-label="Pagination" style="display:flex;justify-content:center;gap:var(--space-2);margin-top:var(--space-12)">
+            {%- if paginate.previous -%}
+              <a href="{{ paginate.previous.url }}" class="btn btn--outline" aria-label="Previous page">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+              </a>
+            {%- endif -%}
+
+            {%- for part in paginate.parts -%}
+              {%- if part.is_link -%}
+                <a href="{{ part.url }}" class="btn btn--outline" aria-label="Page {{ part.title }}">{{ part.title }}</a>
+              {%- elsif part.title == paginate.current_page -%}
+                <span class="btn btn--solid" aria-current="page">{{ part.title }}</span>
+              {%- else -%}
+                <span style="display:flex;align-items:center;padding:0 var(--space-2)">{{ part.title }}</span>
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- if paginate.next -%}
+              <a href="{{ paginate.next.url }}" class="btn btn--outline" aria-label="Next page">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+              </a>
+            {%- endif -%}
+          </nav>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+
+  </div>
+
+</div>
+
+{%- comment -%} Mobile Filter Drawer {%- endcomment -%}
+<div id="filter-drawer-mobile" class="filter-drawer-mobile" role="dialog" aria-modal="true" aria-label="Filters" aria-hidden="true">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-6)">
+    <h2 style="font-family:var(--font-heading);font-size:var(--fs-xl)">Filters</h2>
+    <button data-filter-close aria-label="Close filters">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  {%- if collection.filters.size > 0 -%}
+    <form id="filter-form-mobile">
+      {%- for filter in collection.filters -%}
+        <div class="filter-group">
+          <div class="filter-group__title">{{ filter.label }}</div>
+          <div class="filter-options">
+            {%- for value in filter.values -%}
+              <label class="filter-option">
+                <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}" {% if value.active %}checked{% endif %}>
+                {{ value.label }} ({{ value.count }})
+              </label>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endfor -%}
+      <div style="display:flex;gap:var(--space-3);margin-top:var(--space-6)">
+        <button type="submit" class="btn btn--solid btn--full">Apply Filters</button>
+        <a href="{{ collection.url }}" class="btn btn--outline">Clear</a>
+      </div>
+    </form>
+  {%- endif -%}
+</div>
+
+<script>
+  (function() {
+    var toggle = document.querySelector('[data-filter-toggle]');
+    var drawer = document.getElementById('filter-drawer-mobile');
+    var closeBtn = document.querySelector('[data-filter-close]');
+    if (!toggle || !drawer) return;
+
+    toggle.addEventListener('click', function() {
+      drawer.classList.toggle('is-open');
+      drawer.setAttribute('aria-hidden', !drawer.classList.contains('is-open'));
+      toggle.setAttribute('aria-expanded', drawer.classList.contains('is-open'));
+      document.body.classList.toggle('scroll-locked', drawer.classList.contains('is-open'));
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', function() {
+      drawer.classList.remove('is-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('scroll-locked');
+    });
+  })();
+</script>
+
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Collection Main",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "label": "Products per page"
+    }
+  ],
+  "presets": [
+    { "name": "Collection Main" }
+  ]
+}
+{% endschema %}

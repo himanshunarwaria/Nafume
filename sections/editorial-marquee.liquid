@@ -1,0 +1,89 @@
+<section class="section-padding editorial-marquee" aria-label="Editorial gallery">
+  <div style="overflow:hidden;padding-block:var(--space-4)">
+    <div class="marquee-track">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'image' -%}
+          <div class="marquee-item" {{ block.shopify_attributes }}>
+            {%- if block.settings.image != blank -%}
+              {{ block.settings.image | image_url: width: 400 | image_tag:
+                loading: 'lazy',
+                alt: block.settings.alt | default: shop.name,
+                width: 400, height: 533
+              }}
+            {%- else -%}
+              {{ 'lifestyle-2' | placeholder_svg_tag }}
+            {%- endif -%}
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}" class="visually-hidden">{{ block.settings.alt | default: 'View collection' }}</a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+      {%- comment -%} Duplicate for seamless loop {%- endcomment -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'image' -%}
+          <div class="marquee-item" aria-hidden="true">
+            {%- if block.settings.image != blank -%}
+              {{ block.settings.image | image_url: width: 400 | image_tag:
+                loading: 'lazy',
+                alt: '',
+                width: 400, height: 533
+              }}
+            {%- else -%}
+              {{ 'lifestyle-2' | placeholder_svg_tag }}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+
+  {%- if section.settings.heading != blank or section.settings.cta_text != blank -%}
+    <div class="container" style="text-align:center;margin-top:var(--space-8)">
+      {%- if section.settings.subtitle != blank -%}
+        <span class="section-subtitle">{{ section.settings.subtitle }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="section-title">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.cta_text != blank -%}
+        <a href="{{ section.settings.cta_url | default: '/collections/all' }}"
+           class="btn btn--outline"
+           style="margin-top:var(--space-6)">
+          {{ section.settings.cta_text }}
+        </a>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Editorial Marquee",
+  "settings": [
+    { "type": "text", "id": "subtitle", "label": "Eyebrow text" },
+    { "type": "text", "id": "heading", "label": "Section heading" },
+    { "type": "text", "id": "cta_text", "label": "CTA button text" },
+    { "type": "url", "id": "cta_url", "label": "CTA URL" }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "alt", "label": "Alt text" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Editorial Marquee",
+      "blocks": [
+        {"type":"image"},{"type":"image"},{"type":"image"},{"type":"image"},{"type":"image"}
+      ]
+    }
+  ]
+}
+{% endschema %}

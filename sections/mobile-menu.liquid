@@ -1,0 +1,16 @@
+{%- render 'mobile-menu', menu: section.settings.menu -%}
+
+{% schema %}
+{
+  "name": "Mobile Menu",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Navigation menu",
+      "default": "main-menu"
+    }
+  ],
+  "presets": [{ "name": "Mobile Menu" }]
+}
+{% endschema %}

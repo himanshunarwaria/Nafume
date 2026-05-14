@@ -1,0 +1,11 @@
+{
+  "current": {
+    "color_primary": "#1a1a1a",
+    "color_secondary": "#8b6f47",
+    "color_accent": "#c9a96e",
+    "color_bg": "#faf9f7",
+    "color_surface": "#ffffff",
+    "body_font_size": 16
+  },
+  "presets": {}
+}

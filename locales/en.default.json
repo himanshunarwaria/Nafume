@@ -1,0 +1,45 @@
+{
+  "general": {
+    "currency": {
+      "format": "₹{{amount}}"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to Cart",
+      "sold_out": "Sold Out",
+      "unavailable": "Unavailable",
+      "quantity": "Quantity",
+      "quick_add": "Quick Add",
+      "quick_view": "Quick View"
+    }
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty",
+    "checkout": "Checkout",
+    "subtotal": "Subtotal",
+    "remove": "Remove",
+    "view_cart": "View Cart"
+  },
+  "navigation": {
+    "open_menu": "Open menu",
+    "close_menu": "Close menu"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search fragrances…",
+    "no_results": "No results found."
+  },
+  "wishlist": {
+    "add": "Add to wishlist",
+    "remove": "Remove from wishlist",
+    "added": "Added to wishlist",
+    "removed": "Removed from wishlist"
+  },
+  "accessibility": {
+    "previous": "Previous",
+    "next": "Next",
+    "close": "Close"
+  }
+}

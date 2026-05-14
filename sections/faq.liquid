@@ -1,0 +1,86 @@
+<section class="section-padding" aria-labelledby="faq-heading">
+  <div class="container">
+
+    {%- if section.settings.subtitle != blank -%}
+      <span class="section-subtitle">{{ section.settings.subtitle }}</span>
+    {%- endif -%}
+    <h2 class="section-title" id="faq-heading" style="margin-bottom:var(--space-10)">
+      {{ section.settings.heading | default: 'Frequently Asked Questions' }}
+    </h2>
+
+    <div class="accordion faq-section__accordion" data-multi="true" style="max-width:760px;margin-inline:auto" itemscope itemtype="https://schema.org/FAQPage">
+
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'faq_item' -%}
+          <div class="accordion-item"
+               data-accordion-item
+               {{ block.shopify_attributes }}
+               itemscope
+               itemprop="mainEntity"
+               itemtype="https://schema.org/Question">
+
+            <button
+              class="accordion-trigger"
+              data-accordion-trigger
+              aria-expanded="false"
+              aria-controls="faq-body-{{ block.id }}"
+              itemprop="name">
+              {{ block.settings.question }}
+              <span class="accordion-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+              </span>
+            </button>
+
+            <div
+              class="accordion-body"
+              id="faq-body-{{ block.id }}"
+              data-accordion-body
+              itemscope
+              itemprop="acceptedAnswer"
+              itemtype="https://schema.org/Answer">
+              <div class="accordion-content" itemprop="text">
+                {{ block.settings.answer }}
+              </div>
+            </div>
+
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "settings": [
+    { "type": "text", "id": "subtitle", "label": "Eyebrow text" },
+    { "type": "text", "id": "heading", "label": "Section heading", "default": "Frequently Asked Questions" }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ item",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "How long does the fragrance last?" },
+        { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>Our fragrances are long-lasting, typically lasting 8–12 hours depending on your skin type and the fragrance concentration.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        { "type": "faq_item", "settings": { "question": "How long do your fragrances last?", "answer": "<p>Our Eau de Parfum concentrations last 8–12 hours on most skin types. For best longevity, apply to pulse points right after a shower.</p>" } },
+        { "type": "faq_item", "settings": { "question": "Are your fragrances cruelty-free?", "answer": "<p>Yes. All Nefume fragrances are cruelty-free and we do not test on animals at any stage of production.</p>" } },
+        { "type": "faq_item", "settings": { "question": "What is your return policy?", "answer": "<p>We offer hassle-free returns within 7 days of delivery. Please contact our support team to initiate a return.</p>" } },
+        { "type": "faq_item", "settings": { "question": "Do you offer Cash on Delivery?", "answer": "<p>Yes, COD is available across most pin codes in India. Simply select Cash on Delivery at checkout.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

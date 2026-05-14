@@ -1,0 +1,428 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign on_sale = false
+  if current_variant.compare_at_price > current_variant.price
+    assign on_sale = true
+  endif
+  assign discount_pct = 0
+  if on_sale and current_variant.compare_at_price > 0
+    assign price_diff = current_variant.compare_at_price | minus: current_variant.price
+    assign discount_pct = price_diff | times: 100 | divided_by: current_variant.compare_at_price | round
+  endif
+-%}
+
+<div class="container">
+
+  {%- comment -%} Breadcrumb {%- endcomment -%}
+  {%- render 'breadcrumb' -%}
+
+  {%- comment -%} Product Layout {%- endcomment -%}
+  <div class="product-layout">
+
+    {%- comment -%} ── Gallery ──────────────────────────────── {%- endcomment -%}
+    <div class="product-gallery" data-product-gallery>
+
+      <div class="gallery-main">
+        {%- if product.featured_image -%}
+          <img
+            id="gallery-main-img"
+            class="gallery-main__img"
+            data-gallery-main-img
+            src="{{ product.featured_image | image_url: width: 900 }}"
+            alt="{{ product.featured_image.alt | default: product.title }}"
+            width="900"
+            height="900"
+            fetchpriority="high"
+            loading="eager">
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'gallery-main__img' }}
+        {%- endif -%}
+      </div>
+
+      {%- if product.images.size > 1 -%}
+        <div class="gallery-thumbs" role="list">
+          {%- for image in product.images -%}
+            <button
+              class="gallery-thumb{% if forloop.first %} is-active{% endif %}"
+              data-gallery-thumb
+              data-full-src="{{ image | image_url: width: 900 }}"
+              aria-label="View image {{ forloop.index }}"
+              role="listitem">
+              {{ image | image_url: width: 120 | image_tag: loading: 'lazy', alt: image.alt | default: product.title, width: 120, height: 120 }}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+    </div>
+
+    {%- comment -%} ── Product Info ─────────────────────────── {%- endcomment -%}
+    <div class="product-info">
+
+      {%- comment -%} Title & reviews {%- endcomment -%}
+      <div>
+        {%- if product.vendor != blank -%}
+          <p style="font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:var(--space-2)">
+            {{ product.vendor }}
+          </p>
+        {%- endif -%}
+        <h1 class="product-title">{{ product.title }}</h1>
+        {%- if product.metafields.reviews.rating.value != blank -%}
+          <div class="product-reviews-summary" style="margin-top:var(--space-3)">
+            <span class="stars" aria-hidden="true">
+              {%- assign r = product.metafields.reviews.rating.value | round -%}
+              {%- for i in (1..5) -%}{%- if i <= r -%}★{%- else -%}☆{%- endif -%}{%- endfor -%}
+            </span>
+            <a href="#reviews" style="color:var(--color-text-muted);font-size:var(--fs-sm)">
+              {{ product.metafields.reviews.rating_count }} reviews
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Fragrance family {%- endcomment -%}
+      {%- if product.metafields.custom.fragrance_family != blank -%}
+        <div>
+          <span class="product-fragrance-family">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+            </svg>
+            {{ product.metafields.custom.fragrance_family }}
+          </span>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Fragrance notes {%- endcomment -%}
+      {%- if product.metafields.custom.top_notes != blank or product.metafields.custom.heart_notes != blank or product.metafields.custom.base_notes != blank -%}
+        <div class="product-notes">
+          {%- if product.metafields.custom.top_notes != blank -%}
+            <div class="product-notes__row">
+              <span class="product-notes__label">Top</span>
+              <div class="product-notes__icons">
+                {%- assign notes = product.metafields.custom.top_notes | split: ',' -%}
+                {%- for note in notes -%}
+                  <div class="note-icon">
+                    <div class="note-icon__img" style="background:var(--color-bg-alt);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.25rem">
+                      🌿
+                    </div>
+                    <span class="note-icon__name">{{ note | strip }}</span>
+                  </div>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+          {%- if product.metafields.custom.heart_notes != blank -%}
+            <div class="product-notes__row">
+              <span class="product-notes__label">Heart</span>
+              <div class="product-notes__icons">
+                {%- assign notes = product.metafields.custom.heart_notes | split: ',' -%}
+                {%- for note in notes -%}
+                  <div class="note-icon">
+                    <div class="note-icon__img" style="background:var(--color-bg-alt);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.25rem">
+                      🌸
+                    </div>
+                    <span class="note-icon__name">{{ note | strip }}</span>
+                  </div>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+          {%- if product.metafields.custom.base_notes != blank -%}
+            <div class="product-notes__row">
+              <span class="product-notes__label">Base</span>
+              <div class="product-notes__icons">
+                {%- assign notes = product.metafields.custom.base_notes | split: ',' -%}
+                {%- for note in notes -%}
+                  <div class="note-icon">
+                    <div class="note-icon__img" style="background:var(--color-bg-alt);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.25rem">
+                      🪵
+                    </div>
+                    <span class="note-icon__name">{{ note | strip }}</span>
+                  </div>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Pricing {%- endcomment -%}
+      <div>
+        <div class="product-pricing" data-atc-anchor>
+          {%- if on_sale -%}
+            <span class="product-price product-price--sale" data-product-price>{{ current_variant.price | money }}</span>
+            <span class="product-price product-price--compare" data-compare-price>{{ current_variant.compare_at_price | money }}</span>
+            <span class="product-discount-badge">{{ discount_pct }}% off</span>
+          {%- else -%}
+            <span class="product-price" data-product-price>{{ current_variant.price | money }}</span>
+          {%- endif -%}
+        </div>
+        <p class="product-tax-note">Inclusive of all taxes. Free shipping above ₹999.</p>
+      </div>
+
+      {%- comment -%} Product Form {%- endcomment -%}
+      <form method="post" action="/cart/add" data-product-form>
+        <input type="hidden" name="id" value="{{ current_variant.id }}">
+
+        {%- comment -%} Variant selectors {%- endcomment -%}
+        {%- unless product.has_only_default_variant -%}
+          <div class="variant-selector">
+            {%- for option in product.options_with_values -%}
+              <div>
+                <p class="variant-label">
+                  {{ option.name }}: <span>{{ option.selected_value }}</span>
+                </p>
+                <div class="variant-options" role="group" aria-label="{{ option.name }}">
+                  {%- for value in option.values -%}
+                    {%- liquid
+                      assign variant_available = false
+                      for variant in product.variants
+                        if variant.option1 == value or variant.option2 == value or variant.option3 == value
+                          if variant.available
+                            assign variant_available = true
+                          endif
+                        endif
+                      endfor
+                    -%}
+                    <button
+                      type="button"
+                      class="variant-option{% if option.selected_value == value %} is-selected{% endif %}{% unless variant_available %} is-unavailable{% endunless %}"
+                      data-option-select
+                      name="option-{{ option.position }}"
+                      value="{{ value }}"
+                      aria-pressed="{{ option.selected_value == value }}"
+                      {% unless variant_available %}aria-disabled="true"{% endunless %}>
+                      {{ value }}
+                    </button>
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+
+          {%- comment -%} Hidden variant data for JS {%- endcomment -%}
+          <script type="application/json" data-variant-json>
+            {{ product.variants | json }}
+          </script>
+        {%- endunless -%}
+
+        {%- comment -%} Quantity + ATC {%- endcomment -%}
+        <div class="atc-row">
+          <div class="qty-selector" data-qty-selector>
+            <button type="button" class="qty-btn" data-qty-btn="minus" aria-label="Decrease quantity">−</button>
+            <input type="number" name="quantity" value="1" min="1" max="99" aria-label="Quantity">
+            <button type="button" class="qty-btn" data-qty-btn="plus" aria-label="Increase quantity">+</button>
+          </div>
+          <button
+            type="submit"
+            class="btn btn--solid btn--atc"
+            {% unless current_variant.available %}disabled{% endunless %}>
+            {%- if current_variant.available -%}Add to Cart{%- else -%}Sold Out{%- endif -%}
+          </button>
+        </div>
+
+        {%- comment -%} Dynamic checkout {%- endcomment -%}
+        {%- if section.settings.show_dynamic_checkout -%}
+          {{ form | payment_button }}
+        {%- endif -%}
+
+      </form>
+
+      {%- comment -%} Offer callout {%- endcomment -%}
+      <div class="offer-callout">
+        <ul class="offer-callout__list">
+          <li class="offer-callout__item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Free shipping on orders above ₹999
+          </li>
+          <li class="offer-callout__item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Authentic &amp; sealed | 100% genuine products
+          </li>
+          <li class="offer-callout__item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Easy 7-day returns
+          </li>
+          {%- if section.settings.show_cod -%}
+            <li class="offer-callout__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Cash on Delivery available
+            </li>
+          {%- endif -%}
+        </ul>
+      </div>
+
+      {%- comment -%} Product detail accordion {%- endcomment -%}
+      <div class="accordion product-accordion">
+        {%- if product.description != blank -%}
+          <div class="accordion-item" data-accordion-item>
+            <button class="accordion-trigger" data-accordion-trigger aria-expanded="false" aria-controls="desc-body-{{ product.id }}">
+              Product Description
+              <span class="accordion-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>
+              </span>
+            </button>
+            <div class="accordion-body is-open" id="desc-body-{{ product.id }}" data-accordion-body>
+              <div class="accordion-content">{{ product.description }}</div>
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- if product.metafields.custom.how_to_use != blank -%}
+          <div class="accordion-item" data-accordion-item>
+            <button class="accordion-trigger" data-accordion-trigger aria-expanded="false" aria-controls="howto-body-{{ product.id }}">
+              How to Use
+              <span class="accordion-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>
+              </span>
+            </button>
+            <div class="accordion-body" id="howto-body-{{ product.id }}" data-accordion-body>
+              <div class="accordion-content">{{ product.metafields.custom.how_to_use }}</div>
+            </div>
+          </div>
+        {%- endif -%}
+
+        <div class="accordion-item" data-accordion-item>
+          <button class="accordion-trigger" data-accordion-trigger aria-expanded="false" aria-controls="shipping-body-{{ product.id }}">
+            Shipping &amp; Returns
+            <span class="accordion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>
+            </span>
+          </button>
+          <div class="accordion-body" id="shipping-body-{{ product.id }}" data-accordion-body>
+            <div class="accordion-content">
+              <p>Standard delivery in 5–7 business days. Express delivery available at checkout.</p>
+              <p style="margin-top:.75rem">Return within 7 days of delivery. See our <a href="/policies/refund-policy">return policy</a> for full details.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  {%- comment -%} ── Reviews ─────────────────────────────────── {%- endcomment -%}
+  {%- if section.settings.show_reviews -%}
+    <div id="reviews" class="reviews-section">
+      <h2 style="font-family:var(--font-heading);font-weight:300;font-size:clamp(1.5rem,3vw,2rem);margin-bottom:var(--space-8)">
+        Customer Reviews
+      </h2>
+      <div id="shopify-product-reviews" data-id="{{ product.id }}">
+        {{ product.metafields.spr.reviews }}
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ── Recently Viewed ──────────────────────────── {%- endcomment -%}
+  {%- if section.settings.show_recently_viewed -%}
+    <div id="recently-viewed" class="section-padding" style="border-top:1px solid var(--color-border-light);margin-top:var(--space-8)">
+      <h2 style="font-family:var(--font-heading);font-weight:300;font-size:clamp(1.5rem,3vw,2rem);margin-bottom:var(--space-8)">
+        Recently Viewed
+      </h2>
+      <div class="product-grid" id="recently-viewed-grid"></div>
+    </div>
+
+    <script>
+      (function() {
+        var KEY = 'nefume_recently_viewed';
+        var handle = {{ product.handle | json }};
+        var list = JSON.parse(localStorage.getItem(KEY) || '[]');
+        list = list.filter(function(h) { return h !== handle; });
+        list.unshift(handle);
+        list = list.slice(0, 8);
+        localStorage.setItem(KEY, JSON.stringify(list));
+
+        var toShow = list.filter(function(h) { return h !== handle; }).slice(0, 4);
+        if (!toShow.length) {
+          document.getElementById('recently-viewed').style.display = 'none';
+          return;
+        }
+
+        var grid = document.getElementById('recently-viewed-grid');
+        toShow.forEach(function(h) {
+          fetch('/products/' + h + '.js')
+            .then(function(r) { return r.json(); })
+            .then(function(p) {
+              var img = p.featured_image || '';
+              var price = p.price ? ('₹' + (p.price / 100).toFixed(0)) : '';
+              grid.insertAdjacentHTML('beforeend',
+                '<div><a href="/products/' + h + '" style="display:block">' +
+                '<div style="aspect-ratio:3/4;overflow:hidden;background:var(--color-bg-alt);border-radius:var(--radius-sm);margin-bottom:var(--space-3)">' +
+                (img ? '<img src="' + img + '" alt="' + p.title + '" style="width:100%;height:100%;object-fit:cover" loading="lazy">' : '') +
+                '</div>' +
+                '<p style="font-family:var(--font-heading);font-size:var(--fs-lg)">' + p.title + '</p>' +
+                '<p style="font-size:var(--fs-sm);color:var(--color-text-muted);margin-top:.25rem">' + price + '</p>' +
+                '</a></div>'
+              );
+            });
+        });
+      })();
+    </script>
+  {%- endif -%}
+
+</div>
+
+{%- comment -%} ── Sticky ATC Bar ──────────────────────────── {%- endcomment -%}
+<div class="sticky-atc" id="sticky-atc" role="region" aria-label="Quick add to cart">
+  <div class="sticky-atc__inner">
+    <div class="sticky-atc__info">
+      <span class="sticky-atc__title">{{ product.title }}</span>
+      <span class="sticky-atc__price" data-product-price>{{ current_variant.price | money }}</span>
+    </div>
+    <div class="sticky-atc__actions">
+      {%- if current_variant.available -%}
+        <button
+          class="btn btn--solid"
+          onclick="document.querySelector('[data-product-form] [type=submit]').click()">
+          Add to Cart
+        </button>
+      {%- else -%}
+        <button class="btn btn--solid" disabled>Sold Out</button>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product Main",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Show dynamic checkout button",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cod",
+      "label": "Show COD callout",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show reviews section",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_recently_viewed",
+      "label": "Show recently viewed products",
+      "default": true
+    }
+  ],
+  "presets": [
+    { "name": "Product Main" }
+  ]
+}
+{% endschema %}

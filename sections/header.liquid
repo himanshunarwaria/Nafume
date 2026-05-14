@@ -1,0 +1,226 @@
+<header
+  class="site-header{% if section.settings.transparent_header %} site-header--transparent{% endif %}"
+  id="site-header"
+  data-header
+  role="banner">
+
+  <div class="header__inner">
+
+    {%- comment -%} Hamburger — mobile only {%- endcomment -%}
+    <button
+      class="header__hamburger"
+      id="hamburger-btn"
+      data-hamburger
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    {%- comment -%} Logo {%- endcomment -%}
+    <div class="header__logo">
+      <a href="{{ routes.root_url }}" aria-label="{{ shop.name }} — Home">
+        {%- if section.settings.logo != blank -%}
+          {{ section.settings.logo
+            | image_url: width: 400
+            | image_tag:
+              loading: 'eager',
+              fetchpriority: 'high',
+              width: section.settings.logo_width,
+              alt: shop.name,
+              class: 'header__logo-img header__logo-img--default' }}
+        {%- else -%}
+          <span class="header__logo-text">{{ shop.name }}</span>
+        {%- endif -%}
+        {%- if section.settings.logo_transparent != blank -%}
+          {{ section.settings.logo_transparent
+            | image_url: width: 400
+            | image_tag:
+              loading: 'eager',
+              width: section.settings.logo_width,
+              alt: shop.name,
+              class: 'header__logo-img header__logo-img--light' }}
+        {%- endif -%}
+      </a>
+    </div>
+
+    {%- comment -%} Desktop Navigation {%- endcomment -%}
+    <nav class="header__nav" aria-label="Main navigation">
+      <ul class="nav__list" role="list">
+        {%- for link in section.settings.main_menu.links -%}
+          {%- assign has_sub = false -%}
+          {%- if link.links.size > 0 -%}{%- assign has_sub = true -%}{%- endif -%}
+          {%- assign is_ext = false -%}
+          {%- if link.url contains '://' -%}{%- assign is_ext = true -%}{%- endif -%}
+
+          <li class="nav__item{% if has_sub %} nav__item--has-drop{% endif %}">
+
+            {%- if has_sub -%}
+
+              <button
+                class="nav__link nav__link--parent"
+                aria-haspopup="true"
+                aria-expanded="false"
+                data-nav-parent
+                aria-controls="mega-{{ forloop.index }}">
+                {{ link.title }}
+                <svg class="nav__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" width="10" height="10">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </button>
+
+              <div class="mega-menu"
+                   id="mega-{{ forloop.index }}"
+                   role="region"
+                   aria-label="{{ link.title }} submenu">
+                <div class="mega-menu__inner">
+
+                  <ul class="mega-menu__links" role="list">
+                    {%- for child in link.links -%}
+                      <li>
+                        <a class="mega-menu__link"
+                           href="{{ child.url }}"
+                           {%- if child.active %} aria-current="page"{%- endif -%}>
+                          {{ child.title }}
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+
+                  {%- if section.settings.mega_menu_image != blank -%}
+                    <div class="mega-menu__feature">
+                      <a href="{{ section.settings.mega_menu_image_url | default: '#' }}"
+                         aria-label="{{ section.settings.mega_menu_image_label | default: link.title }}">
+                        {{ section.settings.mega_menu_image
+                          | image_url: width: 340
+                          | image_tag:
+                            loading: 'lazy',
+                            alt: section.settings.mega_menu_image_label | default: link.title,
+                            class: 'mega-menu__feature-img' }}
+                        {%- if section.settings.mega_menu_image_label != blank -%}
+                          <span class="mega-menu__feature-label">
+                            {{ section.settings.mega_menu_image_label }}
+                          </span>
+                        {%- endif -%}
+                      </a>
+                    </div>
+                  {%- endif -%}
+
+                </div>
+              </div>
+
+            {%- else -%}
+
+              <a class="nav__link{% if is_ext %} nav__link--ext{% endif %}"
+                 href="{{ link.url }}"
+                 {%- if link.active %} aria-current="page"{%- endif -%}
+                 {%- if is_ext %} target="_blank" rel="noopener noreferrer"{%- endif -%}>
+                {{ link.title }}
+                {%- if is_ext -%}
+                  <svg class="nav__ext-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" width="9" height="9">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6m0-6L10 14"/>
+                  </svg>
+                  <span class="sr-only">(opens in new tab)</span>
+                {%- endif -%}
+              </a>
+
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    {%- comment -%} Header Actions {%- endcomment -%}
+    <div class="header__actions">
+
+      <button class="header__action"
+              id="search-trigger"
+              aria-label="Open search"
+              aria-expanded="false"
+              aria-controls="search-drawer">
+        {%- render 'icon-search' -%}
+        <span class="header__action-label">Search</span>
+      </button>
+
+      <a class="header__action"
+         href="{{ routes.account_url }}"
+         aria-label="{%- if customer -%}My account{%- else -%}Sign in{%- endif -%}">
+        {%- render 'icon-account' -%}
+        <span class="header__action-label">Account</span>
+      </a>
+
+      <button class="header__action header__action--cart"
+              id="cart-trigger"
+              aria-label="Open cart"
+              aria-expanded="false"
+              aria-controls="cart-drawer">
+        <span class="header__action-cart-wrap">
+          {%- render 'icon-cart' -%}
+          <span class="header__cart-count" data-cart-count hidden>0</span>
+        </span>
+        <span class="header__action-label">Cart</span>
+      </button>
+
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo width",
+      "min": 80, "max": 280, "step": 10, "default": 160, "unit": "px"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_transparent",
+      "label": "Logo — light version",
+      "info": "Shown over hero images when transparent header is enabled. Upload a white or light version of your logo."
+    },
+    {
+      "type": "link_list",
+      "id": "main_menu",
+      "label": "Main navigation menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_header",
+      "label": "Enable transparent header",
+      "info": "Header starts transparent over hero banners and becomes solid on scroll. Works best on the homepage.",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Mega menu feature image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mega_menu_image",
+      "label": "Feature image",
+      "info": "Shown alongside dropdown nav links. Recommended: 340×400px."
+    },
+    {
+      "type": "text",
+      "id": "mega_menu_image_label",
+      "label": "Feature image caption",
+      "default": "New Arrivals"
+    },
+    {
+      "type": "url",
+      "id": "mega_menu_image_url",
+      "label": "Feature image link"
+    }
+  ],
+  "presets": [{ "name": "Header" }]
+}
+{% endschema %}
