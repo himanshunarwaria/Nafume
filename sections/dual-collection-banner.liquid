@@ -23,7 +23,10 @@
     {%- for block in section.blocks -%}
       {%- liquid
         assign card_overlay = block.settings.overlay_opacity | times: 0.01
-        assign has_image    = block.settings.image != blank
+        assign has_image = false
+        if block.settings.image != blank
+          assign has_image = true
+        endif
         assign card_cls     = 'collection-card collection-card--' | append: block.settings.card_height
         assign content_cls  = 'collection-card__content collection-card__content--' | append: block.settings.content_align
       -%}
@@ -41,14 +44,15 @@
         <div class="collection-card__media" aria-hidden="true">
 
           {%- if has_image -%}
+            {%- assign dc_img_alt = block.settings.image.alt | default: block.settings.title | escape -%}
             {{- block.settings.image
               | image_url: width: 960
               | image_tag:
                 class: 'collection-card__img',
                 loading: 'lazy',
-                alt: block.settings.image.alt | default: block.settings.title | escape,
+                alt: dc_img_alt,
                 sizes: '(max-width: 767px) 100vw, 50vw',
-                widths: '400, 600, 800, 960, 1200'
+                widths: '400,600,800,960,1200'
             -}}
           {%- else -%}
             <div class="collection-card__img-fallback"></div>

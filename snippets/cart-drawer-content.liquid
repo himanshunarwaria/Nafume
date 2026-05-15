@@ -54,11 +54,12 @@
         <div class="cart-item" data-key="{{ item.key }}">
 
           <a href="{{ item.url }}" class="cart-item__img-wrap" tabindex="-1" aria-hidden="true">
+            {%- assign cart_img_alt = item.image.alt | default: item.title -%}
             {{- item.image
               | image_url: width: 200
               | image_tag:
                 class: 'cart-item__img',
-                alt: item.image.alt | default: item.title,
+                alt: cart_img_alt,
                 loading: 'lazy',
                 width: 100, height: 100
             -}}

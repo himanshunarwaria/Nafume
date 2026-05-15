@@ -48,7 +48,8 @@
               data-full-src="{{ image | image_url: width: 900 }}"
               aria-label="View image {{ forloop.index }}"
               role="listitem">
-              {{ image | image_url: width: 120 | image_tag: loading: 'lazy', alt: image.alt | default: product.title, width: 120, height: 120 }}
+              {%- assign thumb_alt = image.alt | default: product.title -%}
+              {{ image | image_url: width: 120 | image_tag: loading: 'lazy', alt: thumb_alt, width: 120, height: 120 }}
             </button>
           {%- endfor -%}
         </div>

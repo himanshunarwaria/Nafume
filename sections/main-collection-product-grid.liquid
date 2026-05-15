@@ -7,8 +7,14 @@
   assign show_count         = section.settings.show_product_count
   assign pagination_type    = section.settings.pagination_type
   assign cols               = section.settings.columns_desktop
-  assign has_filters        = enable_filtering and collection.filters.size > 0
-  assign sidebar_active     = has_filters and filter_layout == 'sidebar'
+  assign has_filters = false
+  if enable_filtering and collection.filters.size > 0
+    assign has_filters = true
+  endif
+  assign sidebar_active = false
+  if has_filters and filter_layout == 'sidebar'
+    assign sidebar_active = true
+  endif
 -%}
 
 {%- paginate collection.products by section.settings.products_per_page -%}

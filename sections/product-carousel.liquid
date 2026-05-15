@@ -1,11 +1,13 @@
 {{- 'product-carousel.css' | asset_url | stylesheet_tag -}}
 
 {%- liquid
-  assign col         = collections[section.settings.collection]
-  assign limit       = section.settings.product_limit | default: 8
-  assign cols        = section.settings.products_per_row | default: 4
-  assign has_col     = section.settings.collection != blank
-  assign has_products = has_col and col != blank and col.products.size > 0
+  assign col   = collections[section.settings.collection]
+  assign limit = section.settings.product_limit | default: 8
+  assign cols  = section.settings.products_per_row | default: 4
+  assign has_products = false
+  if section.settings.collection != blank and col != blank and col.products.size > 0
+    assign has_products = true
+  endif
 -%}
 
 {%- if has_products -%}

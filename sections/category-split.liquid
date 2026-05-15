@@ -5,10 +5,11 @@
       <div class="category-panel" {{ block.shopify_attributes }}>
 
         {%- if block.settings.image != blank -%}
+          {%- assign cat_img_alt = block.settings.title | default: block.settings.label -%}
           {{ block.settings.image | image_url: width: 900 | image_tag:
             class: 'category-panel__img',
             loading: 'lazy',
-            alt: block.settings.title | default: block.settings.label,
+            alt: cat_img_alt,
             width: 900, height: 1100
           }}
         {%- else -%}

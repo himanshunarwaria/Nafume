@@ -24,11 +24,12 @@
     {%- comment -%} Product snapshot ─── {%- endcomment -%}
     <div class="sticky-atc__product">
       <div class="sticky-atc__thumb">
+        {%- assign sticky_img_alt = product.title | escape -%}
         {{- product.featured_image
           | image_url: width: 120
           | image_tag:
             loading: 'lazy',
-            alt: product.title | escape,
+            alt: sticky_img_alt,
             width: 60,
             height: 75
         -}}

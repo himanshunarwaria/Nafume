@@ -1,9 +1,18 @@
 {{- 'hero.css' | asset_url | stylesheet_tag -}}
 
 {%- liquid
-  assign has_video   = section.settings.video != blank
-  assign has_desktop = section.settings.desktop_image != blank
-  assign has_mobile  = section.settings.mobile_image != blank
+  assign has_video = false
+  if section.settings.video != blank
+    assign has_video = true
+  endif
+  assign has_desktop = false
+  if section.settings.desktop_image != blank
+    assign has_desktop = true
+  endif
+  assign has_mobile = false
+  if section.settings.mobile_image != blank
+    assign has_mobile = true
+  endif
 
   assign overlay_opacity = section.settings.overlay_opacity | times: 0.01
 

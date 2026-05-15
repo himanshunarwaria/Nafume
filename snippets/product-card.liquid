@@ -88,28 +88,30 @@
 
       {%- if p.featured_image != blank -%}
 
+        {%- assign pc_primary_alt = p.featured_image.alt | default: p.title -%}
         {{- p.featured_image
           | image_url: width: 600
           | image_tag:
             class: 'product-card__img product-card__img--primary',
-            alt: p.featured_image.alt | default: p.title,
+            alt: pc_primary_alt,
             loading: img_loading,
             width: 600,
             height: img_h,
             sizes: '(max-width: 479px) calc(50vw - 24px), (max-width: 767px) calc(50vw - 20px), (max-width: 1023px) calc(33vw - 20px), 280px',
-            widths: '200, 300, 450, 600' -}}
+            widths: '200,300,450,600' -}}
 
         {%- if second_image != blank -%}
+          {%- assign pc_hover_alt = second_image.alt | default: p.title -%}
           {{- second_image
             | image_url: width: 600
             | image_tag:
               class: 'product-card__img product-card__img--hover',
-              alt: second_image.alt | default: p.title,
+              alt: pc_hover_alt,
               loading: 'lazy',
               width: 600,
               height: img_h,
               sizes: '(max-width: 479px) calc(50vw - 24px), (max-width: 767px) calc(50vw - 20px), (max-width: 1023px) calc(33vw - 20px), 280px',
-              widths: '200, 300, 450, 600' -}}
+              widths: '200,300,450,600' -}}
         {%- endif -%}
 
       {%- else -%}

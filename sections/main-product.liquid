@@ -384,13 +384,14 @@
     <div class="pdp__story">
       {%- if section.settings.story_image != blank -%}
         <div class="pdp__story-img">
+          {%- assign story_img_alt = section.settings.story_image.alt | default: product.title | escape -%}
           {{- section.settings.story_image
             | image_url: width: 1600
             | image_tag:
               loading: 'lazy',
-              alt: section.settings.story_image.alt | default: product.title | escape,
+              alt: story_img_alt,
               sizes: '100vw',
-              widths: '750, 1100, 1600'
+              widths: '750,1100,1600'
           -}}
         </div>
       {%- endif -%}

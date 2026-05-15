@@ -70,7 +70,7 @@
           </div>
           {%- if form.posted_successfully? -%}
             <p class="footer__nsl-success" role="status">
-              {{ section.settings.newsletter_success | default: 'Thank you — you\'re subscribed!' }}
+              {{ section.settings.newsletter_success | default: "Thank you - you're subscribed!" }}
             </p>
           {%- endif -%}
         {%- endform -%}

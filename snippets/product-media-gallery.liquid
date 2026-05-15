@@ -86,13 +86,14 @@
               class="gallery__img-wrap"
               data-zoom-trigger
               data-zoom-src="{{ media | image_url: width: 2400 }}">
+              {%- assign gallery_alt = media.alt | default: product.title | escape -%}
               {{- media
                 | image_url: width: 1200
                 | image_tag:
                   class: 'gallery__img',
                   loading: img_loading,
-                  alt: media.alt | default: product.title | escape,
-                  widths: '500, 800, 1200',
+                  alt: gallery_alt,
+                  widths: '500,800,1200',
                   sizes: '(max-width: 767px) 100vw, (max-width: 1023px) 55vw, 48vw'
               -}}
               <span class="gallery__zoom-hint" aria-hidden="true">

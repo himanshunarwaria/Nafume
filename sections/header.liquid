@@ -91,11 +91,12 @@
                     <div class="mega-menu__feature">
                       <a href="{{ section.settings.mega_menu_image_url | default: '#' }}"
                          aria-label="{{ section.settings.mega_menu_image_label | default: link.title }}">
+                        {%- assign mega_img_alt = section.settings.mega_menu_image_label | default: link.title -%}
                         {{ section.settings.mega_menu_image
                           | image_url: width: 340
                           | image_tag:
                             loading: 'lazy',
-                            alt: section.settings.mega_menu_image_label | default: link.title,
+                            alt: mega_img_alt,
                             class: 'mega-menu__feature-img' }}
                         {%- if section.settings.mega_menu_image_label != blank -%}
                           <span class="mega-menu__feature-label">
