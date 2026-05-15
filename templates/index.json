@@ -41,7 +41,7 @@
         "eyebrow": "Just Arrived",
         "heading": "New Launches",
         "subheading": "",
-        "collection": "",
+        "collection": "frontpage",
         "product_limit": 4,
         "products_per_row": "5",
         "text_align": "left",
@@ -129,18 +129,20 @@
         "him": {
           "type": "panel",
           "settings": {
-            "label": "For Him",
-            "title": "The Men's Edit",
-            "btn_text": "Shop Him",
+            "image": "shopify://shop_images/After_Shave_50ML_Fraganote.jpg",
+            "label": "",
+            "title": "",
+            "btn_text": "",
             "btn_url": "/collections/him"
           }
         },
         "her": {
           "type": "panel",
           "settings": {
-            "label": "For Her",
-            "title": "The Women's Edit",
-            "btn_text": "Shop Her",
+            "image": "shopify://shop_images/Alpha_Spade_aromatic_woody_fragrance.jpg",
+            "label": "",
+            "title": "",
+            "btn_text": "",
             "btn_url": "/collections/her"
           }
         }
