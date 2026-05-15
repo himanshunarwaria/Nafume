@@ -1,54 +1,291 @@
-<section class="section-padding" style="background:var(--color-bg-alt)" aria-labelledby="seo-content-heading">
-  <div class="container">
+{{- 'seo-content.css' | asset_url | stylesheet_tag -}}
 
-    {%- if section.settings.heading != blank -%}
-      <h2 class="section-title" id="seo-content-heading" style="margin-bottom:var(--space-8)">
-        {{ section.settings.heading }}
-      </h2>
+{%- liquid
+  assign h_tag         = section.settings.heading_level
+  assign h1_text       = section.settings.h1
+  assign intro         = section.settings.intro
+  assign show_rm       = section.settings.show_read_more
+  assign rm_label      = section.settings.read_more_label  | default: 'Read More'
+  assign rl_label      = section.settings.read_less_label  | default: 'Read Less'
+  assign peek_height   = section.settings.peek_height
+  assign bg_color      = section.settings.bg_color
+-%}
+
+<section
+  id="seo-{{ section.id }}"
+  class="seo-section"
+  style="background: {{ bg_color }};"
+  aria-labelledby="seo-heading-{{ section.id }}">
+
+  <div class="container seo-section__inner">
+
+    {%- comment -%} ── H1 / H2 headline — always visible ──────── {%- endcomment -%}
+    {%- if h1_text != blank -%}
+      <{{ h_tag }}
+        class="seo-section__heading"
+        id="seo-heading-{{ section.id }}">
+        {{ h1_text }}
+      </{{ h_tag }}>
     {%- endif -%}
 
-    <div class="accordion" data-multi="true" style="max-width:760px;margin-inline:auto">
-      {%- for block in section.blocks -%}
-        {%- if block.type == 'content_block' -%}
-          <div class="accordion-item" data-accordion-item {{ block.shopify_attributes }}>
-            <button
-              class="accordion-trigger"
-              data-accordion-trigger
-              aria-expanded="false"
-              aria-controls="seo-body-{{ block.id }}">
-              {{ block.settings.title }}
-              <span class="accordion-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M12 5v14M5 12h14"/>
+    {%- comment -%} ── Intro richtext — always visible ─────────── {%- endcomment -%}
+    {%- if intro != blank -%}
+      <div class="seo-section__intro rte">
+        {{ intro }}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} ── Expandable body — in DOM for crawlers ────── {%- endcomment -%}
+    {%- if section.blocks.size > 0 -%}
+
+      <div
+        class="seo-section__body"
+        data-rm-body
+        data-rm-height="{{ peek_height }}"
+        id="seo-body-{{ section.id }}">
+
+        {%- assign prev_type = '' -%}
+        {%- for block in section.blocks -%}
+          {%- assign next_block = section.blocks[forloop.index] -%}
+
+          {%- if block.type == 'rich_text' -%}
+
+            {%- comment -%} Close any open family grid before this block ─── {%- endcomment -%}
+            {%- if prev_type == 'family_link' -%}
+              </div>{%- comment -%}<!-- .seo-families -->{%- endcomment -%}
+            {%- endif -%}
+
+            <div class="seo-block" {{ block.shopify_attributes }}>
+              {%- if block.settings.heading != blank -%}
+                <{{ block.settings.heading_level }}
+                  class="seo-block__heading">
+                  {{ block.settings.heading }}
+                </{{ block.settings.heading_level }}>
+              {%- endif -%}
+              {%- if block.settings.body != blank -%}
+                <div class="seo-block__body rte">{{ block.settings.body }}</div>
+              {%- endif -%}
+            </div>
+
+          {%- elsif block.type == 'family_link' -%}
+
+            {%- comment -%} Open family grid container on first consecutive family_link ─── {%- endcomment -%}
+            {%- if prev_type != 'family_link' -%}
+              <div class="seo-families" role="list">
+            {%- endif -%}
+
+            <a
+              href="{{ block.settings.url }}"
+              class="seo-family"
+              role="listitem"
+              {{ block.shopify_attributes }}>
+              <span class="seo-family__name">{{ block.settings.name }}</span>
+              {%- if block.settings.description != blank -%}
+                <span class="seo-family__desc">{{ block.settings.description }}</span>
+              {%- endif -%}
+              <span class="seo-family__arrow" aria-hidden="true">
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor"
+                     stroke-width="1.5" width="12" height="12">
+                  <path d="M2.5 7h9M7 2.5L11.5 7 7 11.5"
+                        stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
-            </button>
-            <div class="accordion-body" id="seo-body-{{ block.id }}" data-accordion-body>
-              <div class="accordion-content">
-                {{ block.settings.content }}
-              </div>
-            </div>
-          </div>
+            </a>
+
+            {%- comment -%} Close family grid when next block is not a family_link ─── {%- endcomment -%}
+            {%- unless next_block.type == 'family_link' -%}
+              </div>{%- comment -%}<!-- /.seo-families -->{%- endcomment -%}
+            {%- endunless -%}
+
+          {%- endif -%}
+
+          {%- assign prev_type = block.type -%}
+
+        {%- endfor -%}
+
+        {%- comment -%} Safety: close open family grid if last block was family_link ─── {%- endcomment -%}
+        {%- if section.blocks.last.type == 'family_link' -%}
+          {%- comment -%} Grid already closed inside the loop above ─── {%- endcomment -%}
         {%- endif -%}
-      {%- endfor -%}
-    </div>
+
+      </div>
+
+      {%- comment -%} ── Read More toggle ────────────────────────── {%- endcomment -%}
+      {%- if show_rm -%}
+        <div class="seo-section__rm-wrap">
+          <button
+            class="seo-section__rm-btn"
+            type="button"
+            data-rm-toggle
+            data-rm-target="seo-body-{{ section.id }}"
+            data-rm-more-label="{{ rm_label | escape }}"
+            data-rm-less-label="{{ rl_label | escape }}"
+            aria-expanded="false"
+            aria-controls="seo-body-{{ section.id }}">
+            <span data-rm-label>{{ rm_label }}</span>
+            <span class="seo-section__rm-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="1.5" width="14" height="14">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </span>
+          </button>
+        </div>
+      {%- endif -%}
+
+    {%- endif -%}
 
   </div>
 </section>
 
+<script src="{{ 'accordion.js' | asset_url }}" defer></script>
+
 {% schema %}
 {
   "name": "SEO Content",
+  "tag": "section",
+  "class": "section-seo-content",
+  "max_blocks": 20,
   "settings": [
-    { "type": "text", "id": "heading", "label": "Section heading", "default": "About Nefume Fragrances" }
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_level",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1 — use once per page (homepage recommended)" },
+        { "value": "h2", "label": "H2 — for inner pages with an existing H1"     }
+      ],
+      "default": "h1",
+      "info": "Only one H1 should appear per page. Set to H2 on product/collection pages."
+    },
+    {
+      "type": "text",
+      "id": "h1",
+      "label": "Headline",
+      "default": "Luxury Perfume Brand for Long Lasting Fragrance"
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "Intro paragraph (always visible)",
+      "default": "<p>Discover a curated collection of premium long-lasting perfumes crafted for the modern Indian — fragrances that tell your story from the first note to the last.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Read More Behaviour"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_read_more",
+      "label": "Enable collapsible Read More",
+      "default": true,
+      "info": "Content below is always in the HTML (SEO-safe). This only changes the visual height."
+    },
+    {
+      "type": "range",
+      "id": "peek_height",
+      "label": "Visible peek height (collapsed)",
+      "min": 80,
+      "max": 400,
+      "step": 20,
+      "unit": "px",
+      "default": 200
+    },
+    {
+      "type": "text",
+      "id": "read_more_label",
+      "label": "Expand button label",
+      "default": "Read More"
+    },
+    {
+      "type": "text",
+      "id": "read_less_label",
+      "label": "Collapse button label",
+      "default": "Read Less"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background colour",
+      "default": "#fdfcfa"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
   ],
   "blocks": [
     {
-      "type": "content_block",
+      "type": "rich_text",
       "name": "Content block",
       "settings": [
-        { "type": "text", "id": "title", "label": "Title" },
-        { "type": "richtext", "id": "content", "label": "Content" }
+        {
+          "type": "select",
+          "id": "heading_level",
+          "label": "Heading level",
+          "options": [
+            { "value": "h2", "label": "H2" },
+            { "value": "h3", "label": "H3" }
+          ],
+          "default": "h2"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "Content"
+        }
+      ]
+    },
+    {
+      "type": "family_link",
+      "name": "Fragrance Family",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Family name",
+          "default": "Fresh & Citrus"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Collection URL"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "One-line description",
+          "default": "Light, energising, and perfect for day wear"
+        }
       ]
     }
   ],
@@ -56,8 +293,65 @@
     {
       "name": "SEO Content",
       "blocks": [
-        { "type": "content_block", "settings": { "title": "Premium Perfumes & Fragrances Online in India", "content": "<p>Nefume offers a curated collection of premium perfumes for men and women. Discover long-lasting Eau de Parfum, Eau de Toilette, and exclusive fragrance sets crafted from the finest ingredients.</p>" } },
-        { "type": "content_block", "settings": { "title": "How to Choose the Right Fragrance", "content": "<p>Choosing a fragrance is deeply personal. Consider the fragrance family — floral, woody, oriental, or fresh — and test on your skin before purchasing. Our discovery kits let you sample before committing.</p>" } }
+        {
+          "type": "rich_text",
+          "settings": {
+            "heading_level": "h2",
+            "heading": "Perfumes Crafted for Indian Conditions",
+            "body": "<p>Indian summers are intense — the heat, the sweat, the humidity. Most international fragrances are designed for cooler European climates and fade within hours on Indian skin. Nefume changes that. Every fragrance in our collection is tested extensively in Indian conditions to ensure all-day performance, making them the best perfumes you can buy online for India.</p>"
+          }
+        },
+        {
+          "type": "rich_text",
+          "settings": {
+            "heading_level": "h2",
+            "heading": "Why Buy Perfumes Online From Us",
+            "body": "<p>Shopping for perfumes online should be easy, honest, and risk-free. We offer detailed fragrance breakdowns including top, heart, and base notes, authentic customer reviews, and discovery kits so you can try before committing to a full bottle. All orders include free shipping above ₹999 and hassle-free 7-day returns on sealed products.</p>"
+          }
+        },
+        {
+          "type": "rich_text",
+          "settings": {
+            "heading_level": "h2",
+            "heading": "Explore Perfumes by Fragrance Family",
+            "body": "<p>Finding your signature scent is easier when you start with the fragrance family you love. Whether you're drawn to crisp citrus notes, deep woody resins, delicate florals, or exotic oriental spices — there's a Nefume fragrance waiting for you.</p>"
+          }
+        },
+        {
+          "type": "family_link",
+          "settings": {
+            "name": "Fresh & Citrus Perfumes",
+            "description": "Bright, energising, and perfect for daily wear"
+          }
+        },
+        {
+          "type": "family_link",
+          "settings": {
+            "name": "Woody & Warm Fragrances",
+            "description": "Grounded, sensual, and long-lasting on skin"
+          }
+        },
+        {
+          "type": "family_link",
+          "settings": {
+            "name": "Floral Perfumes",
+            "description": "Romantic, feminine, and timelessly elegant"
+          }
+        },
+        {
+          "type": "family_link",
+          "settings": {
+            "name": "Oriental & Spicy Perfumes",
+            "description": "Rich, exotic, and intensely memorable"
+          }
+        },
+        {
+          "type": "family_link",
+          "settings": {
+            "name": "Unisex Perfumes",
+            "description": "Modern, versatile, and made for everyone"
+          }
+        }
       ]
     }
   ]

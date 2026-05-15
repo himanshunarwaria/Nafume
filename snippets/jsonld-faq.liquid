@@ -1,0 +1,39 @@
+{%- comment -%}
+  FAQPage JSON-LD schema snippet.
+  Usage: {%- render 'jsonld-faq', section: section -%}
+  Reads blocks of type 'faq' with settings: question (text), answer (richtext).
+{%- endcomment -%}
+
+{%- liquid
+  assign faq_count = 0
+  for block in section.blocks
+    if block.type == 'faq'
+      assign faq_count = faq_count | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if faq_count > 0 -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- assign faq_idx = 0 -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'faq' -%}
+        {%- assign faq_idx = faq_idx | plus: 1 -%}
+        {
+          "@type": "Question",
+          "name": {{ block.settings.question | json }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ block.settings.answer | strip_html | strip | json }}
+          }
+        }{% unless faq_idx == faq_count %},{% endunless %}
+      {%- endif -%}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}

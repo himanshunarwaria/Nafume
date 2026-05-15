@@ -1,0 +1,107 @@
+{%- comment -%}
+  Quick-add control rendered inside the card hover overlay.
+
+  Single-variant product → direct form submit (intercepted by cart-drawer.js).
+  Multi-variant product  → trigger button + popover with variant chips
+                           (managed by quick-add.js).
+
+  Usage:
+    {%- render 'quick-add', product: product -%}
+
+  Accepts:
+    product      {Object} — Shopify product (required)
+    button_label {String} — Override button label (default: "Quick Add")
+{%- endcomment -%}
+
+{%- liquid
+  assign is_coming_soon = product.metafields.custom.is_coming_soon.value
+  assign is_sold_out    = true
+  if product.available
+    assign is_sold_out = false
+  endif
+
+  assign label = button_label | default: 'Quick Add'
+
+  assign single_variant = false
+  if product.variants.size == 1 and product.variants.first.title == 'Default Title'
+    assign single_variant = true
+  endif
+-%}
+
+{%- if is_coming_soon -%}
+
+  <button type="button"
+          class="quick-add__cta quick-add__cta--notify"
+          data-notify-me="{{ product.handle }}"
+          aria-label="Notify me when {{ product.title }} is available">
+    Notify Me
+  </button>
+
+{%- elsif is_sold_out -%}
+
+  <button type="button"
+          class="quick-add__cta quick-add__cta--unavailable"
+          disabled
+          aria-disabled="true">
+    Sold Out
+  </button>
+
+{%- elsif single_variant -%}
+
+  <form action="/cart/add" method="post" class="quick-add__form">
+    <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+    <input type="hidden" name="quantity" value="1">
+    <button type="submit"
+            class="quick-add__cta"
+            data-atc-btn
+            aria-label="Add {{ product.title }} to cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           aria-hidden="true" width="13" height="13">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      {{ label }}
+    </button>
+  </form>
+
+{%- else -%}
+
+  <div class="quick-add" data-quick-add="{{ product.handle }}">
+
+    <button type="button"
+            class="quick-add__cta quick-add__cta--trigger"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="qa-{{ product.handle }}"
+            aria-label="Select variant for {{ product.title }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           aria-hidden="true" width="13" height="13">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      {{ label }}
+    </button>
+
+    <div class="quick-add__popover"
+         id="qa-{{ product.handle }}"
+         role="dialog"
+         aria-label="Select a variant"
+         hidden>
+
+      <p class="quick-add__popover-label">Select Size</p>
+
+      <div class="quick-add__options" role="group" aria-label="Available variants">
+        {%- for variant in product.variants -%}
+          <button type="button"
+                  class="quick-add__option{% unless variant.available %} quick-add__option--unavailable{% endunless %}"
+                  data-variant-id="{{ variant.id }}"
+                  data-product-title="{{ product.title | escape }}"
+                  {% unless variant.available %}disabled aria-disabled="true"{% endunless %}
+                  aria-label="{{ variant.title }}{% unless variant.available %} — sold out{% endunless %}">
+            {{ variant.title }}
+          </button>
+        {%- endfor -%}
+      </div>
+
+    </div>
+  </div>
+
+{%- endif -%}

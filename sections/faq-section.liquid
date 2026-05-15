@@ -1,0 +1,215 @@
+{{- 'seo-content.css' | asset_url | stylesheet_tag -}}
+
+{%- render 'jsonld-faq', section: section -%}
+
+<section
+  id="faq-{{ section.id }}"
+  class="faq-section"
+  style="
+    background: {{ section.settings.bg_color }};
+    padding-top: {{ section.settings.section_padding_top }}px;
+    padding-bottom: {{ section.settings.section_padding_bottom }}px;
+  "
+  aria-labelledby="faq-heading-{{ section.id }}">
+
+  <div class="container faq-section__inner">
+
+    {%- comment -%} ── Section header ──────────────────────────── {%- endcomment -%}
+    <header class="faq-section__header">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="faq-section__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h2
+        class="faq-section__heading"
+        id="faq-heading-{{ section.id }}">
+        {{ section.settings.heading | default: 'Frequently Asked Questions' }}
+      </h2>
+      {%- if section.settings.subheading != blank -%}
+        <p class="faq-section__sub">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+    </header>
+
+    {%- comment -%} ── FAQ accordion list ───────────────────────── {%- endcomment -%}
+    {%- if section.blocks.size > 0 -%}
+      <div
+        class="faq-section__list"
+        role="list">
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'faq' -%}
+
+            <div
+              class="faq__item"
+              role="listitem"
+              data-faq-item
+              {{ block.shopify_attributes }}>
+
+              <button
+                class="faq__trigger"
+                type="button"
+                id="faq-trigger-{{ block.id }}"
+                data-faq-trigger
+                aria-expanded="false"
+                aria-controls="faq-body-{{ block.id }}">
+                <span class="faq__trigger-text">{{ block.settings.question | escape }}</span>
+                <span class="faq__trigger-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="1.5" width="16" height="16">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </span>
+              </button>
+
+              <div
+                class="faq__body"
+                id="faq-body-{{ block.id }}"
+                role="region"
+                aria-labelledby="faq-trigger-{{ block.id }}"
+                data-faq-body>
+                <div class="faq__answer rte">
+                  {{ block.settings.answer }}
+                </div>
+              </div>
+
+            </div>
+
+          {%- endif -%}
+        {%- endfor -%}
+
+      </div>
+    {%- else -%}
+      <p class="faq-section__empty">Add FAQ blocks in the customizer to display questions here.</p>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script src="{{ 'accordion.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "FAQ Section",
+  "tag": "section",
+  "class": "section-faq",
+  "max_blocks": 30,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Got Questions?"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "Frequently Asked Questions"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "info": "Optional supporting line below the heading"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background colour",
+      "default": "#fdfcfa"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "How long does the fragrance last?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Our Eau de Parfum concentrations last 8–12 hours on most skin types. For the best longevity, apply to pulse points — wrists, neck, and behind the ears — right after a shower when your skin is still slightly warm.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Section",
+      "blocks": [
+        {
+          "type": "faq",
+          "settings": {
+            "question": "What is the difference between Eau de Parfum (EDP) and Eau de Toilette (EDT)?",
+            "answer": "<p>Eau de Parfum (EDP) has a higher fragrance oil concentration — typically 15–20% — which gives it greater intensity and longevity, lasting 6–10 hours. Eau de Toilette (EDT) is lighter at 8–12% concentration, making it ideal for daytime or warm-weather wear, with a typical lifespan of 4–6 hours. For India's climate, EDP is generally the better investment for all-day performance.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Are your perfumes suitable for India's hot and humid climate?",
+            "answer": "<p>Yes — all Nefume fragrances are formulated and tested specifically for Indian weather conditions. We use high-quality fixatives and base notes that help the scent anchor to skin even in high temperatures and humidity, so you smell great whether you're in an air-conditioned office or outdoors in the heat.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "How should I store my perfume to make it last longer?",
+            "answer": "<p>Store your perfume in a cool, dark place away from direct sunlight, heat sources, and humidity. A closed drawer or wardrobe shelf is ideal. Avoid keeping fragrances in bathrooms, as temperature fluctuations and steam can break down the aromatic compounds and shorten the perfume's shelf life significantly.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Do you offer sample or trial sizes before I buy a full bottle?",
+            "answer": "<p>Yes! We offer Discovery Kits that let you try several fragrances in travel-size formats before committing to a full bottle. It's the safest way to find your signature scent. Discovery Kits are available on our website and can be gifted too — they make an ideal present for fragrance lovers.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Is Cash on Delivery available, and how fast is shipping?",
+            "answer": "<p>Yes, COD is available across most pin codes in India. We also accept all major cards, net banking, and UPI. Orders are dispatched within 1–2 business days, and standard delivery takes 3–5 business days depending on your location. Express delivery options are available at checkout for urgent orders.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "What is your return and exchange policy for perfumes?",
+            "answer": "<p>We accept returns within 7 days of delivery for products that are in their original, sealed, and unused condition. Opened or sprayed fragrances are not eligible for return for hygiene reasons — this is standard industry practice. If you receive a damaged or incorrect item, we'll replace it immediately at no cost. Contact our support team with your order number to initiate a return.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

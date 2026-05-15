@@ -1,0 +1,320 @@
+{{- 'reviews.css' | asset_url | stylesheet_tag -}}
+
+{%- comment -%}
+  Product reviews section.
+  Place in templates/product.json.
+
+  Supports:
+    judgeme  → Judge.me (snippet: judgeme_widgets)
+    loox     → Loox (snippet: loox-reviews OR Liquid filter)
+    okendo   → Okendo (snippet: okendo-reviews-widget)
+    stamped  → Stamped.io (div widget)
+    yotpo    → Yotpo (div widget)
+    shopify  → Shopify Product Reviews app (legacy)
+    custom   → Section blocks rendered via review-card snippet
+{%- endcomment -%}
+
+{%- liquid
+  assign review_app   = section.settings.review_app
+
+  comment
+    Native Shopify rating metafields (set by Product Reviews app / Shopify Reviews)
+  endcomment
+  assign rating_val   = product.metafields.reviews.rating.value
+  assign rating_count = product.metafields.reviews.rating_count.value
+
+  if rating_val
+    assign rating_num = rating_val | times: 1.0
+    assign rating_pct = rating_num | divided_by: 5.0 | times: 100 | round
+  endif
+-%}
+
+<section
+  id="ProductReviews"
+  class="pdp-reviews"
+  data-section="{{ section.id }}"
+  data-reviews-section>
+
+  <div class="container">
+
+    {%- comment -%} ── Header ──────────────────────────────────── {%- endcomment -%}
+    <div class="pdp-reviews__header">
+      <h2 class="pdp-reviews__title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.write_review_url != blank or review_app == 'custom' -%}
+        <a
+          href="{{ section.settings.write_review_url | default: '#' }}"
+          class="pdp-reviews__write-btn"
+          data-write-review>
+          Write a Review
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ── Rating summary (from metafields) ─────────── {%- endcomment -%}
+    {%- if section.settings.show_summary and rating_val != blank -%}
+      <div class="pdp-reviews__summary">
+        <div class="pdp-reviews__avg-block">
+          <span class="pdp-reviews__avg-num">{{ rating_num | round: 1 }}</span>
+          <div class="pdp-reviews__avg-stars"
+               role="img"
+               aria-label="{{ rating_num | round: 1 }} out of 5 stars">
+            <span class="star-rating star-rating--lg">
+              <span class="star-rating__bg" aria-hidden="true">★★★★★</span>
+              <span class="star-rating__fill" aria-hidden="true" style="width: {{ rating_pct }}%">★★★★★</span>
+            </span>
+          </div>
+          {%- if rating_count != blank -%}
+            <p class="pdp-reviews__meta">
+              Based on {{ rating_count }} review{{ rating_count | pluralize: '', 's' }}
+            </p>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} ── App widget / custom fallback ──────────────── {%- endcomment -%}
+    <div class="pdp-reviews__app" data-reviews-app="{{ review_app }}">
+
+      {%- case review_app -%}
+
+        {%- when 'judgeme' -%}
+          {%- comment -%}
+            Requires Judge.me app: apps.shopify.com/judgeme
+            Install the app — it auto-creates the judgeme_widgets snippet.
+          {%- endcomment -%}
+          {% render 'judgeme_widgets',
+            widget_type: 'product_reviews',
+            concierge_install: true,
+            product: product %}
+
+        {%- when 'loox' -%}
+          {%- comment -%}
+            Requires Loox app. Two methods — uncomment the one that matches your Loox version.
+            Method A (most common): {{ product | loox_reviews_div }}
+            Method B (snippet): {% render 'loox-reviews', product: product %}
+          {%- endcomment -%}
+          {{ product | loox_reviews_div }}
+
+        {%- when 'okendo' -%}
+          {%- comment -%}
+            Requires Okendo app: apps.shopify.com/okendo-reviews-and-ugc
+          {%- endcomment -%}
+          {% render 'okendo-reviews-widget', product: product %}
+
+        {%- when 'stamped' -%}
+          {%- comment -%}
+            Requires Stamped.io: apps.shopify.com/product-reviews-addon
+          {%- endcomment -%}
+          <div
+            class="stamped-main-widget"
+            data-id="{{ product.id }}"
+            data-product-title="{{ product.title | escape }}"
+            data-product-type="{{ product.type | escape }}"
+            data-product-url="{{ shop.url }}{{ product.url }}"
+            data-product-image-url="{{ product.featured_image | image_url: width: 600 }}">
+          </div>
+
+        {%- when 'yotpo' -%}
+          {%- comment -%}
+            Requires Yotpo: apps.shopify.com/yotpo-social-reviews
+          {%- endcomment -%}
+          <div
+            class="yotpo yotpo-main-widget"
+            data-product-id="{{ product.id }}"
+            data-price="{{ product.price | money_without_currency }}"
+            data-currency="{{ shop.currency }}"
+            data-name="{{ product.title | escape }}"
+            data-url="{{ shop.url }}{{ product.url }}"
+            data-image-url="{{ product.featured_image | image_url: width: 600 }}">
+          </div>
+
+        {%- when 'shopify' -%}
+          {%- comment -%}
+            Requires legacy Shopify Product Reviews app.
+            Note: Shopify retired this app — prefer Judge.me or Loox for new stores.
+          {%- endcomment -%}
+          <div
+            id="shopify-product-reviews"
+            data-id="{{ product.id }}">
+          </div>
+
+        {%- else -%}
+          {%- comment -%} ── Custom / fallback: section blocks ──── {%- endcomment -%}
+          {%- if section.blocks.size > 0 -%}
+            <div class="pdp-reviews__list">
+              {%- for block in section.blocks -%}
+                {%- render 'review-card',
+                  review_name:          block.settings.reviewer_name,
+                  review_title:         block.settings.review_title,
+                  review_text:          block.settings.review_text,
+                  review_rating:        block.settings.rating,
+                  review_verified:      block.settings.verified,
+                  review_date:          block.settings.review_date,
+                  review_product_title: block.settings.product_title,
+                  review_product_url:   block.settings.product_url
+                -%}
+              {%- endfor -%}
+            </div>
+          {%- else -%}
+            <div class="pdp-reviews__empty">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor"
+                   stroke-width="1" width="40" height="40" aria-hidden="true">
+                <circle cx="24" cy="24" r="20"/>
+                <path d="M16 20h16M16 28h10"/>
+                <circle cx="24" cy="24" r="6" fill="none"/>
+              </svg>
+              <p class="pdp-reviews__empty-title">No reviews yet</p>
+              <p class="pdp-reviews__empty-sub">Be the first to share your experience with this fragrance.</p>
+              {%- if section.settings.write_review_url != blank -%}
+                <a href="{{ section.settings.write_review_url }}"
+                   class="pdp-reviews__write-btn">
+                  Write the First Review
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+      {%- endcase -%}
+
+    </div>
+
+  </div>
+</section>
+
+<script src="{{ 'reviews.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Product Reviews",
+  "tag": "section",
+  "class": "section-product-reviews",
+  "max_blocks": 30,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "Customer Reviews"
+    },
+    {
+      "type": "select",
+      "id": "review_app",
+      "label": "Reviews app",
+      "options": [
+        { "value": "judgeme", "label": "Judge.me"                       },
+        { "value": "loox",    "label": "Loox"                           },
+        { "value": "okendo",  "label": "Okendo"                         },
+        { "value": "stamped", "label": "Stamped.io"                     },
+        { "value": "yotpo",   "label": "Yotpo"                          },
+        { "value": "shopify", "label": "Shopify Product Reviews (legacy)"},
+        { "value": "custom",  "label": "Custom (use section blocks)"    }
+      ],
+      "default": "custom",
+      "info": "Install the matching app first, then select it here. Use \"Custom\" to manually add reviews as blocks."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_summary",
+      "label": "Show rating summary bar",
+      "default": true,
+      "info": "Reads from the product's native reviews.rating metafield (set by most review apps)."
+    },
+    {
+      "type": "url",
+      "id": "write_review_url",
+      "label": "Write a Review URL",
+      "info": "Optional. Link to a review form — e.g. a Google Form, Typeform, or your reviews app form URL. Leave blank to hide the button."
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "text",
+          "id": "reviewer_name",
+          "label": "Reviewer name",
+          "default": "Customer Name"
+        },
+        {
+          "type": "text",
+          "id": "review_title",
+          "label": "Review headline",
+          "default": "Great product"
+        },
+        {
+          "type": "textarea",
+          "id": "review_text",
+          "label": "Review text",
+          "default": "I've been really happy with this product. Would definitely recommend."
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Show Verified purchase badge",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "review_date",
+          "label": "Date",
+          "default": "March 2025"
+        },
+        {
+          "type": "header",
+          "content": "Linked product (optional)"
+        },
+        {
+          "type": "url",
+          "id": "product_url",
+          "label": "Product URL"
+        },
+        {
+          "type": "text",
+          "id": "product_title",
+          "label": "Product name"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Reviews"
+    }
+  ]
+}
+{% endschema %}

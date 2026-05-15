@@ -1,68 +1,261 @@
-<section class="section-padding review-carousel" aria-label="Customer reviews">
-  <div class="container">
+{{- 'reviews.css' | asset_url | stylesheet_tag -}}
 
-    {%- if section.settings.subtitle != blank -%}
-      <span class="section-subtitle">{{ section.settings.subtitle }}</span>
-    {%- endif -%}
-    <h2 class="section-title" style="margin-bottom:var(--space-10)">{{ section.settings.heading | default: 'What Our Customers Say' }}</h2>
+{%- liquid
+  assign eyebrow      = section.settings.eyebrow
+  assign heading      = section.settings.heading
+  assign subheading   = section.settings.subheading
+  assign text_align   = section.settings.text_align
+  assign show_summary = section.settings.show_rating_summary
+  assign autoplay     = section.settings.autoplay_speed
 
-    <div class="product-carousel">
-      <div class="carousel__viewport">
-        <div class="carousel__track">
-          {%- for block in section.blocks -%}
-            {%- if block.type == 'review' -%}
-              <div class="carousel__slide" {{ block.shopify_attributes }}>
-                <article class="review-card" itemscope itemtype="https://schema.org/Review">
-                  <div class="review-card__stars" aria-label="{{ block.settings.rating }} out of 5 stars" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
-                    <meta itemprop="ratingValue" content="{{ block.settings.rating }}">
-                    <meta itemprop="bestRating" content="5">
-                    {%- for i in (1..5) -%}
-                      {%- if i <= block.settings.rating -%}★{%- else -%}☆{%- endif -%}
-                    {%- endfor -%}
-                  </div>
-                  <p class="review-card__title">{{ block.settings.review_title | default: '"Absolutely love it"' }}</p>
-                  <blockquote class="review-card__body" itemprop="reviewBody">
-                    {{ block.settings.review_text }}
-                  </blockquote>
-                  <div class="review-card__meta" itemprop="author" itemscope itemtype="https://schema.org/Person">
-                    <div class="review-card__avatar">{{ block.settings.author_name | slice: 0 }}</div>
-                    <div>
-                      <p class="review-card__author" itemprop="name">{{ block.settings.author_name }}</p>
-                      {%- if block.settings.author_meta != blank -%}
-                        <p class="review-card__date">{{ block.settings.author_meta }}</p>
-                      {%- endif -%}
-                    </div>
-                  </div>
-                </article>
-              </div>
+  comment
+    Compute aggregate rating from blocks
+  endcomment
+  assign total_pts   = 0
+  assign rated_count = 0
+  for block in section.blocks
+    if block.settings.rating > 0
+      assign total_pts   = total_pts   | plus: block.settings.rating
+      assign rated_count = rated_count | plus: 1
+    endif
+  endfor
+
+  if rated_count > 0
+    assign avg_x10   = total_pts | times: 10 | divided_by: rated_count
+    assign avg_whole = avg_x10 | divided_by: 10
+    assign avg_frac  = avg_x10 | modulo: 10
+    assign avg_pct   = avg_x10 | times: 2
+  endif
+-%}
+
+<section
+  id="rc-{{ section.id }}"
+  class="rc-section rc-section--{{ text_align }}"
+  style="
+    --rc-bg: {{ section.settings.bg_color }};
+    --rc-pad-top: {{ section.settings.section_padding_top }}px;
+    --rc-pad-bottom: {{ section.settings.section_padding_bottom }}px;
+  "
+  data-rc
+  data-rc-autoplay="{{ autoplay }}"
+  aria-label="{{ heading | escape }}">
+
+  {%- comment -%} ── Section header ──────────────────────────── {%- endcomment -%}
+  <div class="container rc-section__header-wrap">
+    <header class="rc-section__header">
+
+      {%- if eyebrow != blank -%}
+        <p class="rc-section__eyebrow">{{ eyebrow }}</p>
+      {%- endif -%}
+
+      {%- if heading != blank -%}
+        <h2 class="rc-section__heading">{{ heading }}</h2>
+      {%- endif -%}
+
+      {%- if subheading != blank -%}
+        <p class="rc-section__sub">{{ subheading }}</p>
+      {%- endif -%}
+
+      {%- if show_summary and rated_count > 0 -%}
+        <div class="rc-section__summary">
+          <span class="rc-section__avg-num" aria-hidden="true">
+            {{- avg_whole -}}.{{- avg_frac -}}
+          </span>
+          <div class="rc-section__avg-stars"
+               role="img"
+               aria-label="{{ avg_whole }}.{{ avg_frac }} out of 5 stars">
+            <span class="star-rating">
+              <span class="star-rating__bg" aria-hidden="true">★★★★★</span>
+              <span class="star-rating__fill" aria-hidden="true" style="width: {{ avg_pct }}%">★★★★★</span>
+            </span>
+          </div>
+          <span class="rc-section__count">
+            {%- if section.settings.total_reviews_text != blank -%}
+              {{ section.settings.total_reviews_text }}
+            {%- else -%}
+              {{ rated_count }} review{{ rated_count | pluralize: '', 's' }}
             {%- endif -%}
-          {%- endfor -%}
+          </span>
         </div>
-      </div>
+      {%- endif -%}
 
-      <div class="carousel__nav" style="justify-content:center;margin-top:var(--sp-8)">
-        <button class="carousel__nav-btn carousel__nav-btn--prev" aria-label="Previous review">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+    </header>
+  </div>
+
+  {%- comment -%} ── Carousel ────────────────────────────────── {%- endcomment -%}
+  {%- if section.blocks.size > 0 -%}
+    <div class="rc-carousel" data-rc-carousel>
+
+      <ul
+        class="rc-carousel__track"
+        id="rc-track-{{ section.id }}"
+        data-rc-track
+        role="list"
+        aria-label="Customer reviews">
+        {%- for block in section.blocks -%}
+          <li
+            class="rc-carousel__slide"
+            data-rc-slide="{{ forloop.index0 }}"
+            role="listitem"
+            {{ block.shopify_attributes }}>
+            {%- render 'review-card',
+              review_name:          block.settings.reviewer_name,
+              review_title:         block.settings.review_title,
+              review_text:          block.settings.review_text,
+              review_rating:        block.settings.rating,
+              review_verified:      block.settings.verified,
+              review_date:          block.settings.review_date,
+              review_product_title: block.settings.product_title,
+              review_product_url:   block.settings.product_url
+            -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- comment -%} Arrow nav ─── {%- endcomment -%}
+      {%- if section.blocks.size > 1 -%}
+        <button
+          class="rc-carousel__nav rc-carousel__nav--prev"
+          type="button"
+          data-rc-prev
+          aria-label="Previous review"
+          aria-controls="rc-track-{{ section.id }}"
+          disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.5" width="18" height="18" aria-hidden="true">
             <path d="M15 18l-6-6 6-6"/>
           </svg>
         </button>
-        <button class="carousel__nav-btn carousel__nav-btn--next" aria-label="Next review">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <button
+          class="rc-carousel__nav rc-carousel__nav--next"
+          type="button"
+          data-rc-next
+          aria-label="Next review"
+          aria-controls="rc-track-{{ section.id }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.5" width="18" height="18" aria-hidden="true">
             <path d="M9 18l6-6-6-6"/>
           </svg>
         </button>
-      </div>
-    </div>
 
-  </div>
+        {%- comment -%} Dot indicators ─── {%- endcomment -%}
+        <div class="rc-carousel__dots" data-rc-dots aria-hidden="true">
+          {%- for block in section.blocks -%}
+            <button
+              type="button"
+              class="rc-carousel__dot{% if forloop.first %} is-active{% endif %}"
+              tabindex="-1"
+              data-rc-dot="{{ forloop.index0 }}"
+              aria-label="Review {{ forloop.index }}"></button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Progress bar ─── {%- endcomment -%}
+      <div class="rc-carousel__progress" aria-hidden="true">
+        <div class="rc-carousel__progress-fill" data-rc-fill></div>
+      </div>
+
+    </div>
+  {%- else -%}
+    <div class="container">
+      <p class="rc-section__placeholder">Add review blocks in the customizer to display reviews here.</p>
+    </div>
+  {%- endif -%}
+
 </section>
+
+<script src="{{ 'reviews.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
   "name": "Review Carousel",
+  "tag": "section",
+  "class": "section-review-carousel",
+  "max_blocks": 20,
   "settings": [
-    { "type": "text", "id": "subtitle", "label": "Eyebrow text", "default": "Testimonials" },
-    { "type": "text", "id": "heading", "label": "Section heading", "default": "What Our Customers Say" }
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Customer Reviews"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Loved by thousands of customers"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "info": "Optional supporting line below the heading"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Alignment",
+      "options": [
+        { "value": "left",   "label": "Left"   },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating_summary",
+      "label": "Show aggregate star rating",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "total_reviews_text",
+      "label": "Review count display text",
+      "info": "Overrides auto-count. e.g. \"3,400+ verified reviews\"",
+      "placeholder": "e.g. 3,400+ verified reviews"
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay interval",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5,
+      "info": "Set to 0 to disable autoplay"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background colour",
+      "default": "#f9f7f4"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    }
   ],
   "blocks": [
     {
@@ -70,18 +263,60 @@
       "name": "Review",
       "settings": [
         {
+          "type": "text",
+          "id": "reviewer_name",
+          "label": "Reviewer name",
+          "default": "Customer Name",
+          "info": "Use first name + last initial, e.g. Ananya S."
+        },
+        {
+          "type": "text",
+          "id": "review_title",
+          "label": "Review headline",
+          "default": "Absolutely love this fragrance"
+        },
+        {
+          "type": "textarea",
+          "id": "review_text",
+          "label": "Review text",
+          "default": "I've been wearing this for months and it's become my signature scent. The longevity is incredible — I still get compliments hours later."
+        },
+        {
           "type": "range",
           "id": "rating",
+          "label": "Star rating",
           "min": 1,
           "max": 5,
           "step": 1,
-          "default": 5,
-          "label": "Star rating"
+          "default": 5
         },
-        { "type": "text",     "id": "review_title", "label": "Review title", "default": "Absolutely worth it" },
-        { "type": "textarea", "id": "review_text", "label": "Review text", "default": "Absolutely love this fragrance. It lasts all day and gets so many compliments." },
-        { "type": "text", "id": "author_name", "label": "Author name", "default": "Priya S." },
-        { "type": "text", "id": "author_meta", "label": "Meta (verified purchase / location)", "default": "Verified Purchase · Mumbai" }
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Show Verified purchase badge",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "review_date",
+          "label": "Date",
+          "default": "March 2025",
+          "info": "Displayed as written — no date picker"
+        },
+        {
+          "type": "header",
+          "content": "Linked product (optional)"
+        },
+        {
+          "type": "url",
+          "id": "product_url",
+          "label": "Product URL"
+        },
+        {
+          "type": "text",
+          "id": "product_title",
+          "label": "Product name"
+        }
       ]
     }
   ],
@@ -89,9 +324,61 @@
     {
       "name": "Review Carousel",
       "blocks": [
-        { "type": "review", "settings": { "rating": 5, "review_text": "This scent is absolutely divine. I get compliments every time I wear it.", "author_name": "Priya S.", "author_meta": "Verified Purchase · Mumbai" } },
-        { "type": "review", "settings": { "rating": 5, "review_text": "Long-lasting and unique. Nothing else like it in this price range.", "author_name": "Arjun M.", "author_meta": "Verified Purchase · Delhi" } },
-        { "type": "review", "settings": { "rating": 5, "review_text": "My go-to fragrance now. The packaging is also beautiful.", "author_name": "Sneha R.", "author_meta": "Verified Purchase · Bangalore" } }
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Ananya S.",
+            "review_title": "My signature scent",
+            "review_text": "I was sceptical about ordering a perfume online, but the detailed scent notes convinced me. The fragrance is exactly as described — warm, woody, and long-lasting. I still receive compliments hours after application.",
+            "rating": 5,
+            "verified": true,
+            "review_date": "April 2025"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Rohan K.",
+            "review_title": "Packaging and quality both impressed",
+            "review_text": "The bottle arrived beautifully packed and the scent itself is genuinely luxurious. I've worn this to events and had multiple people ask what I was wearing. Definitely ordering again.",
+            "rating": 5,
+            "verified": true,
+            "review_date": "May 2025"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Priya M.",
+            "review_title": "The perfect anniversary gift",
+            "review_text": "Bought this as a gift and it went down incredibly well. The scent is sophisticated without being overwhelming, and the bottle looks stunning on a dressing table. Will be gifting this again.",
+            "rating": 5,
+            "verified": true,
+            "review_date": "March 2025"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Karan D.",
+            "review_title": "Finally, a fragrance that lasts all day",
+            "review_text": "Most perfumes I've tried fade within a couple of hours. This one stayed with me through a full day of meetings and still drew comments in the evening. The value for the quality is exceptional.",
+            "rating": 5,
+            "verified": true,
+            "review_date": "February 2025"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Divya R.",
+            "review_title": "Worth every rupee",
+            "review_text": "I was hesitant about the price point but after wearing this for a week I completely understand it. The depth and evolution of the scent throughout the day is something I haven't found elsewhere at this price.",
+            "rating": 5,
+            "verified": true,
+            "review_date": "January 2025"
+          }
+        }
       ]
     }
   ]

@@ -1,87 +1,306 @@
-<section class="section-padding editorial-marquee" aria-label="Editorial gallery">
-  <div style="overflow:hidden;padding-block:var(--space-4)">
-    <div class="marquee-track">
-      {%- for block in section.blocks -%}
-        {%- if block.type == 'image' -%}
-          <div class="marquee-item" {{ block.shopify_attributes }}>
-            {%- if block.settings.image != blank -%}
-              {{ block.settings.image | image_url: width: 400 | image_tag:
-                loading: 'lazy',
-                alt: block.settings.alt | default: shop.name,
-                width: 400, height: 533
-              }}
-            {%- else -%}
-              {{ 'lifestyle-2' | placeholder_svg_tag }}
-            {%- endif -%}
-            {%- if block.settings.link != blank -%}
-              <a href="{{ block.settings.link }}" class="visually-hidden">{{ block.settings.alt | default: 'View collection' }}</a>
-            {%- endif -%}
-          </div>
-        {%- endif -%}
-      {%- endfor -%}
-      {%- comment -%} Duplicate for seamless loop {%- endcomment -%}
-      {%- for block in section.blocks -%}
-        {%- if block.type == 'image' -%}
-          <div class="marquee-item" aria-hidden="true">
-            {%- if block.settings.image != blank -%}
-              {{ block.settings.image | image_url: width: 400 | image_tag:
-                loading: 'lazy',
-                alt: '',
-                width: 400, height: 533
-              }}
-            {%- else -%}
-              {{ 'lifestyle-2' | placeholder_svg_tag }}
-            {%- endif -%}
-          </div>
-        {%- endif -%}
-      {%- endfor -%}
-    </div>
-  </div>
+{{- 'editorial-marquee.css' | asset_url | stylesheet_tag -}}
 
-  {%- if section.settings.heading != blank or section.settings.cta_text != blank -%}
-    <div class="container" style="text-align:center;margin-top:var(--space-8)">
-      {%- if section.settings.subtitle != blank -%}
-        <span class="section-subtitle">{{ section.settings.subtitle }}</span>
-      {%- endif -%}
-      {%- if section.settings.heading != blank -%}
-        <h2 class="section-title">{{ section.settings.heading }}</h2>
-      {%- endif -%}
-      {%- if section.settings.cta_text != blank -%}
-        <a href="{{ section.settings.cta_url | default: '/collections/all' }}"
-           class="btn btn--outline"
-           style="margin-top:var(--space-6)">
-          {{ section.settings.cta_text }}
-        </a>
-      {%- endif -%}
+{%- liquid
+  case section.settings.corner_style
+    when 'soft'
+      assign em_radius = '6px'
+    when 'round'
+      assign em_radius = '16px'
+    else
+      assign em_radius = '0px'
+  endcase
+
+  case section.settings.gap
+    when 'tight'
+      assign em_gap = '8px'
+    when 'loose'
+      assign em_gap = '28px'
+    else
+      assign em_gap = '16px'
+  endcase
+
+  assign base_dir = section.settings.first_row_direction | default: 'left'
+-%}
+
+<section
+  id="em-{{ section.id }}"
+  class="em-section em-section--pad-{{ section.settings.section_padding }}{% unless section.settings.pause_on_hover %} em-section--no-pause{% endunless %}"
+  style="
+    --em-bg:          {{ section.settings.bg_color }};
+    --em-height:      {{ section.settings.image_height }}px;
+    --em-gap:         {{ em_gap }};
+    --em-radius:      {{ em_radius }};
+    --em-speed:       {{ section.settings.speed }}s;
+    --em-row-gap:     {{ section.settings.row_spacing }}px;
+    --em-title-color: {{ section.settings.title_color }};
+  "
+  data-editorial-marquee>
+
+  {%- if section.settings.title != blank -%}
+    <div class="em-header container">
+      <p class="em-title em-title--{{ section.settings.title_align }}">
+        {{ section.settings.title }}
+      </p>
     </div>
   {%- endif -%}
+
+  {%- comment -%} All image rows — decorative, hidden from assistive tech {%- endcomment -%}
+  <div aria-hidden="true">
+
+    {%- for row_num in (1..5) -%}
+
+      {%- comment -%} Skip rows with no images assigned ─── {%- endcomment -%}
+      {%- assign row_has_images = false -%}
+      {%- for block in section.blocks -%}
+        {%- if block.settings.image != blank and block.settings.row == row_num -%}
+          {%- assign row_has_images = true -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if row_has_images -%}
+
+        {%- comment -%} Odd rows = base direction, even rows = opposite ─── {%- endcomment -%}
+        {%- assign row_mod = row_num | modulo: 2 -%}
+        {%- if row_mod == 1 -%}
+          {%- assign row_direction = base_dir -%}
+        {%- else -%}
+          {%- if base_dir == 'left' -%}
+            {%- assign row_direction = 'right' -%}
+          {%- else -%}
+            {%- assign row_direction = 'left' -%}
+          {%- endif -%}
+        {%- endif -%}
+
+        <div class="em-row">
+          <div
+            class="em-row__track em-row__track--{{ row_direction }}"
+            data-em-track>
+
+            {%- comment -%} Set 1 — primary visible images ─── {%- endcomment -%}
+            {%- for block in section.blocks -%}
+              {%- if block.settings.image != blank and block.settings.row == row_num -%}
+                <div class="em-row__item">
+                  {{- block.settings.image
+                    | image_url: height: 600
+                    | image_tag:
+                      class: 'em-row__img',
+                      loading: 'lazy',
+                      alt: '',
+                      widths: '280, 380, 500, 600, 800',
+                      sizes: '(max-width: 767px) 40vw, 25vw'
+                  -}}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- comment -%} Set 2 — seamless-loop duplicate ─── {%- endcomment -%}
+            {%- for block in section.blocks -%}
+              {%- if block.settings.image != blank and block.settings.row == row_num -%}
+                <div class="em-row__item">
+                  {{- block.settings.image
+                    | image_url: height: 600
+                    | image_tag:
+                      class: 'em-row__img',
+                      loading: 'lazy',
+                      alt: '',
+                      widths: '280, 380, 500, 600, 800',
+                      sizes: '(max-width: 767px) 40vw, 25vw'
+                  -}}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+
+          </div>
+        </div>
+
+      {%- endif -%}
+    {%- endfor -%}
+
+  </div>
+
 </section>
+
+<script src="{{ 'editorial-marquee.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
   "name": "Editorial Marquee",
+  "tag": "section",
+  "class": "editorial-marquee-section",
+  "max_blocks": 40,
   "settings": [
-    { "type": "text", "id": "subtitle", "label": "Eyebrow text" },
-    { "type": "text", "id": "heading", "label": "Section heading" },
-    { "type": "text", "id": "cta_text", "label": "CTA button text" },
-    { "type": "url", "id": "cta_url", "label": "CTA URL" }
+    {
+      "type": "header",
+      "content": "Title"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section title",
+      "info": "Optional. Leave blank for a full-bleed editorial band."
+    },
+    {
+      "type": "select",
+      "id": "title_align",
+      "label": "Alignment",
+      "options": [
+        { "value": "left",   "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#f5f0e8"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0d0b08"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_padding",
+      "label": "Vertical padding",
+      "options": [
+        { "value": "none",    "label": "None — edge-to-edge rows" },
+        { "value": "compact", "label": "Compact — 24 px" },
+        { "value": "normal",  "label": "Normal — 56 px" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "label": "Image height",
+      "min": 160,
+      "max": 480,
+      "step": 20,
+      "default": 280,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "gap",
+      "label": "Gap between images",
+      "options": [
+        { "value": "tight",  "label": "Tight — 8 px" },
+        { "value": "normal", "label": "Normal — 16 px" },
+        { "value": "loose",  "label": "Loose — 28 px" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "row_spacing",
+      "label": "Spacing between rows",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "corner_style",
+      "label": "Image corners",
+      "options": [
+        { "value": "square", "label": "Square — editorial" },
+        { "value": "soft",   "label": "Soft — 6 px radius" },
+        { "value": "round",  "label": "Round — 16 px radius" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "header",
+      "content": "Motion"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Scroll speed",
+      "info": "Seconds per full loop. Lower value = faster.",
+      "min": 15,
+      "max": 90,
+      "step": 5,
+      "default": 40,
+      "unit": "s"
+    },
+    {
+      "type": "select",
+      "id": "first_row_direction",
+      "label": "First row direction",
+      "info": "Subsequent rows alternate automatically.",
+      "options": [
+        { "value": "left",  "label": "Left — content moves right → left" },
+        { "value": "right", "label": "Right — content moves left → right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on hover",
+      "default": true
+    }
   ],
   "blocks": [
     {
       "type": "image",
       "name": "Image",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "text", "id": "alt", "label": "Alt text" },
-        { "type": "url", "id": "link", "label": "Link" }
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Portrait (3:4 or 4:5) recommended for visual rhythm."
+        },
+        {
+          "type": "range",
+          "id": "row",
+          "label": "Row",
+          "info": "Assign to a row. Rows automatically alternate scroll direction.",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 1
+        }
       ]
     }
   ],
   "presets": [
     {
       "name": "Editorial Marquee",
+      "settings": {
+        "bg_color": "#0d0b08",
+        "image_height": 280,
+        "gap": "normal",
+        "row_spacing": 4,
+        "corner_style": "square",
+        "speed": 40,
+        "first_row_direction": "left",
+        "pause_on_hover": true,
+        "section_padding": "none"
+      },
       "blocks": [
-        {"type":"image"},{"type":"image"},{"type":"image"},{"type":"image"},{"type":"image"}
+        { "type": "image", "settings": { "row": 1 } },
+        { "type": "image", "settings": { "row": 1 } },
+        { "type": "image", "settings": { "row": 1 } },
+        { "type": "image", "settings": { "row": 1 } },
+        { "type": "image", "settings": { "row": 1 } },
+        { "type": "image", "settings": { "row": 2 } },
+        { "type": "image", "settings": { "row": 2 } },
+        { "type": "image", "settings": { "row": 2 } },
+        { "type": "image", "settings": { "row": 2 } },
+        { "type": "image", "settings": { "row": 2 } }
       ]
     }
   ]

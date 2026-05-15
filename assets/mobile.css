@@ -1,0 +1,773 @@
+/* ============================================================
+   mobile.css  —  Nefume Mobile Polish
+   Breakpoints targeted: 360 · 390 · 430 · 768 · 1024
+   Load order: after theme.css, product-card.css (last sheet)
+   ============================================================ */
+
+/* ── §1  Prevent horizontal scroll ──────────────────────────── */
+
+/*
+  Set on html only — body overflow-x:hidden can break
+  position:sticky on descendant elements.
+*/
+html { overflow-x: hidden; }
+
+/* Clip rogue overflow sources without disrupting scroll */
+body { max-width: 100%; }
+
+/* Every image and block-level media respects its container */
+img, video, iframe, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── §2  Token overrides for compact mobile chrome ──────────── */
+
+@media (max-width: 1023px) {
+  :root {
+    /* Tighter header so content starts higher */
+    --header-h:        56px;
+    --header-h-scroll: 52px;
+
+    /* Grid gaps: slightly tighter on phone */
+    --grid-gap-mob: clamp(0.625rem, 2.5vw, 0.875rem);  /* 10–14px */
+
+    /* Container horizontal padding: safe at 360px */
+    --container-pad: clamp(0.875rem, 4vw, 2.5rem);      /* 14–40px */
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    /* Tighter announcement bar on mobile: saves 4px of above-fold chrome */
+    --bar-h: 36px;
+  }
+}
+
+/* ── §3  Header: compact + 44 px tap targets ─────────────────── */
+
+@media (max-width: 1023px) {
+
+  /* Hamburger — expand from 28×28 to 44×44 tap area */
+  .header__hamburger {
+    width:  44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Action icons — give each a 44×44 tap zone */
+  .header__action {
+    min-width:  44px;
+    min-height: 44px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  /* Logo: cap width to leave room for icons at 360 px */
+  .header__logo img {
+    max-width: 130px;
+    height: 28px;
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .header__logo-text {
+    font-size: clamp(1.05rem, 5vw, 1.35rem);
+  }
+
+  /* Cart count badge: nudge slightly */
+  .header__cart-count {
+    top:   -6px;
+    right: -7px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header__inner  { gap: var(--sp-1); }
+  .header__actions { gap: var(--sp-1); }
+}
+
+/* Drawer close buttons: 44×44 */
+.drawer__close {
+  width:  44px;
+  height: 44px;
+}
+
+/* ── §4  Announcement bar ────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .ann-bar {
+    height: 36px;
+    /* Prevent overflow from clipping at edges */
+    overflow: hidden;
+  }
+
+  .ann-bar__item {
+    /* Up from 11px to 12px — still label-style but legible */
+    font-size: 0.75rem;
+    letter-spacing: 0.07em;
+  }
+
+  /* Slightly faster marquee feels more natural on touch */
+  .ann-bar__track { animation-duration: 28s; }
+
+  .ann-bar__close { right: var(--sp-3); }
+}
+
+/* ── §5  Hero section ─────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+
+  /* Hide autoplay video on mobile — save data + battery */
+  .hero__video { display: none; }
+
+  /* Ensure mobile image fills the hero properly */
+  .hero__img {
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  /* Hero text: scale down for narrow viewports */
+  .hero__heading {
+    font-size: clamp(1.875rem, 9vw, 3rem);  /* 30 – 48 px */
+    letter-spacing: 0.02em;
+  }
+
+  .hero__subheading {
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .hero__eyebrow { letter-spacing: 0.08em; }
+
+  /* CTA row — stack on very small screens so buttons stay full-width */
+  .hero__ctas {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    width: 100%;
+  }
+
+  .hero--a-center .hero__ctas { align-items: center; }
+  .hero--a-right  .hero__ctas { align-items: flex-end; }
+
+  /* Hero buttons: 44 px tap target */
+  .hero-btn {
+    min-height: 44px;
+    padding: 0.75rem 1.5rem;
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .hero--a-center .hero-btn { max-width: 260px; }
+}
+
+@media (max-width: 390px) {
+  .hero__heading { font-size: clamp(1.75rem, 9.5vw, 2.6rem); }
+}
+
+/* ── §6  All drawers — shared mobile padding ─────────────────── */
+
+@media (max-width: 767px) {
+  .drawer__head {
+    padding: var(--sp-4) var(--sp-5);
+    min-height: 56px;
+  }
+
+  .drawer__title { font-size: var(--fs-20); }
+
+  .drawer__body  { padding: var(--sp-4) var(--sp-5); }
+
+  .drawer__foot {
+    padding: var(--sp-4) var(--sp-5);
+    /* iPhone home bar */
+    padding-bottom: max(var(--sp-4), calc(var(--sp-4) + env(safe-area-inset-bottom, 0px)));
+  }
+}
+
+/* ── §7  Cart drawer — full width on mobile ──────────────────── */
+
+@media (max-width: 480px) {
+  .cart-drawer.drawer {
+    width: 100%;
+    max-width: 100%;
+    /* No gap at left edge on small phones */
+    border-radius: 0;
+  }
+}
+
+/* Cart item image: slightly bigger on phone for thumb scanning */
+@media (max-width: 767px) {
+  .cart-item {
+    grid-template-columns: 72px 1fr;
+    gap: var(--sp-3);
+  }
+
+  .cart-item__img {
+    width:  72px;
+    height: 90px;    /* portrait aspect on cart too */
+    object-fit: cover;
+  }
+
+  .cart-item__name  { font-size: var(--fs-15); }
+  .cart-item__price { font-size: var(--fs-13); }
+}
+
+/* ── §8  Search drawer — full width from top on mobile ───────── */
+
+@media (max-width: 767px) {
+  .search-drawer {
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    max-height: 90vh;
+    /* Override the centered translateX(-50%) */
+    transform: translateX(0) translateY(-100%);
+  }
+
+  .search-drawer.is-open {
+    transform: translateX(0) translateY(0);
+  }
+
+  /* Slightly smaller search input on mobile */
+  .search-form__input {
+    font-size: var(--fs-20);
+  }
+
+  /* Hint tags: bigger touch area */
+  .search-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: var(--sp-2) var(--sp-3);
+    font-size: var(--fs-12);
+  }
+}
+
+/* ── §9  Filter drawer — bottom sheet on mobile ──────────────── */
+
+@media (max-width: 767px) {
+
+  .filter-drawer__panel {
+    /* Reposition: left edge → bottom of screen */
+    top:   auto;
+    left:  0;
+    right: 0;
+    bottom: 0;
+    width:      100%;
+    max-width:  100%;
+    max-height: 90vh;
+
+    /* Slide from bottom (override from-left) */
+    transform: translateY(100%);
+    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Rounded top corners for bottom-sheet feel */
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 32px rgba(13, 11, 8, 0.14);
+  }
+
+  .filter-drawer.is-open .filter-drawer__panel {
+    transform: translateY(0);
+  }
+
+  /* Drag handle above header */
+  .filter-drawer__header {
+    padding-top: calc(var(--sp-5) + 12px);
+    position: relative;
+  }
+
+  .filter-drawer__header::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: var(--clr-line, #e4ddd5);
+    border-radius: 2px;
+  }
+
+  /* Close button: 44 px */
+  .filter-drawer__close {
+    width:  44px;
+    height: 44px;
+  }
+
+  /* Footer: safe area + taller apply button */
+  .filter-drawer__footer {
+    padding-bottom: max(var(--sp-5), calc(var(--sp-5) + env(safe-area-inset-bottom, 0px)));
+  }
+
+  .filter-drawer__apply {
+    min-height: 44px;
+  }
+
+  /* Facets label row: bigger tap area */
+  .facets__label {
+    padding-block: var(--sp-2);
+    min-height: 40px;
+    align-items: center;
+  }
+
+  .facets__group-summary {
+    min-height: 44px;
+  }
+}
+
+/* ── §21  Product card wishlist — 44 px tap target on touch ─── */
+
+@media (max-width: 1023px) {
+  .product-card__wishlist {
+    width:  44px;
+    height: 44px;
+  }
+}
+
+/* ── §10  All buttons & interactive elements — 44 px floor ────── */
+
+/* Primary rule: every .btn gets a minimum height */
+.btn {
+  min-height: 44px;
+}
+
+/* Small buttons stay visually small but hit 44px via padding */
+.btn--sm {
+  min-height: 36px;   /* intentionally smaller; use btn--sm sparingly */
+  padding: 0.5625rem 1.25rem;
+}
+
+/* Icon-only square: 44×44 */
+.btn--icon {
+  width:  44px;
+  height: 44px;
+  min-height: 44px;
+}
+
+/* Quantity control */
+@media (max-width: 1023px) {
+  .qty-ctrl {
+    height: 44px;
+  }
+
+  .qty-ctrl__btn {
+    width:  44px;
+    height: 44px;
+  }
+
+  .qty-ctrl__input {
+    width: 44px;
+    font-size: var(--fs-15);
+  }
+}
+
+/* Collection filter toggle */
+@media (max-width: 1023px) {
+  .collection__filter-toggle {
+    min-height: 44px;
+    padding: var(--sp-2) var(--sp-5);
+  }
+}
+
+/* Sort dropdown */
+@media (max-width: 767px) {
+  .sort-by__select {
+    min-height: 44px;
+    padding-block: var(--sp-2);
+  }
+}
+
+/* Product card wishlist: 40 px (slightly smaller than nav targets, but on-card) */
+.product-card__wishlist {
+  width:  40px;
+  height: 40px;
+}
+
+/* Pagination */
+@media (max-width: 767px) {
+  .pagination__page,
+  .pagination__btn {
+    min-height: 44px;
+    min-width:  44px;
+  }
+
+  .collection__load-more-btn {
+    min-height: 52px;
+  }
+}
+
+/* ── §11  Product cards ───────────────────────────────────────── */
+
+@media (max-width: 767px) {
+
+  /* No lift-on-hover on touch screens */
+  .product-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Info block: snug but breathable */
+  .product-card__info {
+    padding: var(--sp-3) var(--sp-3) var(--sp-4);
+    gap: var(--sp-1);
+  }
+
+  /* Title: 15 px so text shows in narrow 2-col cards */
+  .product-card__title {
+    font-size: 0.9375rem;    /* 15 px */
+    line-height: 1.3;
+  }
+
+  /* Price: legible on small card */
+  .price-block__current { font-size: var(--fs-14); }
+  .price-block__compare { font-size: var(--fs-12); }
+
+  /* ATC button: 44 px high, tighter letter-spacing */
+  .product-card__atc.btn {
+    min-height: 44px;
+    font-size:  var(--fs-11);
+    letter-spacing: 0.08em;
+  }
+
+  /* Wishlist + badges: pull slightly inward to not clip card edge */
+  .product-card__wishlist {
+    top:   var(--sp-2);
+    right: var(--sp-2);
+  }
+
+  .product-badges {
+    top:  var(--sp-2);
+    left: var(--sp-2);
+  }
+
+  /* Description: hide on mobile (already set in product-card.css; reinforce) */
+  .product-card__desc { display: none; }
+}
+
+/* Very narrow (360 px): tightest card info */
+@media (max-width: 390px) {
+  .product-card__info {
+    padding: var(--sp-2) var(--sp-2) var(--sp-3);
+  }
+
+  .product-card__title { font-size: 0.875rem; } /* 14 px */
+
+  .product-card__meta  { display: none; }       /* hide family/gender on tiny card */
+}
+
+/* ── §12  Product carousel ───────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .product-carousel-section {
+    padding-block: var(--sp-10) var(--sp-12);
+    /* Prevent inner elements from leaking outside */
+    overflow-x: hidden;
+  }
+
+  .pc__container { gap: var(--sp-5); }
+
+  .pc__heading { font-size: clamp(1.5rem, 6.5vw, 2.2rem); }
+
+  /* Carousel track: allow snapping overflow to bleed for "peek" */
+  .pc__viewport {
+    overflow: visible;
+    margin-inline: calc(-1 * var(--container-pad));
+    /* Re-clip top/bottom to keep card shadows visible */
+    overflow-x: clip;
+  }
+
+  .pc__track {
+    padding-inline: var(--container-pad);
+    gap: var(--sp-3);
+    scroll-padding-inline-start: var(--container-pad);
+  }
+
+  /* Slide: show 1.25 cards (≈80% each) */
+  .pc__slide {
+    flex: 0 0 calc(78% - 6px);
+    scroll-snap-align: start;
+  }
+
+  /* Progress bar: slightly thicker so it reads on mobile */
+  .pc__progress        { height: 2px; }
+  .pc__progress-fill   { border-radius: 1px; }
+
+  /* CTA link: left-aligned on mobile */
+  .pc__cta-wrap { justify-content: flex-start; }
+}
+
+/* 360 px: tighter peek — show less of the next card */
+@media (max-width: 360px) {
+  .pc__slide { flex: 0 0 calc(84% - 6px); }
+}
+
+/* 430–767 px: show 1.5 cards */
+@media (min-width: 430px) and (max-width: 767px) {
+  .pc__slide { flex: 0 0 calc(65% - 8px); }
+}
+
+/* ── §13  Collection page — grid & toolbar ───────────────────── */
+
+@media (max-width: 767px) {
+
+  /* Force 2-column grid regardless of --cols-N class */
+  .collection__grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: var(--sp-3) !important;
+  }
+
+  .collection__body { padding-block: var(--sp-5); }
+
+  .collection__header { padding-block: var(--sp-6) var(--sp-4); }
+
+  .collection__title {
+    font-size: clamp(1.375rem, 7vw, 2rem);
+  }
+
+  .collection__toolbar-inner {
+    gap: var(--sp-2);
+  }
+
+  /* Filter + sort row: consistent heights */
+  .collection__filter-toggle,
+  .sort-by__select {
+    min-height: 44px;
+    font-size: var(--fs-12);
+  }
+
+  .sort-by__select { min-width: 130px; }
+}
+
+@media (max-width: 390px) {
+  .collection__grid { gap: var(--sp-2) !important; }
+}
+
+/* ── §14  PDP — gallery, info, sticky ATC ────────────────────── */
+
+@media (max-width: 767px) {
+
+  /* Gallery: collapse to single-column swipeable image strip */
+  .gallery {
+    grid-template-columns: 1fr !important;
+    gap: 0;
+  }
+
+  /* Thumbnail column: hide on mobile */
+  .gallery__thumbs { display: none !important; }
+
+  /* Main image area: full-width, enable horizontal swipe */
+  .gallery__main {
+    touch-action: pan-y; /* vertical scroll; JS handles horizontal */
+    overflow: hidden;
+    border-radius: var(--r-md, 8px);
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* PDP page grid: single column */
+  .pdp__main {
+    grid-template-columns: 1fr !important;
+    gap: var(--sp-8) !important;
+  }
+
+  /* PDP title: comfortable mobile size */
+  .pdp__title {
+    font-size: clamp(1.5rem, 6.5vw, 2.2rem);
+  }
+
+  /* Variant/size buttons: min 44 px */
+  .pdp__swatch,
+  .variant-btn,
+  .swatch-btn {
+    min-width:  44px;
+    min-height: 44px;
+  }
+
+  /* Qty control in PDP */
+  .pdp__qty .qty-ctrl {
+    height: 44px;
+  }
+
+  /* ATC button: prominent 52 px on PDP */
+  .pdp__atc-btn {
+    min-height: 52px;
+    font-size: var(--fs-13);
+  }
+
+  /* Accordion items (notes, ingredients, delivery) */
+  .product-accordion__trigger {
+    min-height: 48px;
+    padding-block: var(--sp-3);
+  }
+}
+
+/* Sticky ATC bar: full-width, safe area */
+.sticky-atc {
+  /* Override any left/right offsets set in product.css */
+  left:   0 !important;
+  right:  0 !important;
+  width:  100% !important;
+}
+
+@media (max-width: 767px) {
+  .sticky-atc {
+    padding-inline: var(--sp-4);
+    padding-bottom: calc(var(--sp-3) + env(safe-area-inset-bottom, 0px));
+    border-radius: 0;
+  }
+
+  .sticky-atc__btn,
+  .sticky-atc .btn--solid {
+    min-height: 48px;
+  }
+}
+
+/* ── §15  Footer ──────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  /* Newsletter subscribe button */
+  .footer__nsl-btn { min-height: 44px; }
+
+  /* Accordion column toggle */
+  .footer__col-toggle {
+    min-height: 48px;
+    padding-block: 0;
+    align-items: center;
+  }
+
+  /* Payment icons: slightly larger on mobile */
+  .footer__payment-icons svg {
+    height: 24px;
+    opacity: 0.7;
+  }
+}
+
+/* ── §16  Section spacing & typography ───────────────────────── */
+
+@media (max-width: 767px) {
+
+  /* Eyebrow label: tighter spacing on narrow screen */
+  .eyebrow { letter-spacing: 0.09em; }
+
+  /* FAQ & SEO section headings */
+  .faq-section__heading {
+    font-size: clamp(1.375rem, 6vw, 1.875rem);
+  }
+
+  .seo-section__heading {
+    font-size: clamp(1.25rem, 5.5vw, 1.75rem);
+  }
+
+  /* FAQ trigger: full-height tap area */
+  .faq__trigger {
+    min-height: 52px;
+  }
+
+  /* Paragraph max-width: don't constrain narrow columns */
+  .product-card p,
+  .footer__brand p,
+  .footer__grievance-text,
+  .footer__nsl-sub {
+    max-width: none;
+  }
+
+  /* Section padding: slightly tighter on phone */
+  .section-pad {
+    padding-block: clamp(var(--sp-10), 5vw, var(--sp-16));
+  }
+}
+
+/* ── §17  Safe-area insets (notch / home bar) ─────────────────── */
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+
+  /* Sticky elements above home indicator */
+  .sticky-atc.is-visible {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--sp-3));
+  }
+
+  /* Drawer footers above home indicator */
+  .drawer__foot {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--sp-5));
+  }
+
+  .filter-drawer__footer {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--sp-5));
+  }
+}
+
+/* ── §18  Touch interaction improvements ─────────────────────── */
+
+/* Remove 300ms tap delay on clickable elements */
+a, button, [role="button"], input, select, textarea, label {
+  touch-action: manipulation;
+}
+
+/* Drawer scroll containers: smooth momentum + contain bounce */
+.drawer__body,
+.filter-drawer__body,
+.pc__track,
+.collection__sidebar--sticky,
+.search-results {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Carousel track: horizontal scroll container */
+.pc__track {
+  scroll-snap-type: x mandatory;
+  /* Allow vertical page scroll from within track */
+  touch-action: pan-x pan-y;
+}
+
+/* Suppress double-tap zoom on cards */
+.product-card,
+.pc__slide {
+  touch-action: manipulation;
+}
+
+/* ── §19  CLS prevention ──────────────────────────────────────── */
+
+/*
+  Images and media have aspect-ratio set on their containers
+  (product-card__media, hero), so these are for belt-and-braces.
+*/
+
+/* Product card image container: lock ratio to prevent reflow */
+.product-card__media--portrait { aspect-ratio: 4 / 5; }
+.product-card__media--square   { aspect-ratio: 1 / 1; }
+
+/* Announcement bar: explicit height so it doesn't collapse before CSS loads */
+.ann-bar { min-height: 36px; }
+
+/* Header: explicit height set in tokens, reinforce here */
+.site-header { min-height: var(--header-h); }
+
+/* ── §20  Reduced motion ──────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+
+  /* Stop marquee — show static text instead */
+  .ann-bar__track {
+    animation: none;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  /* Always hide video */
+  .hero__video { display: none; }
+
+  /* Disable carousel snap animation for reduced-motion users */
+  .pc__track { scroll-behavior: auto; }
+
+  /* Disable drawer slide transitions */
+  .drawer,
+  .filter-drawer__panel,
+  .search-drawer {
+    transition: none;
+  }
+}

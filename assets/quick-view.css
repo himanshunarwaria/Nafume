@@ -1,0 +1,610 @@
+/* ============================================================
+   quick-view.css — Premium Quick View Modal
+   ============================================================ */
+
+/* ── 1. Modal Shell ────────────────────────────────────────── */
+.qv {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.qv[hidden] {
+  display: none;
+}
+
+.qv.is-open {
+  opacity: 1;
+}
+
+/* Prevent body scroll while open */
+body.qv-open {
+  overflow: hidden;
+}
+
+/* ── 2. Backdrop ───────────────────────────────────────────── */
+.qv__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 13, 10, 0.65);
+  cursor: pointer;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* ── 3. Panel ──────────────────────────────────────────────── */
+.qv__panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 880px;
+  max-height: 90vh;
+  background: var(--color-bg, #fdfcfa);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 24px 64px rgba(0, 0, 0, 0.18);
+  transform: scale(0.96) translateY(10px);
+  opacity: 0;
+  transition: transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
+              opacity 0.22s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.qv.is-open .qv__panel {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* ── 4. Close Button ───────────────────────────────────────── */
+.qv__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border, #e8e4df);
+  background: var(--color-bg, #fdfcfa);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-ink, #1a1a18);
+  transition: background 0.18s, border-color 0.18s;
+}
+
+.qv__close:hover {
+  background: var(--color-ink, #1a1a18);
+  border-color: var(--color-ink, #1a1a18);
+  color: var(--color-bg, #fff);
+}
+
+/* ── 5. Loading State ──────────────────────────────────────── */
+.qv__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 420px;
+  flex: 1;
+}
+
+.qv__loading[hidden] {
+  display: none;
+}
+
+.qv__spinner {
+  width: 32px;
+  height: 32px;
+  border: 2.5px solid var(--color-border, #e8e4df);
+  border-top-color: var(--color-ink, #1a1a18);
+  border-radius: 50%;
+  animation: qv-spin 0.7s linear infinite;
+}
+
+@keyframes qv-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── 6. Error State ────────────────────────────────────────── */
+.qv__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 420px;
+  padding: 40px;
+  text-align: center;
+  flex: 1;
+}
+
+.qv__error[hidden] {
+  display: none;
+}
+
+.qv__error svg {
+  color: var(--color-muted, #8a8680);
+  opacity: 0.5;
+}
+
+.qv__error-msg {
+  font-size: 0.9rem;
+  color: var(--color-muted, #8a8680);
+  margin: 0;
+}
+
+.qv__error-retry {
+  padding: 10px 24px;
+  border: 1.5px solid var(--color-ink, #1a1a18);
+  border-radius: 4px;
+  background: transparent;
+  font-size: 0.78rem;
+  font-family: var(--font-body, sans-serif);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+
+.qv__error-retry:hover {
+  background: var(--color-ink, #1a1a18);
+  color: var(--color-bg, #fff);
+}
+
+/* ── 7. Content Body ───────────────────────────────────────── */
+.qv__body {
+  display: grid;
+  grid-template-columns: 45% 1fr;
+  flex: 1;
+  overflow: hidden;
+}
+
+.qv__body[hidden] {
+  display: none;
+}
+
+/* ── 8. Gallery ────────────────────────────────────────────── */
+.qv__gallery {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-surface, #f5f3f0);
+}
+
+.qv__img-wrap {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qv__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.2s ease;
+}
+
+.qv__img.is-switching {
+  opacity: 0;
+}
+
+.qv__thumbs {
+  display: flex;
+  gap: 6px;
+  padding: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  background: var(--color-surface, #f5f3f0);
+}
+
+.qv__thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.qv__thumbs[hidden] {
+  display: none;
+}
+
+.qv__thumb {
+  flex-shrink: 0;
+  width: 52px;
+  height: 64px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+  transition: border-color 0.18s;
+}
+
+.qv__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.qv__thumb.is-active,
+.qv__thumb:hover {
+  border-color: var(--color-ink, #1a1a18);
+}
+
+/* ── 9. Info Column ────────────────────────────────────────── */
+.qv__info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px 28px 28px 24px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border, #e8e4df) transparent;
+}
+
+.qv__info::-webkit-scrollbar {
+  width: 4px;
+}
+
+.qv__info::-webkit-scrollbar-thumb {
+  background: var(--color-border, #e8e4df);
+  border-radius: 2px;
+}
+
+/* ── 10. Meta Tags ─────────────────────────────────────────── */
+.qv__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 1px;
+}
+
+.qv__tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 0.67rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.qv__tag--family {
+  border: 1px solid var(--color-ink, #1a1a18);
+  color: var(--color-ink, #1a1a18);
+}
+
+.qv__tag--gender {
+  border: 1px solid var(--color-border, #e8e4df);
+  color: var(--color-muted, #8a8680);
+  background: var(--color-surface, #f5f3f0);
+}
+
+/* ── 11. Title ─────────────────────────────────────────────── */
+.qv__title {
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-ink, #1a1a18);
+  margin: 0;
+}
+
+/* ── 12. Price Block ───────────────────────────────────────── */
+.qv__price-block {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+}
+
+.qv__price {
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--color-ink, #1a1a18);
+  letter-spacing: -0.01em;
+}
+
+.qv__price--sale {
+  color: #b94040;
+}
+
+.qv__compare {
+  font-size: 0.88rem;
+  color: var(--color-muted, #8a8680);
+  text-decoration: line-through;
+}
+
+.qv__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #fdf0ef;
+  color: #b94040;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* ── 13. Description ───────────────────────────────────────── */
+.qv__desc {
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--color-muted, #8a8680);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── 14. Variant Selector ──────────────────────────────────── */
+.qv__variants {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qv__opt-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qv__opt-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-muted, #8a8680);
+  font-weight: 500;
+}
+
+.qv__opt-selected {
+  color: var(--color-ink, #1a1a18);
+  font-weight: 600;
+}
+
+.qv__opt-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.qv__opt-btn {
+  padding: 7px 14px;
+  border: 1.5px solid var(--color-border, #e8e4df);
+  border-radius: 4px;
+  background: transparent;
+  font-size: 0.78rem;
+  font-family: var(--font-body, sans-serif);
+  color: var(--color-ink, #1a1a18);
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, color 0.18s;
+  letter-spacing: 0.02em;
+}
+
+.qv__opt-btn:hover:not([disabled]) {
+  border-color: var(--color-ink, #1a1a18);
+}
+
+.qv__opt-btn.is-active {
+  border-color: var(--color-ink, #1a1a18);
+  background: var(--color-ink, #1a1a18);
+  color: var(--color-bg, #fff);
+}
+
+.qv__opt-btn.is-unavailable,
+.qv__opt-btn[disabled] {
+  opacity: 0.35;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+/* ── 15. Qty + ATC ─────────────────────────────────────────── */
+.qv__form {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.qv__qty {
+  display: flex;
+  border: 1.5px solid var(--color-border, #e8e4df);
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.qv__qty-btn {
+  width: 36px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--color-ink, #1a1a18);
+  transition: background 0.15s;
+}
+
+.qv__qty-btn:hover {
+  background: var(--color-surface, #f5f3f0);
+}
+
+.qv__qty-input {
+  width: 42px;
+  height: 46px;
+  text-align: center;
+  border: none;
+  border-inline: 1.5px solid var(--color-border, #e8e4df);
+  font-size: 0.88rem;
+  font-family: var(--font-body, sans-serif);
+  color: var(--color-ink, #1a1a18);
+  background: transparent;
+  -moz-appearance: textfield;
+}
+
+.qv__qty-input::-webkit-inner-spin-button,
+.qv__qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.qv__atc {
+  flex: 1;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--color-ink, #1a1a18);
+  color: var(--color-bg, #fff);
+  border: none;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-family: var(--font-body, sans-serif);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.18s, transform 0.15s;
+}
+
+.qv__atc:hover:not([disabled]) {
+  opacity: 0.88;
+}
+
+.qv__atc:active:not([disabled]) {
+  transform: scale(0.98);
+}
+
+.qv__atc[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.qv__atc-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  display: none;
+  animation: qv-spin 0.7s linear infinite;
+}
+
+.qv__atc.is-loading .qv__atc-label { display: none; }
+.qv__atc.is-loading .qv__atc-spinner { display: block; }
+
+/* ── 16. View Full Details ─────────────────────────────────── */
+.qv__view-full {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--color-muted, #8a8680);
+  text-decoration: none;
+  margin-top: auto;
+  transition: color 0.18s;
+  align-self: flex-start;
+}
+
+.qv__view-full:hover {
+  color: var(--color-ink, #1a1a18);
+}
+
+/* ── 17. Responsive ────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .qv {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .qv__panel {
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 16px 16px 0 0;
+    transform: translateY(20px);
+  }
+
+  .qv.is-open .qv__panel {
+    transform: translateY(0);
+  }
+
+  .qv__body {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+    max-height: calc(92vh - 0px);
+  }
+
+  .qv__gallery {
+    max-height: 260px;
+  }
+
+  .qv__img-wrap {
+    max-height: 220px;
+  }
+
+  .qv__img {
+    object-position: top;
+  }
+
+  .qv__info {
+    padding: 20px 20px 32px;
+    overflow-y: visible;
+    gap: 14px;
+  }
+
+  .qv__form {
+    flex-direction: column;
+  }
+
+  .qv__qty {
+    align-self: flex-start;
+  }
+
+  .qv__atc {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 959px) {
+  .qv__body {
+    grid-template-columns: 42% 1fr;
+  }
+}
+
+/* ── 18. Reduced Motion ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .qv,
+  .qv__panel,
+  .qv__img {
+    transition: none;
+  }
+
+  .qv__spinner,
+  .qv__atc-spinner {
+    animation: none;
+    border-top-color: var(--color-ink, #1a1a18);
+    border-color: var(--color-border, #e8e4df);
+  }
+}

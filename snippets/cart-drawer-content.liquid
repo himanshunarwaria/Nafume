@@ -1,0 +1,167 @@
+{%- comment -%}
+  Rendered inside #cart-drawer-content.
+  Also served by sections/cart-drawer-content.liquid for the AJAX sections API.
+{%- endcomment -%}
+
+{%- liquid
+  assign free_shipping_threshold = 99900
+  assign progress_pct = cart.total_price | times: 100 | divided_by: free_shipping_threshold
+  if progress_pct > 100
+    assign progress_pct = 100
+  endif
+  assign remaining = free_shipping_threshold | minus: cart.total_price | money_without_trailing_zeros
+-%}
+
+{%- if cart.item_count == 0 -%}
+
+  {%- comment -%} ── Empty state ── {%- endcomment -%}
+  <div class="cart-empty">
+    <div class="cart-empty__icon" aria-hidden="true">
+      <svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.2" width="52" height="52">
+        <path d="M18 22V16a9 9 0 0 1 18 0v6M7 22h38l-3.5 22H10.5L7 22z" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <p class="cart-empty__title">Your cart is empty</p>
+    <p class="cart-empty__text">Discover our luxury fragrance collection and find your signature scent.</p>
+    <a href="/collections/fragrances" class="btn btn--solid" data-drawer-close style="margin-top:var(--sp-5)">
+      Explore Fragrances
+    </a>
+  </div>
+
+{%- else -%}
+
+  {%- comment -%} ── Free shipping bar ── {%- endcomment -%}
+  <div class="cart-shipping-bar" data-free-shipping-bar>
+    {%- if progress_pct >= 100 -%}
+      <p class="cart-shipping-bar__msg" data-free-shipping-msg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" width="14" height="14"><path d="M20 6 9 17l-5-5"/></svg>
+        You qualify for free shipping!
+      </p>
+    {%- else -%}
+      <p class="cart-shipping-bar__msg" data-free-shipping-msg>
+        Add {{ remaining }} more for free shipping
+      </p>
+    {%- endif -%}
+    <div class="cart-shipping-bar__track" aria-hidden="true">
+      <div class="cart-shipping-bar__fill" data-free-shipping-fill style="width:{{ progress_pct }}%"></div>
+    </div>
+  </div>
+
+  {%- comment -%} ── Cart items ── {%- endcomment -%}
+  <div class="drawer__body">
+    <div class="cart-items">
+      {%- for item in cart.items -%}
+        <div class="cart-item" data-key="{{ item.key }}">
+
+          <a href="{{ item.url }}" class="cart-item__img-wrap" tabindex="-1" aria-hidden="true">
+            {{- item.image
+              | image_url: width: 200
+              | image_tag:
+                class: 'cart-item__img',
+                alt: item.image.alt | default: item.title,
+                loading: 'lazy',
+                width: 100, height: 100
+            -}}
+          </a>
+
+          <div class="cart-item__body">
+            <div class="cart-item__meta">
+              {%- if item.vendor != blank -%}
+                <span class="cart-item__brand">{{ item.vendor }}</span>
+              {%- endif -%}
+              <a href="{{ item.url }}" class="cart-item__name">{{ item.product_title }}</a>
+              {%- unless item.variant_title == 'Default Title' -%}
+                <span class="cart-item__variant">{{ item.variant_title }}</span>
+              {%- endunless -%}
+              {%- if item.selling_plan_allocation -%}
+                <span class="cart-item__variant">{{ item.selling_plan_allocation.selling_plan.name }}</span>
+              {%- endif -%}
+            </div>
+
+            <div class="cart-item__foot">
+              <div class="qty-ctrl" role="group" aria-label="Quantity for {{ item.product_title }}">
+                <button class="qty-ctrl__btn" data-dir="down" aria-label="Decrease quantity">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" width="12" height="12"><path d="M5 12h14"/></svg>
+                </button>
+                <input class="qty-ctrl__input"
+                       type="number"
+                       min="0"
+                       max="99"
+                       value="{{ item.quantity }}"
+                       data-cart-qty="{{ item.key }}"
+                       aria-label="Quantity">
+                <button class="qty-ctrl__btn" data-dir="up" aria-label="Increase quantity">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" width="12" height="12"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+              </div>
+
+              <div class="cart-item__prices">
+                {%- if item.original_line_price != item.final_line_price -%}
+                  <span class="price price--sale">{{ item.final_line_price | money }}</span>
+                  <s class="price price--compare">{{ item.original_line_price | money }}</s>
+                {%- else -%}
+                  <span class="cart-item__price">{{ item.final_line_price | money }}</span>
+                {%- endif -%}
+              </div>
+            </div>
+
+            <button class="cart-item__remove"
+                    data-cart-remove="{{ item.key }}"
+                    aria-label="Remove {{ item.product_title }} from cart">
+              Remove
+            </button>
+          </div>
+
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+
+  {%- comment -%} ── Offer callout strip ── {%- endcomment -%}
+  <div class="cart-offer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+         aria-hidden="true" width="14" height="14">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>
+    </svg>
+    <span>Earn points on this order &mdash; <a href="/pages/loyalty">Learn more</a></span>
+  </div>
+
+  {%- comment -%} ── Cart summary & CTA ── {%- endcomment -%}
+  <div class="drawer__foot cart-drawer__foot">
+
+    <div class="cart-summary">
+      {%- if cart.cart_level_discount_applications.size > 0 -%}
+        {%- for discount in cart.cart_level_discount_applications -%}
+          <div class="cart-summary__row">
+            <span>Discount ({{ discount.title }})</span>
+            <span style="color:var(--clr-sale)">−{{ discount.total_allocated_amount | money }}</span>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+      {%- if cart.total_discounts > 0 -%}
+        <div class="cart-summary__row">
+          <span>You save</span>
+          <span style="color:var(--clr-success)">−{{ cart.total_discounts | money }}</span>
+        </div>
+      {%- endif -%}
+      <div class="cart-summary__row cart-summary__row--total">
+        <span>Subtotal</span>
+        <span>{{ cart.total_price | money }}</span>
+      </div>
+    </div>
+
+    <p class="cart-note">Taxes &amp; shipping calculated at checkout</p>
+
+    <div class="cart-ctas">
+      <a href="/checkout" class="btn btn--solid btn--full">
+        Checkout
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <button type="button" class="btn btn--ghost btn--full" data-drawer-close>
+        Continue Shopping
+      </button>
+    </div>
+
+  </div>
+
+{%- endif -%}

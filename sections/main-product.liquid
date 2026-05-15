@@ -1,0 +1,598 @@
+{{- 'product.css' | asset_url | stylesheet_tag -}}
+
+{%- liquid
+  assign selected_variant   = product.selected_or_first_available_variant
+  assign current_price      = selected_variant.price
+  assign compare_price      = selected_variant.compare_at_price
+  assign has_sale           = false
+  if compare_price > current_price
+    assign has_sale   = true
+    assign diff       = compare_price | minus: current_price
+    assign sale_pct   = diff | times: 100.0 | divided_by: compare_price | round
+  endif
+
+  comment
+    Metafield shorthand aliases
+  endcomment
+  assign mf              = product.metafields.custom
+  assign mf_gender       = mf.gender.value
+  assign mf_family       = mf.fragrance_family.value
+  assign mf_top          = mf.top_notes.value
+  assign mf_middle       = mf.middle_notes.value
+  assign mf_base         = mf.base_notes.value
+  assign mf_feelings     = mf.feelings.value
+  assign mf_occasions    = mf.occasions.value
+  assign mf_behind       = mf.behind_the_perfume.value
+  assign mf_offer        = mf.offer_text.value
+  assign mf_delivery     = mf.delivery_message.value
+  assign mf_coming_soon  = mf.is_coming_soon.value
+
+  comment
+    Rating from native Shopify Reviews app metafield namespace
+  endcomment
+  assign rating_val   = product.metafields.reviews.rating.value
+  assign rating_count = product.metafields.reviews.rating_count.value
+
+  comment
+    Effective offer and delivery text (metafield overrides section setting)
+  endcomment
+  assign offer_text    = mf_offer    | default: section.settings.offer_text
+  assign delivery_text = mf_delivery | default: section.settings.delivery_message
+-%}
+
+<div
+  id="MainProduct"
+  class="pdp"
+  data-product-id="{{ product.id }}"
+  data-section="main-product">
+
+  {%- comment -%} ── 1. Breadcrumb ──────────────────────────────── {%- endcomment -%}
+  <nav class="pdp__breadcrumb container" aria-label="Breadcrumb">
+    <ol
+      class="breadcrumb"
+      itemscope
+      itemtype="https://schema.org/BreadcrumbList">
+
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a href="{{ routes.root_url }}" itemprop="item">
+          <span itemprop="name">Home</span>
+        </a>
+        <meta itemprop="position" content="1">
+      </li>
+
+      {%- if collection -%}
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumb__sep" aria-hidden="true">/</span>
+          <a href="{{ collection.url }}" itemprop="item">
+            <span itemprop="name">{{ collection.title }}</span>
+          </a>
+          <meta itemprop="position" content="2">
+        </li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumb__sep" aria-hidden="true">/</span>
+          <span itemprop="name" aria-current="page">{{ product.title }}</span>
+          <meta itemprop="position" content="3">
+        </li>
+      {%- else -%}
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumb__sep" aria-hidden="true">/</span>
+          <span itemprop="name" aria-current="page">{{ product.title }}</span>
+          <meta itemprop="position" content="2">
+        </li>
+      {%- endif -%}
+
+    </ol>
+  </nav>
+
+  {%- comment -%} ── 2. Main 2-col layout ──────────────────────── {%- endcomment -%}
+  <div class="pdp__main container">
+
+    {%- comment -%} Left: sticky gallery ─── {%- endcomment -%}
+    <div
+      class="pdp__gallery-col{% if section.settings.sticky_gallery %} pdp__gallery-col--sticky{% endif %}"
+      id="PDPGalleryCol">
+      {%- render 'product-media-gallery',
+        product:          product,
+        selected_variant: selected_variant
+      -%}
+    </div>
+
+    {%- comment -%} Right: product info ─── {%- endcomment -%}
+    <div class="pdp__info" id="PDPInfo">
+
+      {%- comment -%} Meta tags row ─── {%- endcomment -%}
+      <div class="pdp__meta-row">
+        {%- if mf_gender != blank -%}
+          <span class="pdp__tag pdp__tag--gender">{{ mf_gender }}</span>
+        {%- endif -%}
+        {%- if product.type != blank -%}
+          <span class="pdp__tag pdp__tag--type">{{ product.type }}</span>
+        {%- endif -%}
+        {%- if mf_family != blank -%}
+          <span class="pdp__tag pdp__tag--family">{{ mf_family }}</span>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Title ─── {%- endcomment -%}
+      <h1 class="pdp__title">{{ product.title }}</h1>
+
+      {%- comment -%} Star rating summary ─── {%- endcomment -%}
+      {%- if rating_val != blank and rating_count != blank -%}
+        {%- assign rating_num = rating_val | times: 1.0 -%}
+        {%- assign rating_pct = rating_num | divided_by: 5.0 | times: 100 -%}
+        <div class="pdp__rating">
+          <div class="star-rating" aria-label="{{ rating_num | round: 1 }} out of 5 stars">
+            <span class="star-rating__bg" aria-hidden="true">★★★★★</span>
+            <span class="star-rating__fill" style="width: {{ rating_pct }}%" aria-hidden="true">★★★★★</span>
+          </div>
+          <a href="#PDPReviews" class="pdp__rating-link">
+            {{ rating_num | round: 1 }} &nbsp;({{ rating_count }}
+            {%- if rating_count == 1 %} review{%- else %} reviews{%- endif -%})
+          </a>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Fragrance notes grid ─── {%- endcomment -%}
+      {%- if mf_top != blank or mf_middle != blank or mf_base != blank -%}
+        {%- render 'product-notes', product: product -%}
+      {%- endif -%}
+
+      {%- comment -%} ── Price block ───────────────────────────── {%- endcomment -%}
+      <div
+        class="pdp__price-block"
+        id="PDPPriceBlock"
+        data-price="{{ current_price }}"
+        data-compare="{{ compare_price | default: 0 }}">
+
+        <span
+          class="pdp__price{% if has_sale %} pdp__price--sale{% endif %}"
+          id="PDPCurrentPrice">
+          {{ current_price | money }}
+        </span>
+
+        {%- if has_sale -%}
+          <span class="pdp__compare-price" id="PDPComparePrice">
+            <span class="visually-hidden">MRP:</span>
+            <s>{{ compare_price | money }}</s>
+          </span>
+          <span class="pdp__discount-badge" id="PDPDiscountBadge">
+            {{ sale_pct }}% OFF
+          </span>
+        {%- else -%}
+          <span class="pdp__compare-price" id="PDPComparePrice" hidden></span>
+          <span class="pdp__discount-badge" id="PDPDiscountBadge" hidden></span>
+        {%- endif -%}
+
+      </div>
+
+      {%- if section.settings.show_tax_info -%}
+        <p class="pdp__tax-note">{{ section.settings.tax_text }}</p>
+      {%- endif -%}
+
+      {%- comment -%} ── Variant / size selector ───────────────── {%- endcomment -%}
+      {%- unless product.has_only_default_variant -%}
+        <div class="pdp__variants" id="PDPVariants">
+          {%- for option in product.options_with_values -%}
+            <div class="pdp__option" data-option-group="{{ forloop.index0 }}">
+              <p class="pdp__option-label">
+                {{ option.name }}:
+                <strong
+                  class="pdp__option-selected"
+                  id="PDPOptionSelected{{ forloop.index0 }}"
+                  data-selected-label="{{ forloop.index0 }}">
+                  {{ option.selected_value }}
+                </strong>
+              </p>
+              <div class="pdp__option-btns" role="group" aria-label="{{ option.name }} options">
+                {%- for value in option.values -%}
+                  <button
+                    type="button"
+                    class="pdp__option-btn{% if option.selected_value == value %} is-active{% endif %}"
+                    data-option-index="{{ forloop.parentloop.index0 }}"
+                    data-option-value="{{ value }}">
+                    {{ value }}
+                  </button>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endunless -%}
+
+      {%- comment -%} ── Quantity + ATC row ────────────────────── {%- endcomment -%}
+      <div class="pdp__purchase">
+
+        <div class="pdp__qty" data-qty-wrap>
+          <button
+            type="button"
+            class="pdp__qty-btn"
+            data-qty-minus
+            aria-label="Decrease quantity">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" width="14" height="14" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
+          <input
+            type="number"
+            id="PDPQty"
+            class="pdp__qty-input"
+            value="1"
+            min="1"
+            max="99"
+            aria-label="Quantity"
+            data-qty-input>
+          <button
+            type="button"
+            class="pdp__qty-btn"
+            data-qty-plus
+            aria-label="Increase quantity">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" width="14" height="14" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
+        </div>
+
+        {%- form 'product', product, id: 'PDPForm', data-product-form: '' -%}
+          <input
+            type="hidden"
+            name="id"
+            id="PDPVariantId"
+            value="{{ selected_variant.id }}">
+          <input
+            type="hidden"
+            name="quantity"
+            id="PDPQtyHidden"
+            value="1">
+
+          <button
+            type="submit"
+            id="PDPATCBtn"
+            class="pdp__atc-btn"
+            data-atc-btn
+            {% unless selected_variant.available %}disabled{% endunless %}>
+            <span class="pdp__atc-label">
+              {%- if mf_coming_soon -%}
+                Notify Me
+              {%- elsif selected_variant.available -%}
+                Add to Cart
+              {%- else -%}
+                Sold Out
+              {%- endif -%}
+            </span>
+            <span class="pdp__atc-spinner" aria-hidden="true"></span>
+          </button>
+
+          {%- if section.settings.show_dynamic_checkout -%}
+            <div class="pdp__buy-now">
+              {{ form | payment_button }}
+            </div>
+          {%- endif -%}
+
+        {%- endform -%}
+
+      </div>
+
+      {%- comment -%} ── Offer callout ─────────────────────────── {%- endcomment -%}
+      {%- if offer_text != blank -%}
+        <div class="pdp__offer-box">
+          <span class="pdp__offer-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.5" width="18" height="18">
+              <polyline points="20 12 20 22 4 22 4 12"/>
+              <rect x="2" y="7" width="20" height="5"/>
+              <line x1="12" y1="22" x2="12" y2="7"/>
+              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+            </svg>
+          </span>
+          <p class="pdp__offer-text">{{ offer_text }}</p>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} ── Delivery message ──────────────────────── {%- endcomment -%}
+      {%- if delivery_text != blank -%}
+        <div class="pdp__delivery">
+          <span class="pdp__delivery-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.5" width="18" height="18">
+              <rect x="1" y="3" width="15" height="13"/>
+              <path d="M16 8h4l3 5v3h-7V8z"/>
+              <circle cx="5.5" cy="18.5" r="2.5"/>
+              <circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+          </span>
+          <p class="pdp__delivery-text">{{ delivery_text }}</p>
+        </div>
+      {%- endif -%}
+
+    </div>
+  </div>
+
+  {%- comment -%} ── 3. Product accordions ─────────────────────── {%- endcomment -%}
+  <div class="pdp__accordions container" id="PDPAccordions">
+
+    {%- if product.description != blank -%}
+      {%- render 'product-accordion',
+        accordion_title:   'Description',
+        accordion_content: product.description,
+        accordion_open:    true
+      -%}
+    {%- endif -%}
+
+    {%- if mf_top != blank or mf_middle != blank or mf_base != blank -%}
+      {%- liquid
+        assign notes_content = '<div class="notes-grid notes-grid--full">'
+        if mf_top != blank
+          assign notes_content = notes_content | append: '<p><strong>Top Notes:</strong> ' | append: mf_top | append: '</p>'
+        endif
+        if mf_middle != blank
+          assign notes_content = notes_content | append: '<p><strong>Heart Notes:</strong> ' | append: mf_middle | append: '</p>'
+        endif
+        if mf_base != blank
+          assign notes_content = notes_content | append: '<p><strong>Base Notes:</strong> ' | append: mf_base | append: '</p>'
+        endif
+        assign notes_content = notes_content | append: '</div>'
+      -%}
+      {%- render 'product-accordion',
+        accordion_title:   'Fragrance Notes',
+        accordion_content: notes_content
+      -%}
+    {%- endif -%}
+
+    {%- if mf_feelings != blank -%}
+      {%- render 'product-accordion',
+        accordion_title:   'Feelings',
+        accordion_content: mf_feelings
+      -%}
+    {%- endif -%}
+
+    {%- if mf_occasions != blank -%}
+      {%- render 'product-accordion',
+        accordion_title:   'Occasions',
+        accordion_content: mf_occasions
+      -%}
+    {%- endif -%}
+
+    {%- if mf_behind != blank -%}
+      {%- render 'product-accordion',
+        accordion_title:   'Behind the Perfume',
+        accordion_content: mf_behind
+      -%}
+    {%- endif -%}
+
+    {%- if section.settings.shipping_text != blank -%}
+      {%- render 'product-accordion',
+        accordion_title:   'Shipping & Returns',
+        accordion_content: section.settings.shipping_text
+      -%}
+    {%- endif -%}
+
+    {%- if section.settings.legal_text != blank -%}
+      {%- render 'product-accordion',
+        accordion_title:   'Legal Information',
+        accordion_content: section.settings.legal_text
+      -%}
+    {%- endif -%}
+
+  </div>
+
+  {%- comment -%} ── 4. Storytelling block ──────────────────────── {%- endcomment -%}
+  {%- if section.settings.story_quote != blank or section.settings.story_image != blank -%}
+    <div class="pdp__story">
+      {%- if section.settings.story_image != blank -%}
+        <div class="pdp__story-img">
+          {{- section.settings.story_image
+            | image_url: width: 1600
+            | image_tag:
+              loading: 'lazy',
+              alt: section.settings.story_image.alt | default: product.title | escape,
+              sizes: '100vw',
+              widths: '750, 1100, 1600'
+          -}}
+        </div>
+      {%- endif -%}
+      {%- if section.settings.story_quote != blank -%}
+        <div class="pdp__story-body">
+          <blockquote class="pdp__story-quote">
+            <svg class="pdp__story-mark" viewBox="0 0 48 36" fill="currentColor"
+                 width="36" height="27" aria-hidden="true">
+              <path d="M0 36V21.6C0 9.6 7.2 2.4 21.6 0L24 4.8C15.6 6.4 11.2 10.4 10.8 16.8H20V36H0zm28 0V21.6C28 9.6 35.2 2.4 49.6 0L52 4.8C43.6 6.4 39.2 10.4 38.8 16.8H48V36H28z"/>
+            </svg>
+            {{ section.settings.story_quote }}
+          </blockquote>
+          {%- if section.settings.story_attribution != blank -%}
+            <cite class="pdp__story-attr">{{ section.settings.story_attribution }}</cite>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ── 5. Recently viewed ────────────────────────── {%- endcomment -%}
+  {%- if section.settings.show_recently_viewed -%}
+    <div class="pdp__recently-viewed" id="PDPRecentlyViewed">
+      <div class="container">
+        <h2 class="pdp__section-title">Recently Viewed</h2>
+        <div
+          class="pdp__rv-grid"
+          id="RecentlyViewedGrid"
+          data-product-id="{{ product.id }}">
+          {%- comment -%} Populated by product.js from localStorage {%- endcomment -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ── 6. Reviews ────────────────────────────────── {%- endcomment -%}
+  {%- if section.settings.show_reviews -%}
+    <div class="pdp__reviews container" id="PDPReviews">
+      <div class="pdp__reviews-header">
+        <h2 class="pdp__section-title">Customer Reviews</h2>
+        {%- if rating_val != blank -%}
+          {%- assign r_num = rating_val | times: 1.0 -%}
+          {%- assign r_pct = r_num | divided_by: 5.0 | times: 100 -%}
+          <div class="pdp__reviews-summary">
+            <div class="star-rating star-rating--lg" aria-label="{{ r_num | round: 1 }} out of 5">
+              <span class="star-rating__bg" aria-hidden="true">★★★★★</span>
+              <span class="star-rating__fill" style="width: {{ r_pct }}%" aria-hidden="true">★★★★★</span>
+            </div>
+            <span class="pdp__reviews-avg">{{ r_num | round: 1 }}</span>
+            <span class="pdp__reviews-count">Based on {{ rating_count }} reviews</span>
+          </div>
+        {%- endif -%}
+      </div>
+      {%- comment -%}
+        Reviews app widget target.
+        Compatible with: Shopify Reviews, Judge.me, Loox, Stamped.
+        Most apps look for an element with id="shopify-product-reviews" or data-id.
+      {%- endcomment -%}
+      <div
+        id="shopify-product-reviews"
+        data-id="{{ product.id }}"
+        data-reviews-widget>
+      </div>
+    </div>
+  {%- endif -%}
+
+</div>
+
+{%- comment -%} ── Sticky ATC ────────────────────────────────── {%- endcomment -%}
+{%- render 'sticky-add-to-cart',
+  product:          product,
+  selected_variant: selected_variant
+-%}
+
+{%- comment -%} ── Variants data for JS ──────────────────────── {%- endcomment -%}
+<script type="application/json" id="ProductVariantsJSON">
+  {{- product.variants | json -}}
+</script>
+
+{%- comment -%} ── Current product data for recently-viewed JS ── {%- endcomment -%}
+<script type="application/json" id="CurrentProductJSON">
+  {
+    "id":    {{ product.id }},
+    "title": {{ product.title | json }},
+    "url":   {{ product.url | json }},
+    "image": {{ product.featured_image | image_url: width: 400 | json }},
+    "price": {{ selected_variant.price | money | json }}
+  }
+</script>
+
+{{ 'product.js' | asset_url | script_tag }}
+
+{% schema %}
+{
+  "name": "Product",
+  "tag": "section",
+  "class": "product-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_gallery",
+      "label": "Sticky gallery on desktop",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Pricing"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tax_info",
+      "label": "Show tax included note",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tax_text",
+      "label": "Tax note text",
+      "default": "Inclusive of all taxes. Free shipping over ₹999."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Show dynamic checkout button (Buy it now)",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Offer & delivery"
+    },
+    {
+      "type": "text",
+      "id": "offer_text",
+      "label": "Offer callout text",
+      "info": "Overridden per product via custom.offer_text metafield.",
+      "default": "🎁 Buy any 2, get 10% off — auto-applied at checkout."
+    },
+    {
+      "type": "text",
+      "id": "delivery_message",
+      "label": "Delivery message",
+      "info": "Overridden per product via custom.delivery_message metafield.",
+      "default": "🚚 Free delivery on orders above ₹999. Ships in 1–3 days."
+    },
+    {
+      "type": "header",
+      "content": "Accordions"
+    },
+    {
+      "type": "richtext",
+      "id": "shipping_text",
+      "label": "Shipping & Returns content",
+      "default": "<p>Free shipping on all orders above ₹999. Standard delivery in 3–5 business days. Easy 7-day returns.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "legal_text",
+      "label": "Legal Information content",
+      "default": "<p>Keep away from children. For external use only. Avoid contact with eyes. If irritation occurs, discontinue use.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Storytelling block"
+    },
+    {
+      "type": "image_picker",
+      "id": "story_image",
+      "label": "Story background image",
+      "info": "Full-width editorial image. Recommended: 1600 × 700 px landscape."
+    },
+    {
+      "type": "textarea",
+      "id": "story_quote",
+      "label": "Pull quote",
+      "info": "Short evocative quote displayed over or beside the image."
+    },
+    {
+      "type": "text",
+      "id": "story_attribution",
+      "label": "Quote attribution",
+      "info": "Optional — name or title below the quote."
+    },
+    {
+      "type": "header",
+      "content": "Lower sections"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_recently_viewed",
+      "label": "Show recently viewed products",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show reviews section",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

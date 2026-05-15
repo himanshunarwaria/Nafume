@@ -1,0 +1,208 @@
+{%- comment -%}
+  Product media gallery.
+  Params:
+    product          → product object (required)
+    selected_variant → optional; defaults to selected_or_first_available_variant
+
+  Desktop: vertical thumbnail strip (left) + large main image (right, sticky handled by parent).
+  Mobile:  full-width swipe carousel, thumbnails hidden, dot indicators shown.
+  Zoom:    click on image opens a full-screen zoom overlay.
+{%- endcomment -%}
+
+{%- liquid
+  unless selected_variant
+    assign selected_variant = product.selected_or_first_available_variant
+  endunless
+
+  assign featured_media_id = selected_variant.featured_media.id | default: product.featured_media.id
+  assign media_count       = product.media.size
+-%}
+
+<div
+  class="gallery"
+  id="ProductGallery"
+  data-gallery
+  data-media-count="{{ media_count }}">
+
+  {%- comment -%} ── Vertical thumbnail strip (desktop) ────────────── {%- endcomment -%}
+  {%- if media_count > 1 -%}
+    <div class="gallery__thumbs" role="list" aria-label="Product media thumbnails">
+      {%- for media in product.media -%}
+        <button
+          type="button"
+          class="gallery__thumb{% if media.id == featured_media_id %} is-active{% endif %}"
+          role="listitem"
+          data-thumb-index="{{ forloop.index0 }}"
+          data-media-id="{{ media.id }}"
+          aria-label="{{ media.alt | default: product.title | escape }} — Image {{ forloop.index }}"
+          {% if media.id == featured_media_id %}aria-pressed="true"{% else %}aria-pressed="false"{% endif %}>
+
+          {{- media.preview_image
+            | image_url: width: 160
+            | image_tag:
+              loading: 'lazy',
+              alt: '',
+              width: 160,
+              height: 200
+          -}}
+
+          {%- if media.media_type == 'video' or media.media_type == 'external_video' -%}
+            <span class="gallery__thumb-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </span>
+          {%- endif -%}
+        </button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ── Main media viewer ─────────────────────────────── {%- endcomment -%}
+  <div class="gallery__main" data-gallery-main>
+
+    {%- for media in product.media -%}
+      {%- liquid
+        assign is_active   = false
+        if media.id == featured_media_id
+          assign is_active = true
+        endif
+        assign img_loading = 'lazy'
+        if is_active
+          assign img_loading = 'eager'
+        endif
+      -%}
+
+      <div
+        class="gallery__slide{% if is_active %} is-active{% endif %}"
+        data-media-id="{{ media.id }}"
+        data-index="{{ forloop.index0 }}"
+        aria-hidden="{% if is_active %}false{% else %}true{% endif %}">
+
+        {%- case media.media_type -%}
+
+          {%- when 'image' -%}
+            <div
+              class="gallery__img-wrap"
+              data-zoom-trigger
+              data-zoom-src="{{ media | image_url: width: 2400 }}">
+              {{- media
+                | image_url: width: 1200
+                | image_tag:
+                  class: 'gallery__img',
+                  loading: img_loading,
+                  alt: media.alt | default: product.title | escape,
+                  widths: '500, 800, 1200',
+                  sizes: '(max-width: 767px) 100vw, (max-width: 1023px) 55vw, 48vw'
+              -}}
+              <span class="gallery__zoom-hint" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="1.5" width="16" height="16">
+                  <circle cx="11" cy="11" r="7"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  <line x1="11" y1="8" x2="11" y2="14"/>
+                  <line x1="8" y1="11" x2="14" y2="11"/>
+                </svg>
+              </span>
+            </div>
+
+          {%- when 'video' -%}
+            <div class="gallery__video-wrap">
+              {{- media | video_tag:
+                class: 'gallery__video',
+                autoplay: false,
+                loop: false,
+                muted: false,
+                playsinline: true,
+                controls: true,
+                preload: 'none'
+              -}}
+            </div>
+
+          {%- when 'external_video' -%}
+            <div class="gallery__video-wrap">
+              {{- media | external_video_tag: class: 'gallery__video' -}}
+            </div>
+
+          {%- when 'model' -%}
+            <div class="gallery__model-wrap">
+              {{- media | model_viewer_tag:
+                class: 'gallery__model',
+                reveal: 'interaction',
+                ar: true
+              -}}
+            </div>
+
+        {%- endcase -%}
+      </div>
+    {%- endfor -%}
+
+    {%- comment -%} Mobile prev/next navigation ─── {%- endcomment -%}
+    {%- if media_count > 1 -%}
+      <button
+        class="gallery__nav gallery__nav--prev"
+        type="button"
+        data-gallery-prev
+        aria-label="Previous image">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" width="18" height="18" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <button
+        class="gallery__nav gallery__nav--next"
+        type="button"
+        data-gallery-next
+        aria-label="Next image">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" width="18" height="18" aria-hidden="true">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+
+      {%- comment -%} Dot indicators (mobile) ─── {%- endcomment -%}
+      <div class="gallery__dots" role="tablist" aria-label="Gallery position" aria-hidden="true">
+        {%- for media in product.media -%}
+          <button
+            type="button"
+            class="gallery__dot{% if media.id == featured_media_id %} is-active{% endif %}"
+            tabindex="-1"
+            data-dot-index="{{ forloop.index0 }}"
+            aria-label="Image {{ forloop.index }}"></button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+
+  {%- comment -%} ── Zoom modal ──────────────────────────────────── {%- endcomment -%}
+  <div
+    class="gallery__zoom-modal"
+    id="GalleryZoom"
+    hidden
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Zoomed product image">
+    <div class="gallery__zoom-backdrop" data-zoom-close></div>
+    <div class="gallery__zoom-frame">
+      <button
+        class="gallery__zoom-close"
+        type="button"
+        data-zoom-close
+        aria-label="Close zoom">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" width="20" height="20" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+      <img
+        id="GalleryZoomImg"
+        class="gallery__zoom-img"
+        src=""
+        alt=""
+        loading="lazy">
+    </div>
+  </div>
+
+</div>

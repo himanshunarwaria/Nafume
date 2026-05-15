@@ -1,0 +1,276 @@
+/* ============================================================
+   Product Carousel  —  product-carousel.css
+   ============================================================ */
+
+/* ── §1  Section shell ──────────────────────────────────────── */
+.product-carousel-section {
+  background-color: var(--pc-bg, var(--clr-bg));
+  padding-block: var(--section-y-desktop);
+}
+
+.pc__container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+}
+
+/* ── §2  Header ─────────────────────────────────────────────── */
+.pc__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-6);
+}
+
+/* Center-align variant */
+.pc--align-center .pc__header {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.pc--align-center .pc__nav {
+  display: none; /* arrows only shown in left-aligned header */
+}
+
+.pc__header-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.pc__eyebrow {
+  font-family: var(--ff-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clr-accent);
+  margin: 0;
+}
+
+.pc__heading {
+  font-family: var(--ff-serif);
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 300;
+  line-height: 1.15;
+  color: var(--clr-ink);
+  margin: 0;
+}
+
+.pc__subheading {
+  font-family: var(--ff-sans);
+  font-size: clamp(13px, 1.2vw, 15px);
+  font-weight: 300;
+  color: var(--clr-ink-3);
+  margin: var(--sp-1) 0 0;
+  max-width: 48ch;
+}
+
+.pc--align-center .pc__subheading {
+  max-width: 54ch;
+}
+
+/* ── §3  Arrow nav ──────────────────────────────────────────── */
+.pc__nav {
+  display: flex;
+  gap: var(--sp-2);
+  flex-shrink: 0;
+}
+
+.pc__nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--clr-line);
+  background: transparent;
+  color: var(--clr-ink);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, opacity 0.2s;
+}
+
+.pc__nav-btn:hover:not(:disabled) {
+  background: var(--clr-ink);
+  border-color: var(--clr-ink);
+  color: var(--clr-bg);
+}
+
+.pc__nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ── §4  Viewport + track ───────────────────────────────────── */
+.pc__viewport {
+  overflow: hidden;
+  /* Extra padding on block axis exposes card box-shadows */
+  margin-block: calc(-1 * var(--sp-4));
+}
+
+.pc__track {
+  display: flex;
+  gap: var(--sp-4);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding-block: var(--sp-4);
+  /* hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  list-style: none;
+  margin: 0;
+  padding-inline: 0;
+  cursor: grab;
+}
+
+.pc__track:active {
+  cursor: grabbing;
+}
+
+.pc__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── §5  Slides — responsive widths ────────────────────────── */
+
+/* Mobile: 1.35 visible (≈ 74% each) */
+.pc__slide {
+  flex: 0 0 calc(74% - 9px);
+  scroll-snap-align: start;
+  min-width: 0; /* prevent flex blowout */
+}
+
+/* Small tablet ≥ 480px: 2 visible + peek */
+@media (min-width: 480px) {
+  .pc__slide {
+    flex: 0 0 calc(46% - 8px);
+  }
+}
+
+/* Tablet ≥ 768px: 3 visible (all column configs) */
+@media (min-width: 768px) {
+  .pc__slide {
+    flex: 0 0 calc(33.33% - 11px);
+  }
+}
+
+/* Desktop ≥ 1024px: column variant classes */
+@media (min-width: 1024px) {
+  .pc--cols-3 .pc__slide {
+    flex: 0 0 calc(33.33% - 11px);
+  }
+
+  .pc--cols-4 .pc__slide {
+    flex: 0 0 calc(25% - 12px);
+  }
+
+  .pc--cols-5 .pc__slide {
+    flex: 0 0 calc(20% - 13px);
+  }
+}
+
+/* ── §6  Progress bar ───────────────────────────────────────── */
+.pc__progress {
+  height: 1px;
+  background: var(--clr-line);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.pc__progress-fill {
+  height: 100%;
+  background: var(--clr-ink);
+  border-radius: 1px;
+  width: 0%;
+  transform-origin: left;
+  transition: width 0.25s ease;
+}
+
+/* ── §7  CTA ─────────────────────────────────────────────────── */
+.pc__cta-wrap {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--sp-4);
+}
+
+.pc--align-left .pc__cta-wrap {
+  justify-content: flex-start;
+}
+
+.pc__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--ff-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--clr-ink);
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid currentColor;
+  transition: color 0.2s, gap 0.2s;
+}
+
+.pc__cta:hover {
+  color: var(--clr-accent);
+  gap: var(--sp-3);
+}
+
+.pc__cta svg {
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.pc__cta:hover svg {
+  transform: translateX(3px);
+}
+
+/* ── §8  Center-aligned CTA override ───────────────────────── */
+.pc--align-center .pc__cta-wrap {
+  justify-content: center;
+}
+
+/* ── §9  Responsive — hide arrows below 1024px ─────────────── */
+@media (max-width: 1023px) {
+  .pc__nav {
+    display: none;
+  }
+
+  .pc__header {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 767px) {
+  .product-carousel-section {
+    padding-block: var(--section-y-mobile);
+  }
+
+  .pc__container {
+    gap: var(--sp-5);
+  }
+}
+
+/* ── §10  Reduced motion ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .pc__track {
+    scroll-behavior: auto;
+  }
+
+  .pc__progress-fill {
+    transition: none;
+  }
+
+  .pc__cta,
+  .pc__cta svg,
+  .pc__nav-btn {
+    transition: none;
+  }
+}

@@ -1,0 +1,435 @@
+{{- 'collection.css' | asset_url | stylesheet_tag -}}
+
+{%- liquid
+  assign filter_layout      = section.settings.filter_layout
+  assign enable_filtering   = section.settings.enable_filtering
+  assign enable_sorting     = section.settings.enable_sorting
+  assign show_count         = section.settings.show_product_count
+  assign pagination_type    = section.settings.pagination_type
+  assign cols               = section.settings.columns_desktop
+  assign has_filters        = enable_filtering and collection.filters.size > 0
+  assign sidebar_active     = has_filters and filter_layout == 'sidebar'
+-%}
+
+{%- paginate collection.products by section.settings.products_per_page -%}
+
+<div
+  id="CollectionSection"
+  class="collection collection--{{ filter_layout }}-layout collection--cols-{{ cols }}"
+  data-section="main-collection-product-grid"
+  data-pagination-type="{{ pagination_type }}">
+
+  {%- comment -%} ── Collection header ──────────────────────────── {%- endcomment -%}
+  <header class="collection__header">
+    <div class="container">
+      <div class="collection__header-inner">
+        <div class="collection__header-text">
+          <h1 class="collection__title">{{ collection.title }}</h1>
+          {%- if section.settings.show_description and collection.description != blank -%}
+            <div class="collection__description rte">
+              {{ collection.description }}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </header>
+
+  {%- comment -%} ── Toolbar: count + sort + filter toggle ───────── {%- endcomment -%}
+  <div class="collection__toolbar">
+    <div class="container">
+      <div class="collection__toolbar-inner">
+
+        {%- comment -%} Left: count + filter toggle ─── {%- endcomment -%}
+        <div class="collection__toolbar-left">
+          {%- if has_filters -%}
+            <button
+              class="collection__filter-toggle"
+              id="FilterDrawerToggle"
+              aria-expanded="false"
+              aria-controls="FilterDrawer"
+              data-filter-drawer-toggle>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="1.5" aria-hidden="true" width="16" height="16">
+                <path d="M3 6h18M7 12h10M10 18h4"/>
+              </svg>
+              <span>Filters</span>
+              {%- if collection.active_filters.size > 0 -%}
+                <span class="collection__filter-badge" aria-label="{{ collection.active_filters.size }} active filters">
+                  {{ collection.active_filters.size }}
+                </span>
+              {%- endif -%}
+            </button>
+          {%- endif -%}
+
+          {%- if show_count -%}
+            <p class="collection__count" data-product-count aria-live="polite">
+              {{ collection.products_count }}
+              {%- if collection.products_count == 1 %} product{%- else %} products{%- endif -%}
+            </p>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Right: sort dropdown ─── {%- endcomment -%}
+        {%- if enable_sorting -%}
+          <div class="collection__toolbar-right">
+            {%- render 'sort-dropdown', results: collection -%}
+          </div>
+        {%- endif -%}
+
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} ── Active filter pills ──────────────────────────── {%- endcomment -%}
+  {%- if collection.active_filters.size > 0 -%}
+    <div class="collection__active-filters">
+      <div class="container">
+        <div class="collection__active-filters-inner" role="list" aria-label="Active filters">
+          {%- for filter in collection.active_filters -%}
+            <a
+              href="{{ filter.url_to_remove }}"
+              class="collection__pill"
+              role="listitem"
+              data-filter-remove
+              aria-label="Remove filter: {{ filter.label }}: {{ filter.value.label }}">
+              <span>{{ filter.label }}: {{ filter.value.label }}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" aria-hidden="true" width="11" height="11">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </a>
+          {%- endfor -%}
+          <a
+            href="{{ collection.url }}"
+            class="collection__pill collection__pill--clear"
+            data-clear-all>
+            Clear all
+          </a>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ── Body: sidebar + product grid ─────────────────── {%- endcomment -%}
+  <div class="collection__body container">
+
+    {%- comment -%} Left sidebar (sidebar layout, desktop only) ─── {%- endcomment -%}
+    {%- if has_filters -%}
+      <aside
+        class="collection__sidebar{% if section.settings.enable_sticky_sidebar %} collection__sidebar--sticky{% endif %}"
+        id="FilterSidebar"
+        aria-label="Product filters">
+        <div class="collection__sidebar-header">
+          <p class="collection__sidebar-title">Filters</p>
+          {%- if collection.active_filters.size > 0 -%}
+            <a
+              href="{{ collection.url }}"
+              class="collection__sidebar-clear"
+              data-clear-all>
+              Clear all
+            </a>
+          {%- endif -%}
+        </div>
+        {%- render 'facets', results: collection, context: 'sidebar' -%}
+      </aside>
+    {%- endif -%}
+
+    {%- comment -%} Main content ─── {%- endcomment -%}
+    <div class="collection__main">
+
+      {%- comment -%} Product grid ─── {%- endcomment -%}
+      {%- if collection.products.size > 0 -%}
+
+        <ul
+          id="ProductGrid"
+          class="collection__grid"
+          role="list"
+          aria-label="Products">
+          {%- for product in collection.products -%}
+            <li class="collection__item">
+              {%- render 'product-card',
+                product:        product,
+                image_ratio:    'portrait',
+                lazy:           true,
+                index:          forloop.index,
+                show_quick_add: true,
+                show_desc:      false,
+                show_sale_pct:  true
+              -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+
+      {%- else -%}
+
+        <div class="collection__empty">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor"
+               stroke-width="1" aria-hidden="true" width="56" height="56">
+            <circle cx="32" cy="32" r="28"/>
+            <path d="M22 32h20M32 22v20"/>
+          </svg>
+          <h2 class="collection__empty-title">No products found</h2>
+          <p class="collection__empty-text">
+            Try adjusting your filters or
+            <a href="{{ collection.url }}" data-clear-all>clearing all filters</a>
+            to see more products.
+          </p>
+        </div>
+
+      {%- endif -%}
+
+      {%- comment -%} ── Pagination ───────────────────────────────── {%- endcomment -%}
+      {%- if paginate.pages > 1 -%}
+        <div class="collection__pagination">
+
+          {%- if pagination_type == 'paginated' -%}
+            <nav class="pagination" aria-label="Pagination">
+              {%- if paginate.previous.is_link -%}
+                <a
+                  href="{{ paginate.previous.url }}"
+                  class="pagination__btn pagination__btn--prev"
+                  data-pagination-link
+                  aria-label="Previous page">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="1.5" aria-hidden="true" width="16" height="16">
+                    <path d="M15 18l-6-6 6-6"/>
+                  </svg>
+                  <span>Previous</span>
+                </a>
+              {%- endif -%}
+
+              <div class="pagination__pages">
+                {%- for part in paginate.parts -%}
+                  {%- if part.is_link -%}
+                    <a
+                      href="{{ part.url }}"
+                      class="pagination__page"
+                      data-pagination-link
+                      aria-label="Page {{ part.title }}">
+                      {{ part.title }}
+                    </a>
+                  {%- else -%}
+                    {%- if part.title == paginate.current_page -%}
+                      <span class="pagination__page pagination__page--current" aria-current="page">
+                        {{ part.title }}
+                      </span>
+                    {%- else -%}
+                      <span class="pagination__gap">{{ part.title }}</span>
+                    {%- endif -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+
+              {%- if paginate.next.is_link -%}
+                <a
+                  href="{{ paginate.next.url }}"
+                  class="pagination__btn pagination__btn--next"
+                  data-pagination-link
+                  aria-label="Next page">
+                  <span>Next</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="1.5" aria-hidden="true" width="16" height="16">
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
+                </a>
+              {%- endif -%}
+            </nav>
+
+          {%- elsif pagination_type == 'load_more' -%}
+            {%- if paginate.next.is_link -%}
+              <div class="collection__load-more">
+                <button
+                  class="collection__load-more-btn"
+                  data-load-more
+                  data-next-url="{{ paginate.next.url }}">
+                  <span class="collection__load-more-label">Load More</span>
+                  <span class="collection__load-more-spinner" aria-hidden="true"></span>
+                </button>
+                <p class="collection__load-more-status">
+                  Showing {{ collection.products.size }} of {{ collection.products_count }} products
+                </p>
+              </div>
+            {%- endif -%}
+
+          {%- elsif pagination_type == 'infinite' -%}
+            {%- if paginate.next.is_link -%}
+              <div
+                class="collection__infinite-sentinel"
+                data-infinite-sentinel
+                data-next-url="{{ paginate.next.url }}"
+                aria-hidden="true">
+                <span class="collection__infinite-spinner"></span>
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+
+        </div>
+      {%- endif -%}
+
+    </div>
+  </div>
+
+  {%- comment -%} ── Filter drawer (all layouts on mobile; drawer layout on desktop) ── {%- endcomment -%}
+  {%- if has_filters -%}
+    <div
+      id="FilterDrawer"
+      class="filter-drawer"
+      aria-hidden="true"
+      aria-label="Product filters"
+      role="dialog"
+      aria-modal="true">
+
+      <div
+        class="filter-drawer__overlay"
+        data-filter-drawer-overlay
+        tabindex="-1"
+        aria-hidden="true"></div>
+
+      <div class="filter-drawer__panel">
+
+        <div class="filter-drawer__header">
+          <h2 class="filter-drawer__title">Filters</h2>
+          <button
+            class="filter-drawer__close"
+            data-filter-drawer-close
+            aria-label="Close filters">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.5" aria-hidden="true" width="20" height="20">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="filter-drawer__body">
+          {%- render 'facets', results: collection, context: 'drawer' -%}
+        </div>
+
+        <div class="filter-drawer__footer">
+          <a
+            href="{{ collection.url }}"
+            class="filter-drawer__clear"
+            data-clear-all>
+            Clear all
+          </a>
+          <button
+            class="filter-drawer__apply"
+            data-drawer-apply>
+            View {{ collection.products_count }}
+            {%- if collection.products_count == 1 %} product{%- else %} products{%- endif -%}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Loading overlay ─── {%- endcomment -%}
+  <div class="collection__loading-overlay" aria-hidden="true">
+    <div class="collection__loading-spinner"></div>
+  </div>
+
+</div>
+
+{%- endpaginate -%}
+
+{{ 'facets.js' | asset_url | script_tag }}
+
+{% schema %}
+{
+  "name": "Collection product grid",
+  "tag": "section",
+  "class": "collection-grid-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "filter_layout",
+      "label": "Filter layout",
+      "info": "Sidebar shows filters on the left on desktop. Drawer opens a side panel.",
+      "options": [
+        { "value": "sidebar", "label": "Left sidebar (desktop)" },
+        { "value": "drawer",  "label": "Drawer (all sizes)" }
+      ],
+      "default": "sidebar"
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "options": [
+        { "value": "3", "label": "3 columns" },
+        { "value": "4", "label": "4 columns" },
+        { "value": "5", "label": "5 columns" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_sidebar",
+      "label": "Sticky filter sidebar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Collection info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show collection description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "Show product count",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Filtering & sorting"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "label": "Enable filtering",
+      "info": "Requires filters set up in Shopify Search & Discovery app.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "label": "Enable sorting",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Pagination"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "pagination_type",
+      "label": "Pagination style",
+      "options": [
+        { "value": "paginated",  "label": "Page numbers" },
+        { "value": "load_more",  "label": "Load more button" },
+        { "value": "infinite",   "label": "Infinite scroll" }
+      ],
+      "default": "paginated"
+    }
+  ]
+}
+{% endschema %}

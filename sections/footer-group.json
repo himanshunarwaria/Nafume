@@ -4,23 +4,27 @@
   "sections": {
     "footer": {
       "type": "footer",
-      "blocks": {
-        "col_shop": {
-          "type": "link_list",
-          "settings": { "heading": "Shop", "menu": "shop-menu" }
-        },
-        "col_help": {
-          "type": "link_list",
-          "settings": { "heading": "Help", "menu": "help-menu" }
-        },
-        "col_company": {
-          "type": "link_list",
-          "settings": { "heading": "Company", "menu": "company-menu" }
-        }
-      },
-      "block_order": ["col_shop","col_help","col_company"],
       "settings": {
-        "brand_description": "Crafted for those who wear their mood. Nefume brings you a curated collection of fine fragrances inspired by nature, art, and emotion."
+        "brand_tagline": "Crafted for those who wear their mood. Nefume brings you a curated collection of fine fragrances inspired by nature, art, and emotion.",
+        "support_heading": "Support",
+        "support_link_1_label": "About Us",
+        "support_link_2_label": "Terms & Services",
+        "support_link_3_label": "Contact",
+        "orders_heading": "Orders & Shipping",
+        "orders_link_1_label": "Privacy Policy",
+        "orders_link_2_label": "Delivery & Returns Policy",
+        "orders_link_3_label": "Shipping Policy",
+        "orders_link_4_label": "Track My Order",
+        "grievance_heading": "Consumer Grievance",
+        "grievance_response": "We aim to respond within 48 business hours.",
+        "newsletter_eyebrow": "Newsletter",
+        "newsletter_heading": "Stay in the Scent",
+        "newsletter_sub": "New arrivals, exclusive offers, and fragrance stories — straight to your inbox.",
+        "newsletter_placeholder": "Your email address",
+        "newsletter_btn": "Subscribe",
+        "newsletter_success": "Thank you — you're subscribed!",
+        "show_payment_icons": true,
+        "copyright_text": "© {year} Nefume. All rights reserved."
       }
     }
   },

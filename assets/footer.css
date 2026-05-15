@@ -1,0 +1,497 @@
+/* ============================================================
+   footer.css  —  Site Footer
+   ============================================================ */
+
+/* ── 1. Shell & Tokens ────────────────────────────────────── */
+.site-footer {
+  background: var(--footer-bg, #1a1a18);
+  color: var(--footer-ink, #f0ece7);
+  --footer-muted:   #7a756e;
+  --footer-border:  rgba(240, 236, 231, 0.1);
+  --footer-link:    #c4bdb5;
+  --footer-link-hv: #f0ece7;
+}
+
+.footer__inner {
+  max-width: var(--container-max, 1280px);
+  margin-inline: auto;
+  padding-inline: var(--container-pad, clamp(20px, 5vw, 60px));
+}
+
+/* ── 2. Top Row: Brand + Newsletter ───────────────────────── */
+.footer__top {
+  display: grid;
+  grid-template-columns: 40% 1fr;
+  gap: clamp(40px, 6vw, 80px);
+  padding-block: 60px;
+  border-bottom: 1px solid var(--footer-border);
+  align-items: start;
+}
+
+/* ── 3. Brand Column ──────────────────────────────────────── */
+.footer__brand-logo {
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.footer__brand-logo img {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+.footer__brand-name {
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--footer-ink);
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.footer__brand-tagline {
+  font-size: 0.83rem;
+  color: var(--footer-muted);
+  line-height: 1.65;
+  margin: 0 0 28px;
+  max-width: 280px;
+}
+
+/* ── 4. Newsletter ────────────────────────────────────────── */
+.footer__nsl-eyebrow {
+  font-size: 0.67rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--footer-muted);
+  margin: 0 0 10px;
+  font-weight: 500;
+}
+
+.footer__nsl-heading {
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+  font-weight: 400;
+  color: var(--footer-ink);
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.footer__nsl-sub {
+  font-size: 0.83rem;
+  color: var(--footer-muted);
+  line-height: 1.6;
+  margin: 0 0 20px;
+  max-width: 420px;
+}
+
+.footer__nsl-row {
+  display: flex;
+  border: 1px solid rgba(240, 236, 231, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  transition: border-color 0.2s;
+  max-width: 440px;
+}
+
+.footer__nsl-row:focus-within {
+  border-color: rgba(240, 236, 231, 0.45);
+}
+
+.footer__nsl-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 13px 16px;
+  font-size: 0.83rem;
+  color: var(--footer-ink);
+  font-family: var(--font-body, sans-serif);
+  min-width: 0;
+}
+
+.footer__nsl-input::placeholder {
+  color: var(--footer-muted);
+}
+
+.footer__nsl-btn {
+  flex-shrink: 0;
+  background: var(--footer-ink, #f0ece7);
+  color: var(--footer-bg, #1a1a18);
+  border: none;
+  padding: 13px 22px;
+  font-size: 0.7rem;
+  font-family: var(--font-body, sans-serif);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.footer__nsl-btn:hover {
+  background: #fff;
+}
+
+.footer__nsl-btn:focus-visible {
+  outline: 2px solid var(--footer-link);
+  outline-offset: -2px;
+}
+
+.footer__nsl-success {
+  font-size: 0.78rem;
+  color: #8eb88a;
+  margin: 10px 0 0;
+}
+
+.footer__nsl-disclaimer {
+  font-size: 0.7rem;
+  color: var(--footer-muted);
+  margin: 10px 0 0;
+  line-height: 1.5;
+}
+
+.footer__nsl-disclaimer a {
+  color: var(--footer-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── 5. Mid Row: Link Columns + Grievance ─────────────────── */
+.footer__mid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1.8fr;
+  gap: clamp(32px, 4vw, 56px);
+  padding-block: 52px;
+  border-bottom: 1px solid var(--footer-border);
+}
+
+/* ── 6. Link Columns ──────────────────────────────────────── */
+.footer__col-heading {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--footer-ink);
+  margin: 0 0 20px;
+}
+
+/* Mobile toggle — hidden on desktop */
+.footer__col-toggle {
+  display: none;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  padding: 18px 0;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.68rem;
+  font-family: var(--font-body, sans-serif);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--footer-ink);
+}
+
+.footer__col-toggle:focus-visible {
+  outline: 2px solid var(--footer-link);
+  outline-offset: 3px;
+}
+
+.footer__chevron {
+  display: flex;
+  align-items: center;
+  color: var(--footer-muted);
+  flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.footer__col.is-open .footer__chevron {
+  transform: rotate(180deg);
+}
+
+.footer__col-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.footer__col-links a {
+  font-size: 0.83rem;
+  color: var(--footer-link);
+  text-decoration: none;
+  line-height: 1.4;
+  transition: color 0.18s;
+}
+
+.footer__col-links a:hover {
+  color: var(--footer-link-hv);
+}
+
+.footer__col-links a:focus-visible {
+  outline: 2px solid var(--footer-link);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── 7. Grievance Block ───────────────────────────────────── */
+.footer__grievance-heading {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--footer-ink);
+  margin: 0 0 16px;
+}
+
+.footer__grievance-officer {
+  font-size: 0.83rem;
+  color: var(--footer-ink);
+  font-weight: 500;
+  margin: 0 0 16px;
+}
+
+.footer__grievance-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.footer__grievance-item {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.footer__grievance-icon {
+  display: flex;
+  align-items: center;
+  padding-top: 1px;
+  color: var(--footer-muted);
+  flex-shrink: 0;
+}
+
+.footer__grievance-text {
+  font-size: 0.8rem;
+  color: var(--footer-link);
+  line-height: 1.55;
+}
+
+.footer__grievance-text a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+
+.footer__grievance-text a:hover {
+  color: var(--footer-link-hv);
+}
+
+.footer__grievance-response {
+  font-size: 0.72rem;
+  color: var(--footer-muted);
+  line-height: 1.55;
+  margin: 16px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--footer-border);
+}
+
+/* ── 8. Bottom Bar ────────────────────────────────────────── */
+.footer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-block: 22px;
+  flex-wrap: wrap;
+}
+
+.footer__copyright {
+  font-size: 0.72rem;
+  color: var(--footer-muted);
+  margin: 0;
+  order: 1;
+}
+
+.footer__payment-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  order: 2;
+}
+
+/* Shopify payment_type_svg_tag icons */
+.footer__payment-icons svg {
+  height: 22px;
+  width: auto;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+
+.footer__payment-icons svg:hover {
+  opacity: 0.85;
+}
+
+/* ── 9. Social Icons (used in brand column) ───────────────── */
+.social-icons {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--footer-border);
+  color: var(--footer-muted);
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.social-icon:hover {
+  color: var(--footer-ink);
+  border-color: rgba(240, 236, 231, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.social-icon:focus-visible {
+  outline: 2px solid var(--footer-link);
+  outline-offset: 3px;
+}
+
+/* ── 10. Tablet (768–1023px) ──────────────────────────────── */
+@media (max-width: 1023px) {
+  .footer__top {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding-block: 48px;
+  }
+
+  .footer__brand-tagline {
+    max-width: 480px;
+  }
+
+  .footer__mid {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+    padding-block: 40px;
+  }
+
+  .footer__grievance {
+    grid-column: 1 / -1;
+    padding-top: 8px;
+    border-top: 1px solid var(--footer-border);
+  }
+}
+
+/* ── 11. Mobile (<768px) ──────────────────────────────────── */
+@media (max-width: 767px) {
+  .footer__top {
+    padding-block: 40px;
+  }
+
+  .footer__brand-tagline {
+    max-width: none;
+  }
+
+  .footer__nsl-row {
+    max-width: none;
+  }
+
+  .footer__mid {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding-block: 0;
+    border-bottom: none;
+  }
+
+  .footer__col {
+    border-bottom: 1px solid var(--footer-border);
+  }
+
+  .footer__col:first-child {
+    border-top: 1px solid var(--footer-border);
+    margin-top: 8px;
+  }
+
+  /* Hide static heading, show accordion toggle */
+  .footer__col-heading {
+    display: none;
+  }
+
+  .footer__col-toggle {
+    display: flex;
+  }
+
+  /* Accordion body: closed by default */
+  .footer__col-links {
+    overflow: hidden;
+    max-height: 0;
+    gap: 0;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .footer__col.is-open .footer__col-links {
+    max-height: 500px;
+  }
+
+  .footer__col-links li:not(:last-child) {
+    padding-bottom: 2px;
+  }
+
+  .footer__col-links li:last-child {
+    padding-bottom: 18px;
+  }
+
+  .footer__grievance {
+    padding-block: 32px;
+    grid-column: auto;
+    border-top: 1px solid var(--footer-border);
+    border-bottom: 1px solid var(--footer-border);
+    margin-top: 4px;
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding-block: 24px 36px;
+  }
+
+  .footer__payment-icons {
+    order: -1;
+  }
+}
+
+/* ── 12. Reduced Motion ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .footer__col-links,
+  .footer__chevron,
+  .social-icon,
+  .footer__nsl-btn,
+  .footer__nsl-row,
+  .footer__col-links a {
+    transition: none;
+  }
+}

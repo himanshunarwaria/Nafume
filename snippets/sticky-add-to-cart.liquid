@@ -1,0 +1,86 @@
+{%- comment -%}
+  Sticky add-to-cart bar — fixed to the bottom of the viewport.
+  Revealed via JS (IntersectionObserver on the main ATC button).
+
+  Params:
+    product          → product object (required)
+    selected_variant → optional
+{%- endcomment -%}
+
+{%- liquid
+  unless selected_variant
+    assign selected_variant = product.selected_or_first_available_variant
+  endunless
+-%}
+
+<div
+  id="StickyATC"
+  class="sticky-atc"
+  aria-hidden="true"
+  data-sticky-atc>
+
+  <div class="sticky-atc__inner container">
+
+    {%- comment -%} Product snapshot ─── {%- endcomment -%}
+    <div class="sticky-atc__product">
+      <div class="sticky-atc__thumb">
+        {{- product.featured_image
+          | image_url: width: 120
+          | image_tag:
+            loading: 'lazy',
+            alt: product.title | escape,
+            width: 60,
+            height: 75
+        -}}
+      </div>
+      <div class="sticky-atc__meta">
+        <p class="sticky-atc__title">{{ product.title }}</p>
+        <p class="sticky-atc__price" id="StickyPrice">
+          {{ selected_variant.price | money }}
+        </p>
+      </div>
+    </div>
+
+    {%- comment -%} Variant select + ATC ─── {%- endcomment -%}
+    <div class="sticky-atc__actions">
+
+      {%- unless product.has_only_default_variant -%}
+        <div class="sticky-atc__select-wrap">
+          <select
+            id="StickyVariantSelect"
+            class="sticky-atc__select"
+            aria-label="Select variant"
+            data-sticky-variant>
+            {%- for variant in product.variants -%}
+              <option
+                value="{{ variant.id }}"
+                {% if variant.id == selected_variant.id %}selected{% endif %}
+                {% unless variant.available %}disabled{% endunless %}>
+                {{ variant.title }}
+                {%- unless variant.available %} — Sold Out{%- endunless -%}
+              </option>
+            {%- endfor -%}
+          </select>
+          <svg class="sticky-atc__select-chevron" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5" width="13" height="13" aria-hidden="true">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+      {%- endunless -%}
+
+      {%- comment -%} Separate form so cart-drawer.js can intercept it ─── {%- endcomment -%}
+      <form action="/cart/add" method="post" id="StickyATCForm" data-sticky-atc-form>
+        <input type="hidden" name="id" id="StickyVariantId" value="{{ selected_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+        <button
+          type="submit"
+          class="sticky-atc__btn"
+          id="StickyATCBtn"
+          {% unless selected_variant.available %}disabled{% endunless %}>
+          {%- if selected_variant.available -%}Add to Cart{%- else -%}Sold Out{%- endif -%}
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>

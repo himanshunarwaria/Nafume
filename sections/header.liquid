@@ -142,12 +142,23 @@
         <span class="header__action-label">Search</span>
       </button>
 
-      <a class="header__action"
-         href="{{ routes.account_url }}"
-         aria-label="{%- if customer -%}My account{%- else -%}Sign in{%- endif -%}">
-        {%- render 'icon-account' -%}
-        <span class="header__action-label">Account</span>
-      </a>
+      {%- if customer -%}
+        <a class="header__action"
+           href="{{ routes.account_url }}"
+           aria-label="My account">
+          {%- render 'icon-account' -%}
+          <span class="header__action-label">Account</span>
+        </a>
+      {%- else -%}
+        <button class="header__action"
+                id="account-trigger"
+                aria-label="Sign in"
+                aria-expanded="false"
+                aria-controls="account-drawer">
+          {%- render 'icon-account' -%}
+          <span class="header__action-label">Account</span>
+        </button>
+      {%- endif -%}
 
       <button class="header__action header__action--cart"
               id="cart-trigger"

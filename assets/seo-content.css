@@ -1,0 +1,443 @@
+/* ============================================================
+   seo-content.css
+   Styles for: SEO Content section · FAQ Section
+   ============================================================ */
+
+/* ── 1. SEO Section Shell ──────────────────────────────────── */
+.seo-section {
+  padding-top: var(--seo-pad-top, 72px);
+  padding-bottom: var(--seo-pad-bottom, 72px);
+}
+
+.seo-section__inner {
+  max-width: 840px;
+  margin-inline: auto;
+}
+
+/* ── 2. Headline ───────────────────────────────────────────── */
+.seo-section__heading {
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-ink, #1a1a18);
+  margin: 0 0 var(--sp-6, 24px);
+  text-align: center;
+}
+
+/* ── 3. Intro ──────────────────────────────────────────────── */
+.seo-section__intro {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--color-ink, #1a1a18);
+  text-align: center;
+  margin-bottom: var(--sp-8, 32px);
+}
+
+.seo-section__intro p {
+  max-width: 660px;
+  margin-inline: auto;
+}
+
+/* ── 4. Expandable Body ────────────────────────────────────── */
+.seo-section__body {
+  overflow: hidden;
+  position: relative;
+  /* JS sets explicit height; CSS transition handles animation */
+  transition: height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/*
+  Gradient fade when collapsed — visible to readers as a "more content below" signal.
+  Content is FULLY in the DOM at all times (SEO-safe).
+  Only the visual overflow is clipped.
+*/
+.seo-section__body::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--seo-bg, #fdfcfa) 85%
+  );
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  will-change: opacity;
+}
+
+.seo-section__body.is-expanded::after {
+  opacity: 0;
+}
+
+/* ── 5. Content Blocks ─────────────────────────────────────── */
+.seo-block {
+  margin-bottom: var(--sp-8, 32px);
+}
+
+.seo-block:last-child {
+  margin-bottom: 0;
+}
+
+.seo-block__heading {
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--color-ink, #1a1a18);
+  margin: 0 0 var(--sp-3, 12px);
+  letter-spacing: -0.01em;
+}
+
+/* H3 blocks are visually smaller */
+h3.seo-block__heading {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  font-weight: 500;
+}
+
+.seo-block__body {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: var(--color-muted, #6e6a64);
+}
+
+.seo-block__body p + p {
+  margin-top: var(--sp-3, 12px);
+}
+
+.seo-block__body a {
+  color: var(--color-ink, #1a1a18);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── 6. Fragrance Family Grid ──────────────────────────────── */
+.seo-families {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: var(--sp-5, 20px);
+  margin-bottom: var(--sp-6, 24px);
+}
+
+.seo-family {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px 14px;
+  border: 1.5px solid var(--color-border, #e8e4df);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--color-ink, #1a1a18);
+  background: var(--color-bg, #fff);
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  position: relative;
+}
+
+.seo-family:hover {
+  border-color: var(--color-ink, #1a1a18);
+  background: var(--color-surface, #f5f3f0);
+  transform: translateY(-2px);
+}
+
+.seo-family:focus-visible {
+  outline: 2px solid var(--color-ink, #1a1a18);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.seo-family__name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-ink, #1a1a18);
+  line-height: 1.3;
+}
+
+.seo-family__desc {
+  font-size: 0.72rem;
+  color: var(--color-muted, #8a8680);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.seo-family__arrow {
+  display: flex;
+  align-self: flex-end;
+  color: var(--color-muted, #8a8680);
+  margin-top: 6px;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.seo-family:hover .seo-family__arrow {
+  transform: translateX(3px);
+  color: var(--color-ink, #1a1a18);
+}
+
+/* ── 7. Read More Toggle ───────────────────────────────────── */
+.seo-section__rm-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-5, 20px);
+}
+
+.seo-section__rm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border: 1.5px solid var(--color-border, #e8e4df);
+  border-radius: 100px;
+  background: transparent;
+  font-size: 0.78rem;
+  font-family: var(--font-body, sans-serif);
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-ink, #1a1a18);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.seo-section__rm-btn:hover {
+  background: var(--color-ink, #1a1a18);
+  border-color: var(--color-ink, #1a1a18);
+  color: var(--color-bg, #fff);
+}
+
+.seo-section__rm-btn:focus-visible {
+  outline: 2px solid var(--color-ink, #1a1a18);
+  outline-offset: 3px;
+  border-radius: 100px;
+}
+
+.seo-section__rm-icon {
+  display: flex;
+  transition: transform 0.3s ease;
+}
+
+.seo-section__rm-btn[aria-expanded="true"] .seo-section__rm-icon {
+  transform: rotate(180deg);
+}
+
+/* ── 8. FAQ Section ────────────────────────────────────────── */
+.faq-section {
+  padding-block: 72px;
+}
+
+.faq-section__inner {
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.faq-section__header {
+  text-align: center;
+  margin-bottom: var(--sp-10, 40px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.faq-section__eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted, #8a8680);
+  margin: 0;
+  font-weight: 500;
+}
+
+.faq-section__heading {
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 400;
+  color: var(--color-ink, #1a1a18);
+  margin: 0;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.faq-section__sub {
+  font-size: 0.88rem;
+  color: var(--color-muted, #8a8680);
+  margin: 0;
+  max-width: 480px;
+}
+
+.faq-section__empty {
+  text-align: center;
+  color: var(--color-muted, #8a8680);
+  font-size: 0.85rem;
+  padding-block: var(--sp-8, 32px);
+}
+
+.faq-section__list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 9. FAQ Item ───────────────────────────────────────────── */
+.faq__item {
+  border-bottom: 1px solid var(--color-border, #e8e4df);
+}
+
+.faq__item:first-child {
+  border-top: 1px solid var(--color-border, #e8e4df);
+}
+
+/* ── 10. FAQ Trigger (accessible button) ───────────────────── */
+.faq__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5, 20px);
+  padding-block: var(--sp-5, 20px);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body, sans-serif);
+  color: var(--color-ink, #1a1a18);
+  transition: color 0.2s;
+}
+
+.faq__trigger:focus-visible {
+  outline: 2px solid var(--color-ink, #1a1a18);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.faq__trigger[aria-expanded="true"] {
+  color: var(--color-ink, #1a1a18);
+}
+
+.faq__trigger-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: inherit;
+  letter-spacing: 0.01em;
+}
+
+.faq__trigger-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  color: var(--color-muted, #8a8680);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s;
+}
+
+.faq__trigger[aria-expanded="true"] .faq__trigger-icon {
+  transform: rotate(180deg);
+  color: var(--color-ink, #1a1a18);
+}
+
+/* ── 11. FAQ Body — animated height ────────────────────────── */
+.faq__body {
+  overflow: hidden;
+  height: 0;
+  /* JS controls the height for smooth animation */
+  transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* No-JS fallback: show content when item is open via CSS */
+.faq__item.is-open .faq__body {
+  height: auto;
+}
+
+.faq__answer {
+  padding-bottom: var(--sp-5, 20px);
+  font-size: 0.88rem;
+  line-height: 1.75;
+  color: var(--color-muted, #6e6a64);
+}
+
+.faq__answer p + p {
+  margin-top: var(--sp-3, 12px);
+}
+
+.faq__answer a {
+  color: var(--color-ink, #1a1a18);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.faq__answer ul,
+.faq__answer ol {
+  padding-left: 1.25em;
+  margin-top: var(--sp-2, 8px);
+}
+
+.faq__answer li + li {
+  margin-top: var(--sp-1, 4px);
+}
+
+/* ── 12. Responsive ────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .seo-section__heading {
+    text-align: left;
+  }
+
+  .seo-section__intro {
+    text-align: left;
+  }
+
+  .seo-section__intro p {
+    margin-inline: 0;
+  }
+
+  .seo-families {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .seo-family {
+    padding: 14px;
+  }
+
+  .faq-section__header {
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .faq-section__heading {
+    font-size: 1.5rem;
+  }
+
+  .faq__trigger-text {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .seo-families {
+    grid-template-columns: 1fr;
+  }
+
+  .seo-section__rm-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── 13. Reduced Motion ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .seo-section__body,
+  .faq__body,
+  .seo-section__rm-icon,
+  .faq__trigger-icon,
+  .seo-family,
+  .seo-family__arrow {
+    transition: none;
+  }
+
+  .seo-section__body::after {
+    transition: none;
+  }
+}

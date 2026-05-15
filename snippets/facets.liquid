@@ -1,0 +1,169 @@
+{%- comment -%}
+  Params:
+    results         → collection object
+    context         → 'sidebar' | 'drawer'
+    enable_filtering → boolean
+{%- endcomment -%}
+
+{%- assign current_sort = results.sort_by | default: results.default_sort_by -%}
+
+<form
+  id="FilterForm-{{ context }}"
+  class="facets"
+  action="{{ results.url }}"
+  method="get"
+  data-filter-form="{{ context }}">
+
+  {%- comment -%} Preserve active sort across filter changes ─── {%- endcomment -%}
+  <input type="hidden" name="sort_by" value="{{ current_sort }}">
+
+  {%- if results.filters.size > 0 -%}
+
+    {%- for filter in results.filters -%}
+
+      {%- comment -%} Determine if this group has active values ─── {%- endcomment -%}
+      {%- assign filter_is_active = false -%}
+      {%- if filter.type == 'price_range' -%}
+        {%- if filter.min_value.value or filter.max_value.value -%}
+          {%- assign filter_is_active = true -%}
+        {%- endif -%}
+      {%- elsif filter.active_values.size > 0 -%}
+        {%- assign filter_is_active = true -%}
+      {%- endif -%}
+
+      {%- comment -%} Sidebar opens first 3 + active; drawer opens active only ─── {%- endcomment -%}
+      {%- assign group_open = filter_is_active -%}
+      {%- if context == 'sidebar' and forloop.index <= 3 -%}
+        {%- assign group_open = true -%}
+      {%- endif -%}
+
+      <details
+        class="facets__group"
+        data-filter-group
+        {% if group_open %}open{% endif %}>
+
+        <summary class="facets__group-summary">
+          <span class="facets__group-label">{{ filter.label }}</span>
+
+          {%- if filter_is_active -%}
+            <span class="facets__group-badge" aria-label="{{ filter.active_values.size }} active">
+              {%- if filter.type == 'price_range' -%}1{%- else -%}{{ filter.active_values.size }}{%- endif -%}
+            </span>
+          {%- endif -%}
+
+          <svg class="facets__group-chevron" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5" aria-hidden="true"
+               width="14" height="14">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </summary>
+
+        <div class="facets__group-body">
+
+          {%- case filter.type -%}
+
+            {%- when 'boolean', 'list' -%}
+              <ul class="facets__list" role="list">
+                {%- for value in filter.values -%}
+                  {%- assign opt_id = filter.param_name | replace: '.', '-' | append: '-' | append: value.value | handle | append: '-' | append: context -%}
+                  <li class="facets__item{% if value.count == 0 and value.active == false %} facets__item--empty{% endif %}">
+                    <label class="facets__label" for="{{ opt_id }}">
+                      <input
+                        type="checkbox"
+                        class="facets__checkbox"
+                        id="{{ opt_id }}"
+                        name="{{ filter.param_name }}"
+                        value="{{ value.value }}"
+                        {% if value.active %}checked{% endif %}
+                        {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                        data-filter-checkbox>
+                      <span class="facets__checkbox-ui" aria-hidden="true">
+                        <svg viewBox="0 0 12 10" fill="none" stroke="currentColor"
+                             stroke-width="1.8" width="12" height="10" aria-hidden="true">
+                          <polyline points="1.5,5 4.5,8.5 10.5,1.5"/>
+                        </svg>
+                      </span>
+                      <span class="facets__option-name">{{ value.label }}</span>
+                      <span class="facets__option-count">({{ value.count }})</span>
+                    </label>
+                  </li>
+                {%- endfor -%}
+              </ul>
+
+            {%- when 'price_range' -%}
+              {%- liquid
+                assign price_min = filter.min_value.value | default: 0
+                assign price_max = filter.max_value.value | default: filter.range_max
+                assign range_floor = 0
+                assign range_ceil  = filter.range_max | money_without_currency | replace: ',', '' | strip
+              -%}
+              <div class="facets__price-range">
+                <div class="facets__price-row">
+                  <div class="facets__price-field">
+                    <label class="facets__price-label" for="PriceMin-{{ context }}">From</label>
+                    <div class="facets__price-input-wrap">
+                      <span class="facets__price-currency">{{ cart.currency.symbol }}</span>
+                      <input
+                        id="PriceMin-{{ context }}"
+                        class="facets__price-input"
+                        type="number"
+                        name="{{ filter.min_value.param_name }}"
+                        placeholder="0"
+                        min="{{ range_floor }}"
+                        max="{{ range_ceil }}"
+                        value="{% if filter.min_value.value %}{{ filter.min_value.value | money_without_currency | replace: ',', '' | strip }}{% endif %}"
+                        data-price-min>
+                    </div>
+                  </div>
+
+                  <span class="facets__price-sep" aria-hidden="true">–</span>
+
+                  <div class="facets__price-field">
+                    <label class="facets__price-label" for="PriceMax-{{ context }}">To</label>
+                    <div class="facets__price-input-wrap">
+                      <span class="facets__price-currency">{{ cart.currency.symbol }}</span>
+                      <input
+                        id="PriceMax-{{ context }}"
+                        class="facets__price-input"
+                        type="number"
+                        name="{{ filter.max_value.param_name }}"
+                        placeholder="{{ range_ceil }}"
+                        min="{{ range_floor }}"
+                        max="{{ range_ceil }}"
+                        value="{% if filter.max_value.value %}{{ filter.max_value.value | money_without_currency | replace: ',', '' | strip }}{% endif %}"
+                        data-price-max>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  class="facets__price-apply"
+                  data-price-apply>
+                  Apply
+                </button>
+              </div>
+
+          {%- endcase -%}
+
+          {%- comment -%} Per-group clear link ─── {%- endcomment -%}
+          {%- if filter_is_active -%}
+            <a
+              href="{{ filter.url_to_remove }}"
+              class="facets__group-clear"
+              data-filter-remove
+              aria-label="Clear {{ filter.label }} filter">
+              Clear
+            </a>
+          {%- endif -%}
+
+        </div>
+      </details>
+
+    {%- endfor -%}
+
+  {%- else -%}
+    <p class="facets__empty-msg">No filters available for this collection.</p>
+  {%- endif -%}
+
+</form>

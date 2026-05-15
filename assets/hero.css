@@ -1,0 +1,626 @@
+/* ============================================================
+   NEFUME — Hero System
+   Covers: hero-banner section + dual-collection-banner section.
+   Tokens from theme.css are inherited — no redefinition.
+   ============================================================ */
+
+/* ============================================================
+   §1  HERO — SHELL
+   ============================================================ */
+.hero {
+  position: relative;
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+
+  /* Vertical positioning of content — overridden by modifiers */
+  align-items: center;
+
+  /* Prevent layout shift while image loads */
+  background: var(--clr-bg-deep);
+}
+
+/* Height modifiers */
+.hero--small  { min-height: 60vh; }
+.hero--medium { min-height: 80vh; }
+.hero--large  { min-height: 100vh; min-height: 100svh; }
+.hero--auto   { min-height: 0; }
+
+/* Vertical position modifiers */
+.hero--v-top    { align-items: flex-start; padding-top: clamp(5rem, 12vh, 9rem); }
+.hero--v-center { align-items: center; }
+.hero--v-bottom { align-items: flex-end; padding-bottom: clamp(4rem, 10vh, 7rem); }
+
+/* ============================================================
+   §2  HERO — MEDIA LAYER
+   ============================================================ */
+.hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Picture fills the container */
+.hero__picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Desktop / fallback image */
+.hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* Placeholder when no image/video is set */
+.hero__img-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1c1917 0%, #2d2520 50%, #1a1612 100%);
+}
+
+/* Video — sits above image so image acts as poster/fallback */
+.hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+/* Video hidden on mobile: saves battery, shows image instead */
+@media (max-width: 767px) {
+  .hero__video { display: none; }
+}
+
+/* ============================================================
+   §3  HERO — OVERLAY
+   ============================================================ */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-color: var(--hero-overlay-color, #0d0b08);
+  opacity: var(--hero-overlay, 0.35);
+  pointer-events: none;
+}
+
+/* ============================================================
+   §4  HERO — CONTENT LAYER
+   ============================================================ */
+.hero__body {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding-block: clamp(3rem, 8vh, 5rem);
+}
+
+.hero__text-wrap {
+  max-width: 780px;
+
+  /* Alignment is applied by the modifier on .hero */
+  display: flex;
+  flex-direction: column;
+  gap: clamp(var(--sp-3), 2vh, var(--sp-5));
+}
+
+/* Text alignment modifiers — position text-wrap inside container */
+.hero--a-left   .hero__body .container { display: flex; justify-content: flex-start; }
+.hero--a-center .hero__body .container { display: flex; justify-content: center; }
+.hero--a-right  .hero__body .container { display: flex; justify-content: flex-end; }
+
+.hero--a-left   .hero__text-wrap { text-align: left;  align-items: flex-start; }
+.hero--a-center .hero__text-wrap { text-align: center; align-items: center;     }
+.hero--a-right  .hero__text-wrap { text-align: right;  align-items: flex-end;   }
+
+/* ============================================================
+   §5  HERO — TYPOGRAPHY
+   ============================================================ */
+
+/* Eyebrow */
+.hero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  font-family: var(--ff-sans);
+  font-size: var(--fs-11);
+  font-weight: var(--fw-semi);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--hero-eyebrow-color, #c9a96e);
+  line-height: 1;
+  margin: 0;
+}
+
+/* Optional leading rule on eyebrow */
+.hero__eyebrow-rule {
+  display: block;
+  width: 36px;
+  height: 1px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.hero--a-center .hero__eyebrow { justify-content: center; }
+.hero--a-right  .hero__eyebrow { justify-content: flex-end; }
+
+/* Heading — luxury scale */
+.hero__heading {
+  font-family: var(--ff-serif);
+  font-size: clamp(2.6rem, 7vw, 6.5rem);
+  font-weight: var(--fw-light);
+  line-height: 1.0;
+  letter-spacing: -0.01em;
+  color: var(--hero-heading-color, #ffffff);
+  margin: 0;
+  max-width: 20ch;
+}
+
+/* Center/right align expands max-width */
+.hero--a-center .hero__heading,
+.hero--a-right  .hero__heading {
+  max-width: 100%;
+}
+
+/* Subheading */
+.hero__subheading {
+  font-family: var(--ff-sans);
+  font-size: clamp(var(--fs-14), 1.4vw, var(--fs-18));
+  font-weight: var(--fw-light);
+  line-height: 1.7;
+  color: var(--hero-text-color, #d8d2c8);
+  max-width: 52ch;
+  margin: 0;
+}
+
+.hero--a-center .hero__subheading,
+.hero--a-right  .hero__subheading {
+  max-width: 100%;
+}
+
+/* Trust strip — social proof line below CTAs */
+.hero__trust {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-12);
+  font-weight: var(--fw-regular);
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.58);
+  margin-top: var(--sp-1);
+  max-width: 100%;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   §6  HERO — CTA BUTTONS
+   ============================================================ */
+.hero__ctas {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-5) var(--sp-6);
+  margin-top: var(--sp-2);
+}
+
+.hero--a-center .hero__ctas { justify-content: center; }
+.hero--a-right  .hero__ctas { justify-content: flex-end; }
+
+/* Shared hero button base */
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--ff-sans);
+  font-size: var(--fs-11);
+  font-weight: var(--fw-semi);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--dur-base) var(--ease-out),
+              color var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out),
+              transform var(--dur-base) var(--ease-out);
+  white-space: nowrap;
+}
+
+/* Primary — solid white fill */
+.hero-btn--solid {
+  padding: 15px 36px;
+  background: #ffffff;
+  color: #1c1917;
+  border: 1px solid #ffffff;
+  border-radius: 0;
+}
+
+.hero-btn--solid:hover {
+  background: transparent;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.hero-btn--solid:active { transform: translateY(0); }
+
+/* Secondary — minimal text + arrow */
+.hero-btn--text {
+  position: relative;
+  padding: 3px 0;
+  color: rgba(255, 255, 255, 0.78);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.hero-btn--text::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #fff;
+  transition: width var(--dur-base) var(--ease-out);
+}
+
+.hero-btn--text:hover {
+  color: #ffffff;
+}
+
+.hero-btn--text:hover::after { width: 100%; }
+
+.hero-btn--text svg {
+  transition: transform var(--dur-base) var(--ease-out);
+  flex-shrink: 0;
+}
+.hero-btn--text:hover svg { transform: translateX(5px); }
+
+/* ============================================================
+   §7  HERO — SCROLL INDICATOR
+   ============================================================ */
+.hero__scroll {
+  position: absolute;
+  bottom: clamp(var(--sp-6), 5vh, var(--sp-10));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  pointer-events: none;
+}
+
+.hero__scroll-line {
+  display: block;
+  width: 1px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero__scroll-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 45%;
+  background: rgba(255, 255, 255, 0.9);
+  animation: scroll-drip 2s var(--ease-in-out) infinite;
+}
+
+@keyframes scroll-drip {
+  0%   { top: -45%; opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.hero__scroll-label {
+  font-family: var(--ff-sans);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Hide scroll indicator on short screens */
+@media (max-height: 600px) {
+  .hero__scroll { display: none; }
+}
+
+/* ============================================================
+   §8  HERO — RESPONSIVE
+   ============================================================ */
+@media (max-width: 767px) {
+  .hero--large  { min-height: 90svh; }
+  .hero--medium { min-height: 75svh; }
+  .hero--small  { min-height: 55svh; }
+
+  /* Force center alignment on mobile regardless of desktop setting */
+  .hero__text-wrap {
+    text-align: center;
+    align-items: center;
+    max-width: 100%;
+  }
+
+  .hero__body .container {
+    display: flex;
+    justify-content: center;
+  }
+
+  .hero__heading {
+    font-size: clamp(2.25rem, 10vw, 3.25rem);
+    max-width: 100%;
+  }
+
+  .hero__subheading {
+    font-size: var(--fs-14);
+  }
+
+  .hero__ctas { justify-content: center; }
+
+  .hero__eyebrow { justify-content: center; }
+
+  /* Hide eyebrow rule on mobile — too narrow */
+  .hero__eyebrow-rule { display: none; }
+
+  .hero__body {
+    padding-block: clamp(var(--sp-10), 8vh, var(--sp-16));
+  }
+
+  /* Mobile image object position — show face/subject at top */
+  .hero__img {
+    object-position: center center;
+  }
+}
+
+/* ============================================================
+   §9  DUAL COLLECTION BANNER — SHELL
+   ============================================================ */
+.dual-banner { width: 100%; }
+
+.dual-banner__intro {
+  padding: var(--sp-12) var(--container-pad) var(--sp-8);
+  text-align: center;
+}
+
+/* Grid */
+.dual-banner__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+}
+
+/* Gap variants */
+.dual-banner__grid--gap-none { gap: 0; }
+.dual-banner__grid--gap-xs   { gap: 2px; }
+.dual-banner__grid--gap-sm   { gap: var(--sp-3); }
+.dual-banner__grid--gap-md   { gap: var(--sp-6); }
+.dual-banner__grid--gap-lg   { gap: var(--sp-10); }
+
+/* Stack on mobile */
+@media (max-width: 767px) {
+  .dual-banner__grid {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .collection-card--medium { min-height: 75vw; }
+  .collection-card--tall   { min-height: 85vw; }
+}
+
+/* ============================================================
+   §10  COLLECTION CARD — SHELL
+   ============================================================ */
+.collection-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--clr-bg-deep);
+  cursor: pointer;
+}
+
+/* Height variants */
+.collection-card--short  { min-height: 55vh; }
+.collection-card--medium { min-height: 70vh; }
+.collection-card--tall   { min-height: 85vh; }
+
+/* On mobile, reduce heights since cards stack full-width */
+@media (max-width: 767px) {
+  .collection-card--short  { min-height: 55vw; }
+  .collection-card--medium { min-height: 70vw; }
+  .collection-card--tall   { min-height: 90vw; }
+}
+
+/* ============================================================
+   §11  COLLECTION CARD — MEDIA
+   ============================================================ */
+.collection-card__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.collection-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.75s var(--ease-out);
+}
+
+.collection-card:hover .collection-card__img {
+  transform: scale(1.06);
+}
+
+.collection-card__img-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #2c2420 0%, #1a1612 100%);
+}
+
+.collection-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--card-overlay-color, #0d0b08);
+  opacity: var(--card-overlay, 0.3);
+  transition: opacity 0.4s var(--ease-out);
+}
+
+/* Deepen overlay on hover for readability */
+.collection-card:hover .collection-card__overlay {
+  opacity: calc(var(--card-overlay, 0.3) + 0.1);
+}
+
+/* ============================================================
+   §12  COLLECTION CARD — CONTENT
+   ============================================================ */
+.collection-card__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: inherit;
+  padding: clamp(var(--sp-8), 6%, var(--sp-12));
+  color: var(--card-text, #ffffff);
+  gap: var(--sp-3);
+}
+
+/* ── Content position variants ── */
+/* Top row */
+.collection-card__content--top-left   { justify-content: flex-start; align-items: flex-start; text-align: left;   }
+.collection-card__content--top-center { justify-content: flex-start; align-items: center;      text-align: center; }
+.collection-card__content--top-right  { justify-content: flex-start; align-items: flex-end;    text-align: right;  }
+
+/* Center row */
+.collection-card__content--center-left  { justify-content: center; align-items: flex-start; text-align: left;   }
+.collection-card__content--center       { justify-content: center; align-items: center;      text-align: center; }
+.collection-card__content--center-right { justify-content: center; align-items: flex-end;    text-align: right;  }
+
+/* Bottom row */
+.collection-card__content--bottom-left   { justify-content: flex-end; align-items: flex-start; text-align: left;   }
+.collection-card__content--bottom-center { justify-content: flex-end; align-items: center;      text-align: center; }
+.collection-card__content--bottom-right  { justify-content: flex-end; align-items: flex-end;    text-align: right;  }
+
+/* ── Typography inside card ── */
+.collection-card__eyebrow {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-10);
+  font-weight: var(--fw-semi);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: inherit;
+  opacity: 0.7;
+  margin: 0;
+  line-height: 1;
+}
+
+.collection-card__title {
+  font-family: var(--ff-serif);
+  font-size: clamp(var(--fs-28), 3.5vw, var(--fs-56));
+  font-weight: var(--fw-light);
+  line-height: 1.05;
+  letter-spacing: var(--ls-wide);
+  color: inherit;
+  margin: 0;
+  transition: letter-spacing var(--dur-base) var(--ease-out);
+}
+
+.collection-card:hover .collection-card__title {
+  letter-spacing: 0.06em;
+}
+
+.collection-card__subtitle {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-light);
+  line-height: 1.6;
+  color: inherit;
+  opacity: 0.8;
+  margin: 0;
+  max-width: 32ch;
+}
+
+/* ── CTA link inside card ── */
+.collection-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--ff-sans);
+  font-size: var(--fs-11);
+  font-weight: var(--fw-semi);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: inherit;
+  text-decoration: none;
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  transition: border-color var(--dur-base), gap var(--dur-base);
+  margin-top: var(--sp-2);
+}
+
+.collection-card:hover .collection-card__cta {
+  border-color: currentColor;
+  gap: var(--sp-3);
+}
+
+.collection-card__cta svg {
+  flex-shrink: 0;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.collection-card:hover .collection-card__cta svg {
+  transform: translateX(4px);
+}
+
+/* Full-card link overlay — receives the click, sits under all content */
+.collection-card__link-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+}
+
+/* ============================================================
+   §13  COLLECTION CARD — RESPONSIVE
+   ============================================================ */
+@media (max-width: 767px) {
+  .collection-card__content {
+    padding: var(--sp-6) var(--sp-6) var(--sp-8);
+    gap: var(--sp-2);
+  }
+
+  .collection-card__title {
+    font-size: clamp(var(--fs-24), 7vw, var(--fs-32));
+  }
+
+  /* On mobile always bottom-left feels most natural */
+  .collection-card__content {
+    justify-content: flex-end;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .collection-card--tall   { min-height: 70vh; }
+  .collection-card--medium { min-height: 58vh; }
+}
+
+/* ============================================================
+   §14  REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .hero__scroll-line::after   { animation: none; }
+  .collection-card__img       { transition: none; }
+  .hero-btn--solid,
+  .hero-btn--text             { transition: none; }
+  .collection-card__cta svg   { transition: none; }
+}

@@ -1,0 +1,58 @@
+{%- comment -%}
+  Renders price with compare-at and optional sale-percentage badge.
+
+  Usage:
+    {%- render 'price', product: product, show_sale_pct: true -%}
+    {%- render 'price', product: product, variant: variant -%}
+
+  Accepts:
+    product       {Object}  — Shopify product (required)
+    variant       {Object}  — Override with a specific variant (optional)
+    show_sale_pct {Boolean} — Show "X% off" badge (default: false)
+    class         {String}  — Extra CSS class on the wrapper (optional)
+{%- endcomment -%}
+
+{%- liquid
+  if variant
+    assign compare_price = variant.compare_at_price
+    assign current_price = variant.price
+    assign price_varies  = false
+  else
+    assign compare_price = product.compare_at_price_max
+    assign current_price = product.price_min
+    assign price_varies  = product.price_varies
+  endif
+
+  assign on_sale = false
+  if compare_price > current_price
+    assign on_sale = true
+  endif
+
+  assign sale_pct = 0
+  if on_sale and compare_price > 0
+    assign diff     = compare_price | minus: current_price
+    assign sale_pct = diff | times: 100 | divided_by: compare_price
+  endif
+-%}
+
+<div class="price-block{% if on_sale %} price-block--on-sale{% endif %}{% if class != blank %} {{ class }}{% endif %}">
+  <div class="price-block__row">
+
+    <span class="price-block__current" aria-label="{% if on_sale %}Sale price{% else %}Price{% endif %}">
+      {%- if price_varies -%}From &nbsp;{%- endif -%}
+      {{- current_price | money -}}
+    </span>
+
+    {%- if on_sale -%}
+      <s class="price-block__compare" aria-label="Original price">
+        MRP&nbsp;{{ compare_price | money }}
+      </s>
+      {%- if show_sale_pct and sale_pct > 0 -%}
+        <span class="price-block__pct-off" aria-label="{{ sale_pct }}% off">
+          {{- sale_pct -}}% off
+        </span>
+      {%- endif -%}
+    {%- endif -%}
+
+  </div>
+</div>

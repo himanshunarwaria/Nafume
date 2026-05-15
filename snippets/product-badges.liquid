@@ -1,0 +1,58 @@
+{%- comment -%}
+  Renders the badge stack for a product card.
+  Reads metafields + computed states and outputs a prioritised stack.
+
+  Usage:
+    {%- render 'product-badges', product: product -%}
+
+  Accepts:
+    product {Object} — Shopify product object (required)
+
+  Metafields read:
+    custom.badge_label    — "New Launch" | "Bestseller" | "Popular Choice"
+    custom.is_coming_soon — boolean
+{%- endcomment -%}
+
+{%- liquid
+  assign is_coming_soon = product.metafields.custom.is_coming_soon.value
+  assign badge_label    = product.metafields.custom.badge_label.value
+
+  assign is_sold_out = true
+  if product.available
+    assign is_sold_out = false
+  endif
+
+  assign is_on_sale = false
+  if product.compare_at_price_max > product.price_min
+    assign is_on_sale = true
+  endif
+-%}
+
+{%- if is_coming_soon or is_sold_out or badge_label != blank or is_on_sale -%}
+  <div class="product-badges" aria-label="Product labels">
+
+    {%- if is_coming_soon -%}
+      <span class="product-badge product-badge--coming-soon">Coming Soon</span>
+
+    {%- elsif is_sold_out -%}
+      <span class="product-badge product-badge--sold-out">Sold Out</span>
+
+    {%- else -%}
+
+      {%- case badge_label -%}
+        {%- when 'New Launch' -%}
+          <span class="product-badge product-badge--new">New Launch</span>
+        {%- when 'Bestseller' -%}
+          <span class="product-badge product-badge--bestseller">Bestseller</span>
+        {%- when 'Popular Choice' -%}
+          <span class="product-badge product-badge--popular">Popular Choice</span>
+      {%- endcase -%}
+
+      {%- if is_on_sale -%}
+        <span class="product-badge product-badge--sale">On Sale</span>
+      {%- endif -%}
+
+    {%- endif -%}
+
+  </div>
+{%- endif -%}

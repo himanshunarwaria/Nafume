@@ -1,0 +1,125 @@
+/* ============================================================
+   Editorial Marquee  —  editorial-marquee.css
+   ============================================================ */
+
+/* ── §1  Section shell ──────────────────────────────────────── */
+.em-section {
+  background-color: var(--em-bg, #0d0b08);
+  overflow: hidden;
+  /* Default: no padding (edge-to-edge rows) */
+}
+
+.em-section--pad-compact { padding-block: 24px; }
+.em-section--pad-normal  { padding-block: 56px; }
+
+/* ── §2  Optional title header ──────────────────────────────── */
+.em-header {
+  padding-block: 40px 24px;
+}
+
+/* When section already has its own padding, remove top redundancy */
+.em-section--pad-compact .em-header,
+.em-section--pad-normal  .em-header {
+  padding-top: 0;
+}
+
+.em-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+  font-weight: 300;
+  letter-spacing: 0.07em;
+  color: var(--em-title-color, #f5f0e8);
+  margin: 0;
+}
+
+.em-title--center { text-align: center; }
+.em-title--left   { text-align: left; }
+
+/* ── §3  Row wrapper ────────────────────────────────────────── */
+.em-row {
+  overflow: hidden;
+  line-height: 0; /* prevents gap below inline-block descendants */
+}
+
+.em-row + .em-row {
+  margin-top: var(--em-row-gap, 0px);
+}
+
+/* ── §4  Scrolling track ────────────────────────────────────── */
+/*
+  Seamless loop logic:
+  Track = [Set 1][Set 2] where Set 1 = Set 2 (same images).
+  Total track width = 2× the single-set width.
+  Left  scroll: translateX(0 → -50%)  loops back to start seamlessly.
+  Right scroll: translateX(-50% → 0)  loops forward to start seamlessly.
+  Uses margin-right on items (not flex gap) so the -50% midpoint lands
+  exactly at the boundary between Set 1 and Set 2.
+*/
+.em-row__track {
+  display: flex;
+  flex-wrap: nowrap;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-duration: var(--em-speed, 40s);
+  will-change: transform;
+  transform: translateZ(0); /* promote to GPU layer */
+}
+
+.em-row__track--left  { animation-name: em-scroll-left;  }
+.em-row__track--right { animation-name: em-scroll-right; }
+
+/* ── §5  Items ──────────────────────────────────────────────── */
+.em-row__item {
+  flex-shrink: 0;
+  /* margin-right instead of flex gap so -50% aligns to the set boundary */
+  margin-right: var(--em-gap, 16px);
+  border-radius: var(--em-radius, 0px);
+  overflow: hidden;
+  line-height: 0;
+}
+
+/* ── §6  Images ─────────────────────────────────────────────── */
+.em-row__img {
+  display: block;
+  height: var(--em-height, 280px);
+  width: auto;          /* natural aspect ratio; fixed height only */
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ── §7  Keyframes ──────────────────────────────────────────── */
+@keyframes em-scroll-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes em-scroll-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+/* ── §8  Hover pause (CSS-only — no JS needed) ──────────────── */
+.em-section:not(.em-section--no-pause):hover .em-row__track {
+  animation-play-state: paused;
+}
+
+/* ── §9  Responsive — scale height on mobile ────────────────── */
+@media (max-width: 767px) {
+  .em-row__img {
+    /* Scale to ~72% on mobile for better density */
+    height: calc(var(--em-height, 280px) * 0.72);
+  }
+
+  .em-header {
+    padding-block: 32px 20px;
+  }
+}
+
+/* ── §10 Reduced motion — freeze all tracks ─────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .em-row__track {
+    animation-play-state: paused !important;
+  }
+}

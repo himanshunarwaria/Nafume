@@ -1,0 +1,108 @@
+{%- comment -%}
+  Review card — shared by review-carousel.liquid and product-reviews.liquid.
+
+  Params:
+    review_name          → string  reviewer display name (required)
+    review_title         → string  short headline
+    review_text          → string  review body (required)
+    review_rating        → integer 1–5 stars (optional, defaults to 5)
+    review_product_title → string  product name
+    review_product_url   → string  product URL
+    review_verified      → boolean show Verified badge
+    review_date          → string  display date e.g. "March 2025"
+{%- endcomment -%}
+
+{%- liquid
+  unless review_name
+    assign review_name = 'Customer'
+  endunless
+
+  assign name_parts    = review_name | split: ' '
+  assign first_initial = name_parts[0] | slice: 0 | upcase
+  assign last_initial  = ''
+  if name_parts.size > 1
+    assign last_part    = name_parts | last
+    assign last_initial = last_part | slice: 0 | upcase
+  endif
+  assign initials = first_initial | append: last_initial
+
+  assign first_char   = review_name | upcase | slice: 0
+  assign avatar_color = 1
+  if 'FGHIJ' contains first_char
+    assign avatar_color = 2
+  elsif 'KLMNO' contains first_char
+    assign avatar_color = 3
+  elsif 'PQRST' contains first_char
+    assign avatar_color = 4
+  elsif 'UVWXYZ' contains first_char
+    assign avatar_color = 5
+  endif
+
+  unless review_rating
+    assign review_rating = 5
+  endunless
+  assign rating_pct = review_rating | times: 20
+-%}
+
+<article class="review-card">
+
+  <header class="review-card__header">
+    <div class="review-card__rating"
+         role="img"
+         aria-label="{{ review_rating }} out of 5 stars">
+      <span class="star-rating">
+        <span class="star-rating__bg" aria-hidden="true">★★★★★</span>
+        <span class="star-rating__fill" aria-hidden="true" style="width: {{ rating_pct }}%">★★★★★</span>
+      </span>
+    </div>
+    {%- if review_verified -%}
+      <span class="review-card__verified">
+        <svg viewBox="0 0 16 16" width="11" height="11" fill="none" aria-hidden="true">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M8 1.5L9.6 2.9l2-.7.7 2 2 .7-1.4 1.6 1 2-2 .6.4 2.1-2-.7L8 11.5l-1.3 1-2-.7.4-2.1-2-.6 1-2L2.7 4.9l2-.7.7-2 2 .7L8 1.5z"
+            fill="currentColor"/>
+          <path d="M5 8l2 2 4-4"
+            stroke="#fff" stroke-width="1.3"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Verified
+      </span>
+    {%- endif -%}
+  </header>
+
+  {%- if review_title != blank -%}
+    <p class="review-card__title">{{ review_title | escape }}</p>
+  {%- endif -%}
+
+  <blockquote class="review-card__text">
+    <p>{{ review_text | escape }}</p>
+  </blockquote>
+
+  <footer class="review-card__footer">
+
+    <div class="review-card__avatar review-card__avatar--color-{{ avatar_color }}"
+         aria-hidden="true">{{ initials }}</div>
+
+    <div class="review-card__author">
+      <span class="review-card__name">{{ review_name | escape }}</span>
+      {%- if review_date != blank -%}
+        <time class="review-card__date">{{ review_date }}</time>
+      {%- endif -%}
+    </div>
+
+    {%- if review_product_url != blank and review_product_title != blank -%}
+      <a href="{{ review_product_url }}"
+         class="review-card__product"
+         aria-label="Reviewed: {{ review_product_title | escape }}">
+        {{ review_product_title | escape }}
+        <svg viewBox="0 0 14 14" width="10" height="10" fill="none"
+             stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M2.5 7h9M7 2.5L11.5 7 7 11.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    {%- endif -%}
+
+  </footer>
+
+</article>
