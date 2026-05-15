@@ -1,0 +1,56 @@
+/* ── UGC Video / Watch and Buy section ────────────────────────────────── */
+
+.ugc-video {
+  background: var(--ugc-bg, #fff);
+  padding: var(--section-y-desktop) 0;
+}
+
+.ugc-video__header {
+  text-align: center;
+  margin-bottom: var(--sp-8);
+}
+
+.ugc-video__eyebrow {
+  margin-bottom: var(--sp-2);
+}
+
+.ugc-video__heading {
+  font-family: var(--ff-serif);
+  font-size: clamp(var(--fs-24), 3vw, var(--fs-36));
+  font-weight: var(--fw-medium);
+  color: var(--ugc-heading-color, var(--clr-ink));
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.ugc-video__embed {
+  width: 100%;
+}
+
+/* Editor placeholder */
+.ugc-video__placeholder {
+  padding: var(--sp-8) var(--container-pad);
+}
+
+.ugc-video__placeholder-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--sp-10) var(--sp-6);
+  border: 2px dashed var(--clr-line);
+  border-radius: var(--radius-lg);
+  color: var(--clr-ink-3);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@media (max-width: 767px) {
+  .ugc-video {
+    padding: var(--section-y-mobile) 0;
+  }
+
+  .ugc-video__header {
+    margin-bottom: var(--sp-6);
+  }
+}

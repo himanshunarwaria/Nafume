@@ -1,0 +1,85 @@
+{{- 'ugc-video.css' | asset_url | stylesheet_tag -}}
+
+<section
+  id="ugc-{{ section.id }}"
+  class="ugc-video"
+  style="--ugc-bg: {{ section.settings.bg_color }}; --ugc-heading-color: {{ section.settings.heading_color }};">
+
+  {%- if section.settings.heading != blank -%}
+    <div class="ugc-video__header container">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="ugc-video__eyebrow eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h2 class="ugc-video__heading">{{ section.settings.heading }}</h2>
+    </div>
+  {%- endif -%}
+
+  <div class="ugc-video__embed">
+    {%- if section.settings.embed_code != blank -%}
+      {{ section.settings.embed_code }}
+    {%- elsif request.design_mode -%}
+      <div class="ugc-video__placeholder container">
+        <div class="ugc-video__placeholder-inner">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" width="40" height="40" aria-hidden="true">
+            <rect x="4" y="10" width="40" height="28" rx="3"/>
+            <path d="M20 18l10 6-10 6V18z" fill="currentColor" stroke="none"/>
+          </svg>
+          <p style="margin: 12px 0 4px; font-weight: 500;">Paste your Whatmore embed code here</p>
+          <p style="font-size: 13px; color: #999; max-width: 360px; margin: 0 auto;">
+            1. Install the <strong>Whatmore</strong> app from the Shopify App Store.<br>
+            2. In your Whatmore dashboard, copy the widget embed code.<br>
+            3. Paste it into the "Embed code" setting in this section.
+          </p>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+
+</section>
+
+{% schema %}
+{
+  "name": "Watch and Buy (UGC)",
+  "tag": "div",
+  "class": "ugc-video-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "Watch and Buy"
+    },
+    {
+      "type": "html",
+      "id": "embed_code",
+      "label": "Whatmore embed code",
+      "info": "Paste the embed code from your Whatmore dashboard. Install the Whatmore app first from the Shopify App Store."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Watch and Buy (UGC)",
+      "settings": {
+        "heading": "Watch and Buy"
+      }
+    }
+  ]
+}
+{% endschema %}

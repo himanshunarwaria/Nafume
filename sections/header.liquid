@@ -1,12 +1,20 @@
+{%- liquid
+  assign is_center = false
+  if section.settings.logo_position == 'center'
+    assign is_center = true
+  endif
+  assign second_menu = section.settings.second_menu
+-%}
+
 <header
-  class="site-header{% if section.settings.transparent_header %} site-header--transparent{% endif %}"
+  class="site-header{% if section.settings.transparent_header %} site-header--transparent{% endif %}{% if is_center %} site-header--center{% endif %}"
   id="site-header"
   data-header
   role="banner">
 
-  <div class="header__inner">
+  <div class="header__inner{% if is_center %} header__inner--center{% endif %}">
 
-    {%- comment -%} Hamburger — mobile only {%- endcomment -%}
+    {%- comment -%} Mobile hamburger {%- endcomment -%}
     <button
       class="header__hamburger"
       id="hamburger-btn"
@@ -17,9 +25,22 @@
       <span></span><span></span><span></span>
     </button>
 
+    {%- comment -%} Left slot — search on desktop center layout {%- endcomment -%}
+    {%- if is_center -%}
+      <div class="header__left">
+        <button class="header__action"
+                id="search-trigger"
+                aria-label="Open search"
+                aria-expanded="false"
+                aria-controls="search-drawer">
+          {%- render 'icon-search' -%}
+        </button>
+      </div>
+    {%- endif -%}
+
     {%- comment -%} Logo {%- endcomment -%}
     <div class="header__logo">
-      <a href="{{ routes.root_url }}" aria-label="{{ shop.name }} — Home">
+      <a href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
         {%- if section.settings.logo != blank -%}
           {{ section.settings.logo
             | image_url: width: 400
@@ -44,7 +65,8 @@
       </a>
     </div>
 
-    {%- comment -%} Desktop Navigation {%- endcomment -%}
+    {%- comment -%} Desktop Navigation — only rendered inline on left-logo layout {%- endcomment -%}
+    {%- unless is_center -%}
     <nav class="header__nav" aria-label="Main navigation">
       <ul class="nav__list" role="list">
         {%- for link in section.settings.main_menu.links -%}
@@ -130,18 +152,21 @@
         {%- endfor -%}
       </ul>
     </nav>
+    {%- endunless -%}
 
     {%- comment -%} Header Actions {%- endcomment -%}
     <div class="header__actions">
 
-      <button class="header__action"
-              id="search-trigger"
-              aria-label="Open search"
-              aria-expanded="false"
-              aria-controls="search-drawer">
-        {%- render 'icon-search' -%}
-        <span class="header__action-label">Search</span>
-      </button>
+      {%- unless is_center -%}
+        <button class="header__action"
+                id="search-trigger"
+                aria-label="Open search"
+                aria-expanded="false"
+                aria-controls="search-drawer">
+          {%- render 'icon-search' -%}
+          <span class="header__action-label">Search</span>
+        </button>
+      {%- endunless -%}
 
       {%- if customer -%}
         <a class="header__action"
@@ -175,12 +200,94 @@
 
     </div>
   </div>
+
+  {%- comment -%} Center layout: full-width nav row below top bar {%- endcomment -%}
+  {%- if is_center -%}
+    <nav class="header__nav header__nav--row" aria-label="Main navigation">
+      <ul class="nav__list" role="list">
+        {%- for link in section.settings.main_menu.links -%}
+          {%- liquid
+            assign has_sub = false
+            if link.links.size > 0
+              assign has_sub = true
+            endif
+            assign is_ext = false
+            if link.url contains '://'
+              assign is_ext = true
+            endif
+          -%}
+          <li class="nav__item{% if has_sub %} nav__item--has-drop{% endif %}">
+            {%- if has_sub -%}
+              <button class="nav__link nav__link--parent"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                      data-nav-parent
+                      aria-controls="mega-c-{{ forloop.index }}">
+                {{ link.title }}
+                <svg class="nav__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" width="10" height="10">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </button>
+              <div class="mega-menu" id="mega-c-{{ forloop.index }}" role="region" aria-label="{{ link.title }} submenu">
+                <div class="mega-menu__inner">
+                  <ul class="mega-menu__links" role="list">
+                    {%- for child in link.links -%}
+                      <li>
+                        <a class="mega-menu__link" href="{{ child.url }}" {%- if child.active %} aria-current="page"{% endif %}>
+                          {{ child.title }}
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </div>
+              </div>
+            {%- else -%}
+              <a class="nav__link" href="{{ link.url }}"
+                 {%- if link.active %} aria-current="page"{% endif %}
+                 {%- if is_ext %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                {{ link.title }}
+              </a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    {%- if section.settings.second_menu != blank -%}
+      {%- assign smenu = linklists[section.settings.second_menu] -%}
+      {%- if smenu.links.size > 0 -%}
+        <nav class="header__subnav" aria-label="Secondary navigation">
+          <ul class="header__subnav-list" role="list">
+            {%- for link in smenu.links -%}
+              <li>
+                <a class="header__subnav-link" href="{{ link.url }}"
+                   {%- if link.active %} aria-current="page"{% endif %}>
+                  {{ link.title }}
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+
 </header>
 
 {% schema %}
 {
   "name": "Header",
   "settings": [
+    {
+      "type": "select",
+      "id": "logo_position",
+      "label": "Logo position",
+      "options": [
+        { "value": "left",   "label": "Left (default)" },
+        { "value": "center", "label": "Center — search left, logo center, icons right" }
+      ],
+      "default": "center"
+    },
     {
       "type": "image_picker",
       "id": "logo",
@@ -203,6 +310,12 @@
       "id": "main_menu",
       "label": "Main navigation menu",
       "default": "main-menu"
+    },
+    {
+      "type": "link_list",
+      "id": "second_menu",
+      "label": "Secondary navigation row",
+      "info": "Optional second nav row below the main nav. E.g. 'New Arrivals, Track My Order'."
     },
     {
       "type": "checkbox",

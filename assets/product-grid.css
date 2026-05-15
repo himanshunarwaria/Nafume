@@ -1,0 +1,81 @@
+/* ── Product Grid section ─────────────────────────────────────────────── */
+
+.product-grid {
+  background: var(--pg-bg, #fff);
+  padding: var(--section-y-desktop) 0;
+}
+
+/* Section header */
+.pg__header {
+  text-align: center;
+  margin-bottom: var(--sp-10);
+}
+
+.pg__eyebrow {
+  margin-bottom: var(--sp-2);
+}
+
+.pg__heading {
+  font-family: var(--ff-serif);
+  font-size: clamp(var(--fs-24), 3.5vw, var(--fs-40));
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clr-ink);
+  margin: 0;
+}
+
+/* Grid layout */
+.pg__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--pg-cols, 4), 1fr);
+  gap: var(--sp-6) var(--sp-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pg__item {
+  display: flex;
+  flex-direction: column;
+}
+
+/* CTA */
+.pg__cta-wrap {
+  margin-top: var(--sp-10);
+  display: flex;
+  justify-content: center;
+}
+
+/* Placeholder */
+.pg__placeholder {
+  padding: var(--sp-10) var(--sp-6);
+  text-align: center;
+  border: 2px dashed var(--clr-line);
+  border-radius: var(--radius-lg);
+  color: var(--clr-ink-3);
+  font-size: var(--fs-14);
+}
+
+/* Mobile: 2 columns */
+@media (max-width: 767px) {
+  .product-grid {
+    padding: var(--section-y-mobile) 0;
+  }
+
+  .pg__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-4) var(--sp-3);
+  }
+
+  .pg__header {
+    margin-bottom: var(--sp-6);
+  }
+}
+
+/* 480px: still 2 cols but tighter */
+@media (max-width: 480px) {
+  .pg__grid {
+    gap: var(--sp-3) var(--sp-2);
+  }
+}
