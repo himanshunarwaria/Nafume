@@ -2,41 +2,42 @@
   "sections": {
     "hero": {
       "type": "hero-banner",
-      "blocks": {
-        "slide_1": {
-          "type": "slide",
-          "settings": {
-            "eyebrow": "New Launches 2025",
-            "heading": "Wear Your Story",
-            "description": "Premium fragrances crafted for every emotion.",
-            "btn_primary_text": "Shop Now",
-            "btn_primary_url": "/collections/all",
-            "btn_secondary_text": "Explore All",
-            "btn_secondary_url": "/collections/all"
-          }
-        }
-      },
-      "block_order": ["slide_1"],
       "settings": {
-        "autoplay_speed": 5
+        "eyebrow": "New Launches 2025",
+        "eyebrow_style": "rule",
+        "heading_tag": "h1",
+        "heading": "Wear Your Story",
+        "subheading": "Premium fragrances crafted for every emotion.",
+        "cta_primary_label": "Shop Now",
+        "cta_primary_url": "/collections/all",
+        "cta_secondary_label": "Explore All",
+        "cta_secondary_url": "/collections/all",
+        "trust_strip": "★ 4.8 from 2,000+ reviews · Free shipping ₹999+ · COD available",
+        "min_height": "large",
+        "text_position": "center",
+        "text_align": "center",
+        "overlay_opacity": 35,
+        "show_scroll_indicator": true
       }
     },
     "new_launches": {
       "type": "product-carousel",
       "settings": {
-        "subtitle": "Just Arrived",
+        "eyebrow": "Just Arrived",
         "heading": "New Launches",
-        "products_to_show": 8,
-        "view_all_text": "View All"
+        "product_limit": 8,
+        "show_cta": true,
+        "cta_label": "View All"
       }
     },
     "best_sellers": {
       "type": "product-carousel",
       "settings": {
-        "subtitle": "Customer Favourites",
+        "eyebrow": "Customer Favourites",
         "heading": "Best Sellers",
-        "products_to_show": 8,
-        "view_all_text": "View All"
+        "product_limit": 8,
+        "show_cta": true,
+        "cta_label": "View All"
       }
     },
     "editorial": {
@@ -81,34 +82,94 @@
     "reviews": {
       "type": "review-carousel",
       "blocks": {
-        "r1": { "type": "review", "settings": { "rating": 5, "review_text": "This scent is absolutely divine. I get compliments every time I wear it.", "author_name": "Priya S.", "author_meta": "Verified Purchase · Mumbai" } },
-        "r2": { "type": "review", "settings": { "rating": 5, "review_text": "Long-lasting and unique. Nothing else like it in this price range.", "author_name": "Arjun M.", "author_meta": "Verified Purchase · Delhi" } },
-        "r3": { "type": "review", "settings": { "rating": 5, "review_text": "My go-to fragrance now. The packaging is also beautiful.", "author_name": "Sneha R.", "author_meta": "Verified Purchase · Bangalore" } }
+        "r1": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "review_text": "This scent is absolutely divine. I get compliments every time I wear it.",
+            "reviewer_name": "Priya S.",
+            "review_title": "Verified Purchase · Mumbai"
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "review_text": "Long-lasting and unique. Nothing else like it in this price range.",
+            "reviewer_name": "Arjun M.",
+            "review_title": "Verified Purchase · Delhi"
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "review_text": "My go-to fragrance now. The packaging is also beautiful.",
+            "reviewer_name": "Sneha R.",
+            "review_title": "Verified Purchase · Bangalore"
+          }
+        }
       },
       "block_order": ["r1","r2","r3"],
       "settings": {
-        "subtitle": "Testimonials",
+        "eyebrow": "Testimonials",
         "heading": "What Our Customers Say"
       }
     },
     "seo_content": {
       "type": "seo-content",
       "blocks": {
-        "b1": { "type": "content_block", "settings": { "title": "Premium Perfumes & Fragrances Online in India", "content": "<p>Nefume offers a curated collection of premium perfumes for men and women. Discover long-lasting Eau de Parfum, Eau de Toilette, and exclusive fragrance sets crafted from the finest ingredients.</p>" } },
-        "b2": { "type": "content_block", "settings": { "title": "How to Choose the Right Fragrance", "content": "<p>Consider the fragrance family — floral, woody, oriental, or fresh — and test on your skin before purchasing. Our discovery kits let you sample before committing.</p>" } }
+        "b1": {
+          "type": "rich_text",
+          "settings": {
+            "heading_level": "h2",
+            "heading": "Premium Perfumes & Fragrances Online in India",
+            "body": "<p>Nefume offers a curated collection of premium perfumes for men and women. Discover long-lasting Eau de Parfum, Eau de Toilette, and exclusive fragrance sets crafted from the finest ingredients.</p>"
+          }
+        },
+        "b2": {
+          "type": "rich_text",
+          "settings": {
+            "heading_level": "h2",
+            "heading": "How to Choose the Right Fragrance",
+            "body": "<p>Consider the fragrance family — floral, woody, oriental, or fresh — and test on your skin before purchasing. Our discovery kits let you sample before committing.</p>"
+          }
+        }
       },
       "block_order": ["b1","b2"],
-      "settings": { "heading": "About Nefume Fragrances" }
+      "settings": {
+        "h1": "About Nefume Fragrances"
+      }
     },
     "faq": {
       "type": "faq",
       "blocks": {
-        "q1": { "type": "faq_item", "settings": { "question": "How long do your fragrances last?", "answer": "<p>Our Eau de Parfum concentrations last 8–12 hours on most skin types.</p>" } },
-        "q2": { "type": "faq_item", "settings": { "question": "Are your fragrances cruelty-free?", "answer": "<p>Yes. All Nefume fragrances are cruelty-free.</p>" } },
-        "q3": { "type": "faq_item", "settings": { "question": "Do you offer Cash on Delivery?", "answer": "<p>Yes, COD is available across most pin codes in India.</p>" } }
+        "q1": {
+          "type": "faq_item",
+          "settings": {
+            "question": "How long do your fragrances last?",
+            "answer": "<p>Our Eau de Parfum concentrations last 8–12 hours on most skin types.</p>"
+          }
+        },
+        "q2": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Are your fragrances cruelty-free?",
+            "answer": "<p>Yes. All Nefume fragrances are cruelty-free.</p>"
+          }
+        },
+        "q3": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do you offer Cash on Delivery?",
+            "answer": "<p>Yes, COD is available across most pin codes in India.</p>"
+          }
+        }
       },
       "block_order": ["q1","q2","q3"],
-      "settings": { "heading": "Frequently Asked Questions" }
+      "settings": {
+        "heading": "Frequently Asked Questions"
+      }
     },
     "newsletter": {
       "type": "newsletter",

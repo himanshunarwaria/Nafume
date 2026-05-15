@@ -1,0 +1,60 @@
+{{- 'theme.css' | asset_url | stylesheet_tag -}}
+
+<section class="page-404 container" style="padding: var(--section-y-desktop) var(--container-pad); text-align: center; min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-6);">
+
+  <p class="page-404__code" style="font-family: var(--ff-serif); font-size: clamp(5rem, 15vw, 10rem); font-weight: var(--fw-light); color: var(--clr-line); line-height: 1; margin: 0;">
+    404
+  </p>
+
+  <h1 class="page-404__heading" style="font-family: var(--ff-serif); font-size: clamp(var(--fs-24), 4vw, var(--fs-36)); font-weight: var(--fw-medium); color: var(--clr-ink); margin: 0;">
+    {{ section.settings.heading }}
+  </h1>
+
+  <p class="page-404__body" style="font-family: var(--ff-sans); font-size: var(--fs-15); color: var(--clr-ink-3); max-width: 38ch; line-height: 1.7; margin: 0;">
+    {{ section.settings.body }}
+  </p>
+
+  <a href="{{ section.settings.cta_url | default: '/' }}"
+     class="btn btn--solid"
+     style="margin-top: var(--sp-2);">
+    {{ section.settings.cta_label }}
+  </a>
+
+</section>
+
+{% schema %}
+{
+  "name": "404 Page",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Page not found"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body text",
+      "default": "The page you're looking for has moved, been removed, or doesn't exist."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button text",
+      "default": "Back to Home"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "404 Page"
+    }
+  ]
+}
+{% endschema %}

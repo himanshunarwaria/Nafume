@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-404",
+      "settings": {
+        "heading": "Page not found",
+        "body": "The page you're looking for has moved, been removed, or doesn't exist.",
+        "cta_label": "Back to Home",
+        "cta_url": "/"
+      }
+    }
+  },
+  "order": ["main"]
+}
