@@ -1,0 +1,54 @@
+# ── Dependencies ──────────────────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Environment / Secrets ─────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+
+# ── Shopify CLI ───────────────────────────────────────────────────────────────
+.shopify/
+theme.lock
+
+# ── Build artifacts ───────────────────────────────────────────────────────────
+dist/
+build/
+.cache/
+
+# ── OS files ─────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ── Editor ───────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Temp ─────────────────────────────────────────────────────────────────────
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# ── Do NOT ignore Shopify theme folders ──────────────────────────────────────
+# assets/, config/, layout/, locales/, sections/, snippets/, templates/ — all tracked

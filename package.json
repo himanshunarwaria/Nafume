@@ -1,0 +1,17 @@
+{
+  "name": "nefume-shopify-theme",
+  "version": "1.0.0",
+  "description": "Custom Shopify 2.0 theme for Nefume — premium D2C fragrance brand",
+  "private": true,
+  "scripts": {
+    "dev": "shopify theme dev --store nafume.myshopify.com",
+    "push": "shopify theme push --store nafume.myshopify.com --unpublished --theme \"Nefume Dev\"",
+    "pull": "shopify theme pull --store nafume.myshopify.com",
+    "check": "shopify theme check"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": ["shopify", "theme", "fragrance", "nefume"],
+  "author": "Himanshu Narwaria"
+}
