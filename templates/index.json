@@ -1,23 +1,38 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
       "type": "hero-banner",
       "settings": {
-        "eyebrow": "New Launches 2025",
+        "eyebrow": "",
         "eyebrow_style": "rule",
         "heading_tag": "h1",
-        "heading": "Wear Your Story",
-        "subheading": "Premium fragrances crafted for every emotion.",
-        "cta_primary_label": "Shop Now",
+        "heading": "",
+        "subheading": "",
+        "cta_primary_label": "",
         "cta_primary_url": "/collections/all",
-        "cta_secondary_label": "Explore All",
+        "cta_secondary_label": "",
         "cta_secondary_url": "/collections/all",
-        "trust_strip": "★ 4.8 from 2,000+ reviews · Free shipping ₹999+ · COD available",
+        "trust_strip": "",
+        "desktop_image": "shopify://shop_images/Herobanner.jpg",
+        "mobile_image": "shopify://shop_images/Mobile_banner_1.jpg",
         "min_height": "large",
         "text_position": "center",
         "text_align": "center",
+        "show_scroll_indicator": true,
+        "overlay_color": "#0d0b08",
         "overlay_opacity": 35,
-        "show_scroll_indicator": true
+        "eyebrow_color": "#c9a96e",
+        "heading_color": "#ffffff",
+        "text_color": "#d8d2c8"
       }
     },
     "new_launches": {
@@ -25,9 +40,15 @@
       "settings": {
         "eyebrow": "Just Arrived",
         "heading": "New Launches",
-        "product_limit": 8,
+        "subheading": "",
+        "collection": "",
+        "product_limit": 4,
+        "products_per_row": "5",
+        "text_align": "left",
+        "bg_color": "#ffffff",
         "show_cta": true,
-        "cta_label": "View All"
+        "cta_label": "View All",
+        "cta_url": ""
       }
     },
     "best_sellers": {
@@ -35,23 +56,71 @@
       "settings": {
         "eyebrow": "Customer Favourites",
         "heading": "Best Sellers",
+        "subheading": "",
+        "collection": "",
         "product_limit": 8,
+        "products_per_row": "4",
+        "text_align": "left",
+        "bg_color": "#ffffff",
         "show_cta": true,
-        "cta_label": "View All"
+        "cta_label": "View All",
+        "cta_url": ""
       }
     },
     "editorial": {
       "type": "editorial-marquee",
       "blocks": {
-        "img_1": { "type": "image", "settings": {} },
-        "img_2": { "type": "image", "settings": {} },
-        "img_3": { "type": "image", "settings": {} },
-        "img_4": { "type": "image", "settings": {} },
-        "img_5": { "type": "image", "settings": {} }
+        "img_1": {
+          "type": "image",
+          "settings": {
+            "row": 1
+          }
+        },
+        "img_2": {
+          "type": "image",
+          "settings": {
+            "row": 1
+          }
+        },
+        "img_3": {
+          "type": "image",
+          "settings": {
+            "row": 1
+          }
+        },
+        "img_4": {
+          "type": "image",
+          "settings": {
+            "row": 1
+          }
+        },
+        "img_5": {
+          "type": "image",
+          "settings": {
+            "row": 1
+          }
+        }
       },
-      "block_order": ["img_1","img_2","img_3","img_4","img_5"],
+      "block_order": [
+        "img_1",
+        "img_2",
+        "img_3",
+        "img_4",
+        "img_5"
+      ],
       "settings": {
-        "heading": "Discover the Art of Fragrance"
+        "title": "",
+        "title_align": "left",
+        "title_color": "#f5f0e8",
+        "bg_color": "#0d0b08",
+        "section_padding": "none",
+        "image_height": 280,
+        "gap": "normal",
+        "row_spacing": 0,
+        "corner_style": "square",
+        "speed": 40,
+        "first_row_direction": "left",
+        "pause_on_hover": true
       }
     },
     "categories": {
@@ -76,8 +145,13 @@
           }
         }
       },
-      "block_order": ["him","her"],
-      "settings": {}
+      "block_order": [
+        "him",
+        "her"
+      ],
+      "settings": {
+        "section_label": "Shop by category"
+      }
     },
     "reviews": {
       "type": "review-carousel",
@@ -85,35 +159,59 @@
         "r1": {
           "type": "review",
           "settings": {
-            "rating": 5,
-            "review_text": "This scent is absolutely divine. I get compliments every time I wear it.",
             "reviewer_name": "Priya S.",
-            "review_title": "Verified Purchase · Mumbai"
+            "review_title": "Verified Purchase · Mumbai",
+            "review_text": "This scent is absolutely divine. I get compliments every time I wear it.",
+            "rating": 5,
+            "verified": true,
+            "review_date": "March 2025",
+            "product_url": "",
+            "product_title": ""
           }
         },
         "r2": {
           "type": "review",
           "settings": {
-            "rating": 5,
-            "review_text": "Long-lasting and unique. Nothing else like it in this price range.",
             "reviewer_name": "Arjun M.",
-            "review_title": "Verified Purchase · Delhi"
+            "review_title": "Verified Purchase · Delhi",
+            "review_text": "Long-lasting and unique. Nothing else like it in this price range.",
+            "rating": 5,
+            "verified": true,
+            "review_date": "March 2025",
+            "product_url": "",
+            "product_title": ""
           }
         },
         "r3": {
           "type": "review",
           "settings": {
-            "rating": 5,
-            "review_text": "My go-to fragrance now. The packaging is also beautiful.",
             "reviewer_name": "Sneha R.",
-            "review_title": "Verified Purchase · Bangalore"
+            "review_title": "Verified Purchase · Bangalore",
+            "review_text": "My go-to fragrance now. The packaging is also beautiful.",
+            "rating": 5,
+            "verified": true,
+            "review_date": "March 2025",
+            "product_url": "",
+            "product_title": ""
           }
         }
       },
-      "block_order": ["r1","r2","r3"],
+      "block_order": [
+        "r1",
+        "r2",
+        "r3"
+      ],
       "settings": {
         "eyebrow": "Testimonials",
-        "heading": "What Our Customers Say"
+        "heading": "What Our Customers Say",
+        "subheading": "",
+        "text_align": "center",
+        "show_rating_summary": true,
+        "total_reviews_text": "",
+        "autoplay_speed": 5,
+        "bg_color": "#f9f7f4",
+        "section_padding_top": 80,
+        "section_padding_bottom": 80
       }
     },
     "seo_content": {
@@ -136,9 +234,21 @@
           }
         }
       },
-      "block_order": ["b1","b2"],
+      "block_order": [
+        "b1",
+        "b2"
+      ],
       "settings": {
-        "h1": "About Nefume Fragrances"
+        "heading_level": "h1",
+        "h1": "About Nefume Fragrances",
+        "intro": "<p>Discover a curated collection of premium long-lasting perfumes crafted for the modern Indian — fragrances that tell your story from the first note to the last.</p>",
+        "show_read_more": true,
+        "peek_height": 200,
+        "read_more_label": "Read More",
+        "read_less_label": "Read Less",
+        "bg_color": "#fdfcfa",
+        "section_padding_top": 72,
+        "section_padding_bottom": 72
       }
     },
     "faq": {
@@ -166,19 +276,37 @@
           }
         }
       },
-      "block_order": ["q1","q2","q3"],
+      "block_order": [
+        "q1",
+        "q2",
+        "q3"
+      ],
       "settings": {
+        "subtitle": "",
         "heading": "Frequently Asked Questions"
       }
     },
     "newsletter": {
       "type": "newsletter",
       "settings": {
+        "subtitle": "",
         "heading": "Join the Nefume Circle",
         "description": "Be the first to discover new launches, exclusive offers, and fragrance stories.",
-        "btn_text": "Subscribe"
+        "placeholder": "Enter your email address",
+        "btn_text": "Subscribe",
+        "success_message": "Thank you! Welcome to the Nefume family."
       }
     }
   },
-  "order": ["hero","new_launches","best_sellers","editorial","categories","reviews","seo_content","faq","newsletter"]
+  "order": [
+    "hero",
+    "new_launches",
+    "best_sellers",
+    "editorial",
+    "categories",
+    "reviews",
+    "seo_content",
+    "faq",
+    "newsletter"
+  ]
 }
