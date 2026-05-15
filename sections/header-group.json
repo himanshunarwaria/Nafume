@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "header",
   "name": "Header group",
@@ -5,23 +14,63 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "blocks": {
-        "msg1": { "type": "announcement", "settings": { "text": "Free shipping on orders above ₹999" } },
-        "msg2": { "type": "announcement", "settings": { "text": "New launches: Shop the latest fragrances" } },
-        "msg3": { "type": "announcement", "settings": { "text": "100% authentic | Easy returns | COD available" } }
+        "msg1": {
+          "type": "announcement",
+          "settings": {
+            "text": "Free shipping on orders above ₹999",
+            "link": ""
+          }
+        },
+        "msg2": {
+          "type": "announcement",
+          "settings": {
+            "text": "New launches: Shop the latest fragrances",
+            "link": ""
+          }
+        },
+        "msg3": {
+          "type": "announcement",
+          "settings": {
+            "text": "100% authentic | Easy returns | COD available",
+            "link": ""
+          }
+        }
       },
-      "block_order": ["msg1","msg2","msg3"],
-      "settings": { "show_announcement": true }
+      "block_order": [
+        "msg1",
+        "msg2",
+        "msg3"
+      ],
+      "settings": {
+        "show_announcement": true,
+        "bg_color": "#1c1917",
+        "text_color": "#ffffff",
+        "rotation_speed": 4,
+        "show_close": true
+      }
     },
     "header": {
       "type": "header",
       "settings": {
-        "logo_width": 160
+        "logo_position": "center",
+        "logo_width": 150,
+        "main_menu": "main-menu",
+        "second_menu": "",
+        "transparent_header": false,
+        "mega_menu_image_label": "New Arrivals",
+        "mega_menu_image_url": ""
       }
     },
     "mobile-menu-snippet": {
       "type": "mobile-menu",
-      "settings": {}
+      "settings": {
+        "menu": "main-menu"
+      }
     }
   },
-  "order": ["announcement-bar","header","mobile-menu-snippet"]
+  "order": [
+    "announcement-bar",
+    "header",
+    "mobile-menu-snippet"
+  ]
 }
