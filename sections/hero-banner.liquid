@@ -29,17 +29,9 @@
   id="hero-{{ section.id }}"
   class="hero {{ height_cls }} {{ vpos_cls }} {{ align_cls }}"
   aria-label="{{ section.settings.heading | default: 'Hero banner' | escape }}"
-  style="
-    --hero-overlay:       {{ overlay_opacity }};
-    --hero-overlay-color: {{ section.settings.overlay_color }};
-    --hero-heading-color: {{ section.settings.heading_color }};
-    --hero-text-color:    {{ section.settings.text_color }};
-    --hero-eyebrow-color: {{ section.settings.eyebrow_color }};
-  ">
+  style="--hero-overlay: {{ overlay_opacity }}; --hero-overlay-color: {{ section.settings.overlay_color }}; --hero-heading-color: {{ section.settings.heading_color }}; --hero-text-color: {{ section.settings.text_color }}; --hero-eyebrow-color: {{ section.settings.eyebrow_color }};">
 
-  {%- comment -%} ───────────────────────────────────────
-    LAYER 1 — Media (video + image, absolutely filled)
-  ─────────────────────────────────────────────────── {%- endcomment -%}
+  {%- comment -%} LAYER 1 — Media {%- endcomment -%}
   <div class="hero__media" aria-hidden="true">
 
     {%- if has_video -%}
@@ -58,14 +50,8 @@
         {%- if has_mobile -%}
           <source
             media="(max-width: 767px)"
-            srcset="
-              {{ section.settings.mobile_image | image_url: width: 750  }} 750w,
-              {{ section.settings.mobile_image | image_url: width: 960  }} 960w,
-              {{ section.settings.mobile_image | image_url: width: 1200 }} 1200w
-            "
+            srcset="{{ section.settings.mobile_image | image_url: width: 750 }} 750w, {{ section.settings.mobile_image | image_url: width: 960 }} 960w, {{ section.settings.mobile_image | image_url: width: 1200 }} 1200w"
             sizes="100vw">
-        {%- elsif has_video == false -%}
-          {{- '' -}}
         {%- endif -%}
         <img
           src="{{ hero_src_1920 }}"
@@ -79,7 +65,6 @@
           height="{{ section.settings.desktop_image.height }}"
           alt="{{ section.settings.desktop_image.alt | default: shop.name | escape }}">
       </picture>
-
     {%- elsif has_video == false -%}
       <div class="hero__img-fallback" aria-hidden="true"></div>
     {%- endif -%}
@@ -89,9 +74,7 @@
   {%- comment -%} LAYER 2 — Overlay {%- endcomment -%}
   <div class="hero__overlay" aria-hidden="true"></div>
 
-  {%- comment -%} ───────────────────────────────────────
-    LAYER 3 — Content
-  ─────────────────────────────────────────────────── {%- endcomment -%}
+  {%- comment -%} LAYER 3 — Content {%- endcomment -%}
   <div class="hero__body">
     <div class="container">
       <div class="hero__text-wrap">
@@ -106,25 +89,24 @@
         {%- endif -%}
 
         {%- if section.settings.heading != blank -%}
-          <{{ section.settings.heading_tag }} class="hero__heading">
-            {{ section.settings.heading }}
-          </{{ section.settings.heading_tag }}>
+          {%- if section.settings.heading_tag == 'h1' -%}
+            <h1 class="hero__heading">{{ section.settings.heading }}</h1>
+          {%- else -%}
+            <h2 class="hero__heading">{{ section.settings.heading }}</h2>
+          {%- endif -%}
         {%- endif -%}
 
         {%- if section.settings.subheading != blank -%}
           <p class="hero__subheading">{{ section.settings.subheading }}</p>
         {%- endif -%}
 
-        {%- if section.settings.cta_primary_label != blank
-            or section.settings.cta_secondary_label != blank -%}
+        {%- if section.settings.cta_primary_label != blank or section.settings.cta_secondary_label != blank -%}
           <div class="hero__ctas">
 
             {%- if section.settings.cta_primary_label != blank -%}
               <a href="{{ section.settings.cta_primary_url | default: '#' }}"
                  class="hero-btn hero-btn--solid"
-                 {% if section.settings.cta_primary_url == blank %}
-                   tabindex="-1" aria-disabled="true"
-                 {% endif %}>
+                 {% if section.settings.cta_primary_url == blank %}tabindex="-1" aria-disabled="true"{% endif %}>
                 {{ section.settings.cta_primary_label }}
               </a>
             {%- endif -%}
@@ -132,12 +114,9 @@
             {%- if section.settings.cta_secondary_label != blank -%}
               <a href="{{ section.settings.cta_secondary_url | default: '#' }}"
                  class="hero-btn hero-btn--text"
-                 {% if section.settings.cta_secondary_url == blank %}
-                   tabindex="-1" aria-disabled="true"
-                 {% endif %}>
+                 {% if section.settings.cta_secondary_url == blank %}tabindex="-1" aria-disabled="true"{% endif %}>
                 {{ section.settings.cta_secondary_label }}
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="1.5" aria-hidden="true" width="14" height="14">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" width="14" height="14">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </a>
@@ -154,7 +133,6 @@
     </div>
   </div>
 
-  {%- comment -%} Scroll indicator {%- endcomment -%}
   {%- if section.settings.show_scroll_indicator -%}
     <div class="hero__scroll" aria-hidden="true">
       <span class="hero__scroll-line"></span>
@@ -167,7 +145,7 @@
 {% schema %}
 {
   "name": "Hero Banner",
-  "tag": "section",
+  "tag": "div",
   "class": "hero-section",
   "settings": [
     {
@@ -177,8 +155,7 @@
     {
       "type": "text",
       "id": "eyebrow",
-      "label": "Eyebrow",
-      "info": "Small label above the heading.",
+      "label": "Eyebrow label",
       "default": "New Collection 2025"
     },
     {
@@ -186,18 +163,18 @@
       "id": "eyebrow_style",
       "label": "Eyebrow style",
       "options": [
-        { "value": "text",  "label": "Text only" },
-        { "value": "rule",  "label": "Text with leading rule" }
+        { "value": "text", "label": "Text only" },
+        { "value": "rule", "label": "Text with rule" }
       ],
       "default": "rule"
     },
     {
       "type": "select",
       "id": "heading_tag",
-      "label": "Heading HTML tag",
-      "info": "Use H1 for the main homepage hero only.",
+      "label": "Heading tag",
+      "info": "Use H1 on the homepage hero only.",
       "options": [
-        { "value": "h1", "label": "H1 — page hero" },
+        { "value": "h1", "label": "H1" },
         { "value": "h2", "label": "H2" }
       ],
       "default": "h1"
@@ -244,8 +221,7 @@
       "type": "text",
       "id": "trust_strip",
       "label": "Trust strip",
-      "info": "Short social-proof line shown below CTAs. E.g. ★ 4.8 from 2,000+ reviews · Free shipping ₹999+ · COD available",
-      "default": "★ 4.8 from 2,000+ reviews · Free shipping ₹999+ · COD available"
+      "default": "4.8 from 2,000+ reviews - Free shipping Rs.999+ - COD available"
     },
     {
       "type": "header",
@@ -254,20 +230,17 @@
     {
       "type": "image_picker",
       "id": "desktop_image",
-      "label": "Desktop image",
-      "info": "Recommended: 1920 × 1080px minimum. Also shown as video poster frame."
+      "label": "Desktop image"
     },
     {
       "type": "image_picker",
       "id": "mobile_image",
-      "label": "Mobile image",
-      "info": "Recommended: 750 × 1000px portrait crop. Falls back to desktop image if not set."
+      "label": "Mobile image"
     },
     {
       "type": "video",
       "id": "video",
-      "label": "Background video",
-      "info": "Autoplays muted + looped. Hides on mobile to preserve battery. Upload a 15–30s ambient MP4."
+      "label": "Background video"
     },
     {
       "type": "header",
@@ -278,10 +251,10 @@
       "id": "min_height",
       "label": "Section height",
       "options": [
-        { "value": "small",  "label": "Small — 60 vh" },
-        { "value": "medium", "label": "Medium — 80 vh" },
-        { "value": "large",  "label": "Full screen — 100 vh" },
-        { "value": "auto",   "label": "Auto (content height)" }
+        { "value": "small",  "label": "Small (60vh)" },
+        { "value": "medium", "label": "Medium (80vh)" },
+        { "value": "large",  "label": "Full screen (100vh)" },
+        { "value": "auto",   "label": "Auto" }
       ],
       "default": "large"
     },
@@ -335,7 +308,7 @@
     },
     {
       "type": "header",
-      "content": "Typography colors"
+      "content": "Text colors"
     },
     {
       "type": "color",
